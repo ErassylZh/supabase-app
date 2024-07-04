@@ -1,4 +1,5 @@
-//package migrate
+package migrate
+
 //
 //import (
 //	"database/sql"
