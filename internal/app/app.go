@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,8 +22,22 @@ import (
 )
 
 func Run(cfg *config.Config) {
-
-	repositories, err := repository.NewRepositories(cfg)
+	db, err := gorm.Open(postgres.Open(cfg.Database.Dsn), &gorm.Config{
+		PrepareStmt: false,
+		Logger:      logger.Default.LogMode(logger.Info),
+	})
+	if err != nil {
+		panic("Failed to connect to database")
+	}
+	//connection, err := db.DB()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//if err := migrate.Up(connection, "migrations"); err != nil {
+	//	fmt.Println("Failed to apply migrations:", err)
+	//	panic(err)
+	//}
+	repositories, err := repository.NewRepositories(db, cfg)
 	if err != nil {
 		panic("error initialization Repositories " + err.Error())
 	}
