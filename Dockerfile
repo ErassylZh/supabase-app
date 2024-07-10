@@ -1,4 +1,4 @@
-FROM docker-registry.fmobile.kz/golang:1.19-alpine
+FROM golang:1.19-alpine
 
 RUN ln -snf /usr/share/zoneinfo/Asia/Almaty /etc/localtime && echo Asia/Almaty > /etc/timezone
 
