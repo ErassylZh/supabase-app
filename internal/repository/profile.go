@@ -22,7 +22,7 @@ func NewProfileDB(db *gorm.DB) *ProfileDB {
 func (r *ProfileDB) GetByID(ctx context.Context, profileId string) (profile model.Profile, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Profile{})
-	err = q.Where("profile_id = ?", profileId).
+	err = q.Where("id = ?", profileId).
 		First(&profileId).
 		Error
 	if err != nil {
@@ -34,7 +34,7 @@ func (r *ProfileDB) GetByID(ctx context.Context, profileId string) (profile mode
 func (r *ProfileDB) DeleteByID(ctx context.Context, userId string) (err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Profile{})
-	err = q.Where("profile_id = ?", userId).
+	err = q.Where("id = ?", userId).
 		Delete(&model.Profile{}).
 		Error
 	if err != nil {
