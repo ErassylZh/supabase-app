@@ -23,7 +23,8 @@ func (r *UserDB) GetByID(ctx context.Context, userId string) (user model.User, e
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.User{})
 	err = q.Where("id = ?", userId).
-		First(&user).Error
+		First(&user).
+		Error
 	if err != nil {
 		return model.User{}, err
 	}
