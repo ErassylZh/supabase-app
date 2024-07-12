@@ -23,7 +23,7 @@ import (
 
 func Run(cfg *config.Config) {
 	db, err := gorm.Open(postgres.Open(cfg.Database.Dsn), &gorm.Config{
-		PrepareStmt: false,
+		PrepareStmt: true,
 		Logger:      logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
