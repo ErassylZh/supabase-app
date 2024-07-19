@@ -18,6 +18,7 @@ import (
 	"work-project/internal/repository"
 	"work-project/internal/server"
 	"work-project/internal/service"
+	"work-project/internal/usecase"
 	"work-project/internal/worker"
 )
 
@@ -45,6 +46,10 @@ func Run(cfg *config.Config) {
 		Repos: repositories,
 		Cgf:   cfg,
 	})
+	usecases := usecase.NewUsecases(usecase.Deps{
+		Services:     services,
+		Repositories: repositories,
+	})
 
 	healthCheckFn := func() error {
 		//if err := connection.Ping(); err != nil {
@@ -56,7 +61,7 @@ func Run(cfg *config.Config) {
 	//handlers := v1.NewHandler(services)
 
 	authMiddleware := middleware.NewAuthMiddleware(middleware.GinRecoveryFn)
-	handlerDelivery := handler.NewHandlerDelivery(services, "", *authMiddleware, healthCheckFn)
+	handlerDelivery := handler.NewHandlerDelivery(usecases, services, "", *authMiddleware, healthCheckFn)
 	if err != nil {
 		fmt.Println("Failed to create handlers:", err)
 		panic(err)

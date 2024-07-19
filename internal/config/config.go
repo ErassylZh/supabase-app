@@ -26,6 +26,7 @@ type (
 		Dsn         string `envconfig:"DATABASE_DSN"`
 	}
 	Security struct {
+		Secret string `envconfig:"SECRET"`
 	}
 	Integration struct {
 	}

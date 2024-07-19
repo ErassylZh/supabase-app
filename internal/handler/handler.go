@@ -7,10 +7,12 @@ import (
 	v1 "work-project/internal/handler/v1"
 	"work-project/internal/middleware"
 	"work-project/internal/service"
+	"work-project/internal/usecase"
 	"work-project/pkg/middlewares"
 )
 
 type Handler struct {
+	usecases       *usecase.Usecases
 	services       *service.Services
 	baseUrl        string
 	authMiddleware middleware.AuthMiddleware
@@ -18,12 +20,14 @@ type Handler struct {
 }
 
 func NewHandlerDelivery(
+	usecases *usecase.Usecases,
 	services *service.Services,
 	baseUrl string,
 	auth middleware.AuthMiddleware,
 	healthcheckFn func() error,
 ) *Handler {
 	return &Handler{
+		usecases:       usecases,
 		services:       services,
 		baseUrl:        baseUrl,
 		authMiddleware: auth,
@@ -66,7 +70,7 @@ func (h *Handler) Init(cfg *config.Config) (*gin.Engine, error) {
 func (h *Handler) initAPI(router *gin.Engine) {
 	baseUrl := router.Group(h.baseUrl)
 
-	handlerV1 := v1.NewHandler(h.services, &h.authMiddleware)
+	handlerV1 := v1.NewHandler(h.services, h.usecases, &h.authMiddleware)
 	api := baseUrl.Group("/api")
 	{
 		handlerV1.Init(api)
