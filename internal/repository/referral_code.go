@@ -9,6 +9,7 @@ import (
 type ReferralCode interface {
 	GetByUserId(ctx context.Context, userId string) (model.ReferralCode, error)
 	GetByReferralCode(ctx context.Context, referralCode string) (model.ReferralCode, error)
+	Create(ctx context.Context, code model.ReferralCode) error
 }
 
 type ReferralCodeDB struct {
@@ -41,4 +42,15 @@ func (r *ReferralCodeDB) GetByReferralCode(ctx context.Context, code string) (re
 		return referralCode, err
 	}
 	return referralCode, nil
+}
+
+func (r *ReferralCodeDB) Create(ctx context.Context, code model.ReferralCode) error {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.ReferralCode{})
+	err := q.Create(&code).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
