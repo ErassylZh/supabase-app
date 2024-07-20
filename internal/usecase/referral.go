@@ -61,6 +61,13 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 		}
 		return model.ReferralCode{}, err
 	}
+	_, err = u.referral.GetByInvitedUserId(ctx, userID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return model.ReferralCode{}, err
+	}
+	if err == nil {
+		return model.ReferralCode{}, fmt.Errorf("user already accept referral code ")
+	}
 
 	referral := model.Referral{
 		UserID:        referralCode.UserID,
