@@ -16,6 +16,6 @@ type Deps struct {
 
 func NewUsecases(deps Deps) *Usecases {
 	return &Usecases{
-		Referral: NewReferralUsecase(deps.Repositories.ReferralCode, deps.Repositories.Referral),
+		Referral: NewReferralUsecase(deps.Repositories.ReferralCode, deps.Repositories.Referral, deps.Services.PushNotification),
 	}
 }

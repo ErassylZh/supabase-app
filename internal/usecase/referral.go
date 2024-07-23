@@ -10,6 +10,7 @@ import (
 	"time"
 	"work-project/internal/model"
 	"work-project/internal/repository"
+	"work-project/internal/service"
 )
 
 type Referral interface {
@@ -18,15 +19,13 @@ type Referral interface {
 }
 
 type ReferralUsecase struct {
-	referralCode repository.ReferralCode
-	referral     repository.Referral
+	referralCode     repository.ReferralCode
+	referral         repository.Referral
+	pushNotification service.PushNotification
 }
 
-func NewReferralUsecase(referralCode repository.ReferralCode, referral repository.Referral) *ReferralUsecase {
-	return &ReferralUsecase{
-		referralCode: referralCode,
-		referral:     referral,
-	}
+func NewReferralUsecase(referralCode repository.ReferralCode, referral repository.Referral, pushNotification service.PushNotification) *ReferralUsecase {
+	return &ReferralUsecase{referralCode: referralCode, referral: referral, pushNotification: pushNotification}
 }
 
 func (u *ReferralUsecase) GetReferralCodeByUser(ctx context.Context, userID string) (model.ReferralCode, error) {
@@ -80,6 +79,7 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 		return model.ReferralCode{}, err
 	}
 	//todo добавить отправвку пуша и добавление бонусов двум юзерам
+	//err = u.pushNotification.Send(ctx, "some text", "some header", "some token", nil, nil)
 	return model.ReferralCode{}, nil
 }
 

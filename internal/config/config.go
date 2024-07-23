@@ -29,6 +29,7 @@ type (
 		Secret string `envconfig:"SECRET"`
 	}
 	Integration struct {
+		PathToFirebaseConfig string `envconfig:"PATH_TO_FIREBASE_CONFIG" default:"haco-firebase-config.json"`
 	}
 )
 
