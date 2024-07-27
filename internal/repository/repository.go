@@ -11,6 +11,8 @@ type Repositories struct {
 	ReferralCode     ReferralCode
 	Referral         Referral
 	PushNotification PushNotification
+	Transaction      Transaction
+	Balance          Balance
 
 	FirebaseMessaging FirebaseMessaging
 }
@@ -22,6 +24,8 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		ReferralCode:      NewReferralCodeDB(db),
 		Referral:          NewReferralDB(db),
 		PushNotification:  NewPushNotificationDB(db),
+		Balance:           NewBalanceDB(db),
+		Transaction:       NewTransactionDB(db),
 		FirebaseMessaging: NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 	}, nil
 }

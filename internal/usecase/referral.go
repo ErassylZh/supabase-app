@@ -19,17 +19,18 @@ type Referral interface {
 }
 
 type ReferralUsecase struct {
-	referralCode     repository.ReferralCode
-	referral         repository.Referral
-	pushNotification service.PushNotification
+	referralCodeRepository  repository.ReferralCode
+	referralRepository      repository.Referral
+	pushNotificationService service.PushNotification
+	balanceService          service.Balance
 }
 
-func NewReferralUsecase(referralCode repository.ReferralCode, referral repository.Referral, pushNotification service.PushNotification) *ReferralUsecase {
-	return &ReferralUsecase{referralCode: referralCode, referral: referral, pushNotification: pushNotification}
+func NewReferralUsecase(referralCode repository.ReferralCode, referral repository.Referral, pushNotification service.PushNotification, balance service.Balance) *ReferralUsecase {
+	return &ReferralUsecase{referralCodeRepository: referralCode, referralRepository: referral, pushNotificationService: pushNotification, balanceService: balance}
 }
 
 func (u *ReferralUsecase) GetReferralCodeByUser(ctx context.Context, userID string) (model.ReferralCode, error) {
-	referralCode, err := u.referralCode.GetByUserId(ctx, userID)
+	referralCode, err := u.referralCodeRepository.GetByUserId(ctx, userID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return referralCode, err
 	}
@@ -45,7 +46,7 @@ func (u *ReferralUsecase) GetReferralCodeByUser(ctx context.Context, userID stri
 		ReferralCode: code,
 		CreatedAt:    time.Now(),
 	}
-	err = u.referralCode.Create(ctx, referralCode)
+	err = u.referralCodeRepository.Create(ctx, referralCode)
 	if err != nil {
 		return model.ReferralCode{}, err
 	}
@@ -53,14 +54,14 @@ func (u *ReferralUsecase) GetReferralCodeByUser(ctx context.Context, userID stri
 }
 
 func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string, code string) (model.ReferralCode, error) {
-	referralCode, err := u.referralCode.GetByReferralCode(ctx, code)
+	referralCode, err := u.referralCodeRepository.GetByReferralCode(ctx, code)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return model.ReferralCode{}, fmt.Errorf("referral code not found")
 		}
 		return model.ReferralCode{}, err
 	}
-	_, err = u.referral.GetByInvitedUserId(ctx, userID)
+	_, err = u.referralRepository.GetByInvitedUserId(ctx, userID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return model.ReferralCode{}, err
 	}
@@ -74,12 +75,37 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 		ReferralCode:  code,
 		CreatedAt:     time.Now(),
 	}
-	err = u.referral.Create(ctx, referral)
+	err = u.referralRepository.Create(ctx, referral)
 	if err != nil {
 		return model.ReferralCode{}, err
 	}
 	//todo добавить отправвку пуша и добавление бонусов двум юзерам
 	//err = u.pushNotification.Send(ctx, "some text", "some header", "some token", nil, nil)
+
+	//todo потом возможно поменяем койны и сапфиры которые даем за реферал
+	_, err = u.balanceService.CreateTransaction(ctx, referralCode.UserID, model.Transaction{
+		Coins:           10,
+		Sapphires:       0,
+		UserId:          referralCode.UserID,
+		CreatedAt:       time.Now(),
+		TransactionType: string(model.TRANSACTION_TYPE_INCOME),
+		Reason:          string(model.TRANSACTION_REASON_REFERRAL),
+	})
+	if err != nil {
+		return model.ReferralCode{}, err
+	}
+
+	_, err = u.balanceService.CreateTransaction(ctx, userID, model.Transaction{
+		Coins:           10,
+		Sapphires:       0,
+		UserId:          userID,
+		CreatedAt:       time.Now(),
+		TransactionType: string(model.TRANSACTION_TYPE_INCOME),
+		Reason:          string(model.TRANSACTION_REASON_REFERRAL),
+	})
+	if err != nil {
+		return model.ReferralCode{}, err
+	}
 	return model.ReferralCode{}, nil
 }
 
