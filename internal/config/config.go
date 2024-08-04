@@ -30,6 +30,8 @@ type (
 	}
 	Integration struct {
 		PathToFirebaseConfig string `envconfig:"PATH_TO_FIREBASE_CONFIG" default:"haco-firebase-config.json"`
+		AirtableBaseurl      string `envconfig:"AIRTABLE_BASE_URL"`
+		AirtableApiKey       string `envconfig:"AIRTABLE_API_KEY"`
 	}
 )
 
