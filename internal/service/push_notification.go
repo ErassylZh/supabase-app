@@ -9,6 +9,7 @@ import (
 
 type PushNotification interface {
 	Send(ctx context.Context, text, header string, token, topic, condition *string) error
+	GetAllByUser(ctx context.Context, deviceToken string) ([]model.PushNotification, error)
 }
 
 type PushNotificationService struct {
@@ -48,4 +49,12 @@ func (s *PushNotificationService) Send(ctx context.Context, text, header string,
 		return err
 	}
 	return s.pushNotification.Create(ctx, pushNotificationModel)
+}
+
+func (s *PushNotificationService) GetAllByUser(ctx context.Context, deviceToken string) ([]model.PushNotification, error) {
+	var token *string
+	if len(deviceToken) > 0 {
+		token = &deviceToken
+	}
+	return s.pushNotification.GetByToken(ctx, token)
 }
