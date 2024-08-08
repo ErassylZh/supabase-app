@@ -23,6 +23,7 @@ func NewPushNotificationService(pushNotification repository.PushNotification, fi
 
 func (s *PushNotificationService) Send(ctx context.Context, text, header string, token, topic, condition *string) error {
 	message := messaging.Message{
+		Topic: "all",
 		Notification: &messaging.Notification{
 			Title: header,
 			Body:  text,

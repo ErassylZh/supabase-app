@@ -10,6 +10,8 @@ type PushNotification interface {
 	GetByID(ctx context.Context, profileId string) (model.PushNotification, error)
 	Create(ctx context.Context, notification model.PushNotification) error
 	GetByToken(ctx context.Context, token *string) ([]model.PushNotification, error)
+	GetAllNotSended(ctx context.Context) ([]model.PushNotification, error)
+	Update(ctx context.Context, notificationModel model.PushNotification) error
 }
 
 type PushNotificationDB struct {
@@ -54,4 +56,28 @@ func (r *PushNotificationDB) GetByToken(ctx context.Context, token *string) (not
 		return notifications, err
 	}
 	return notifications, nil
+}
+
+func (r *PushNotificationDB) GetAllNotSended(ctx context.Context) (notifications []model.PushNotification, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.PushNotification{})
+	err = q.Where("is_sended = ?", false).
+		Find(&notifications).
+		Error
+	if err != nil {
+		return notifications, err
+	}
+	return notifications, nil
+}
+
+func (r *PushNotificationDB) Update(ctx context.Context, notification model.PushNotification) error {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.PushNotification{})
+	err := q.Where("push_notification_id=?", notification.PushNotificationID).
+		Save(&notification).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

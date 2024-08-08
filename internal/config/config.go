@@ -29,7 +29,8 @@ type (
 		Secret string `envconfig:"SECRET"`
 	}
 	Integration struct {
-		PathToFirebaseConfig string `envconfig:"PATH_TO_FIREBASE_CONFIG" default:"haco-firebase-config.json"`
+		PathToFirebaseConfig       string `envconfig:"PATH_TO_FIREBASE_CONFIG" default:"haco-firebase-config.json"`
+		PushNotificationReadPeriod int    `envconfig:"PUSH_NOTIFICATION_READ_PERIOD" default:"300"`
 	}
 )
 

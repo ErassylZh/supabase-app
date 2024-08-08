@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 	"net/http"
 	"os"
 	"os/signal"
@@ -23,9 +23,15 @@ import (
 )
 
 func Run(cfg *config.Config) {
-	db, err := gorm.Open(postgres.Open(cfg.Database.Dsn), &gorm.Config{
-		PrepareStmt: false,
-		Logger:      logger.Default.LogMode(logger.Info),
+
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  cfg.Database.Dsn,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix:   "wa.",
+			SingularTable: false,
+		},
 	})
 	if err != nil {
 		panic("Failed to connect to database")

@@ -13,6 +13,7 @@ type PushNotification struct {
 	Token              *string   `gorm:"column:token" json:"token"`
 	Topic              *string   `gorm:"column:topic" json:"topic"`
 	Condition          *string   `gorm:"column:condition" json:"condition"`
+	IsSended           bool      `gorm:"column:is_sended" json:"is_sended"`
 }
 
 func (u PushNotification) TableName() string {
