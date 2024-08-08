@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
+	"strings"
 )
 
 type Auth interface {
@@ -18,7 +19,8 @@ func NewAuthService(secret string) *AuthService {
 }
 
 func (a *AuthService) VerifyToken(tokenString string) (userId string, err error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	tokenMain := strings.Split(tokenString, " ")[1]
+	token, err := jwt.Parse(tokenMain, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
