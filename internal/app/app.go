@@ -24,7 +24,7 @@ import (
 
 func Run(cfg *config.Config) {
 	db, err := gorm.Open(postgres.Open(cfg.Database.Dsn), &gorm.Config{
-		PrepareStmt: true,
+		PrepareStmt: false,
 		Logger:      logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
