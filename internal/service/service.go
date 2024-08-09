@@ -12,6 +12,7 @@ type Services struct {
 	User             User
 	PushNotification PushNotification
 	Balance          Balance
+	UserDeviceToken  UserDeviceToken
 }
 
 type Deps struct {
@@ -25,5 +26,6 @@ func NewServices(deps Deps) *Services {
 		Auth:             NewAuthService(deps.Cgf.Security.Secret),
 		PushNotification: NewPushNotificationService(deps.Repos.PushNotification, deps.Repos.FirebaseMessaging),
 		Balance:          NewBalanceService(deps.Repos.Balance, deps.Repos.Transaction),
+		UserDeviceToken:  NewUserDeviceTokenService(deps.Repos.UserDeviceToken),
 	}
 }

@@ -23,10 +23,11 @@ type ReferralUsecase struct {
 	referralRepository      repository.Referral
 	pushNotificationService service.PushNotification
 	balanceService          service.Balance
+	userDeviceTokenService  service.UserDeviceToken
 }
 
-func NewReferralUsecase(referralCode repository.ReferralCode, referral repository.Referral, pushNotification service.PushNotification, balance service.Balance) *ReferralUsecase {
-	return &ReferralUsecase{referralCodeRepository: referralCode, referralRepository: referral, pushNotificationService: pushNotification, balanceService: balance}
+func NewReferralUsecase(referralCodeRepository repository.ReferralCode, referralRepository repository.Referral, pushNotificationService service.PushNotification, balanceService service.Balance, userDeviceTokenService service.UserDeviceToken) *ReferralUsecase {
+	return &ReferralUsecase{referralCodeRepository: referralCodeRepository, referralRepository: referralRepository, pushNotificationService: pushNotificationService, balanceService: balanceService, userDeviceTokenService: userDeviceTokenService}
 }
 
 func (u *ReferralUsecase) GetReferralCodeByUser(ctx context.Context, userID string) (model.ReferralCode, error) {
@@ -79,8 +80,6 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 	if err != nil {
 		return model.ReferralCode{}, err
 	}
-	//todo добавить отправвку пуша и добавление бонусов двум юзерам
-	//err = u.pushNotification.Send(ctx, "some text", "some header", "some token", nil, nil)
 
 	//todo потом возможно поменяем койны и сапфиры которые даем за реферал
 	_, err = u.balanceService.CreateTransaction(ctx, referralCode.UserID, model.Transaction{
@@ -91,6 +90,11 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 		TransactionType: string(model.TRANSACTION_TYPE_INCOME),
 		Reason:          string(model.TRANSACTION_REASON_REFERRAL),
 	})
+	if err != nil {
+		return model.ReferralCode{}, err
+	}
+
+	err = u.sendMessageReferralToUser(ctx, referralCode.UserID)
 	if err != nil {
 		return model.ReferralCode{}, err
 	}
@@ -122,4 +126,18 @@ func (u *ReferralUsecase) generateReferralCode(length int) (string, error) {
 		code[i] = charset[randomInt.Int64()]
 	}
 	return string(code), nil
+}
+
+func (u *ReferralUsecase) sendMessageReferralToUser(ctx context.Context, userId string) error {
+	devices, err := u.userDeviceTokenService.GetByUserId(ctx, userId)
+	if err != nil {
+		return err
+	}
+	for _, device := range devices {
+		err = u.pushNotificationService.Send(ctx, "Congrats! You get coins from referral", "referral", &device.DeviceToken, nil, nil)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

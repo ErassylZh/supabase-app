@@ -28,5 +28,6 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initReferral(v1)
 		h.initBalance(v1)
 		h.initNotification(v1)
+		h.initUserDeviceToken(v1)
 	}
 }

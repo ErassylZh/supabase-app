@@ -13,6 +13,7 @@ type Repositories struct {
 	PushNotification PushNotification
 	Transaction      Transaction
 	Balance          Balance
+	UserDeviceToken  UserDeviceToken
 
 	FirebaseMessaging FirebaseMessaging
 }
@@ -26,6 +27,7 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		PushNotification:  NewPushNotificationDB(db),
 		Balance:           NewBalanceDB(db),
 		Transaction:       NewTransactionDB(db),
+		UserDeviceToken:   NewUserDeviceTokenDB(db),
 		FirebaseMessaging: NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 	}, nil
 }
