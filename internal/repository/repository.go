@@ -16,11 +16,12 @@ type Repositories struct {
 	Balance          Balance
 
 	FirebaseMessaging integration.FirebaseMessaging
-	Airtable          integration.AirTable
+	Airtable          AirTable
+	StorageClient     integration.StorageClient
 }
 
 func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
-	airtable, err := integration.NewAirTableClient(cfg.Integration.AirtableBaseurl, cfg.Integration.AirtableApiKey)
+	airtable, err := NewAirTableClient(cfg.Integration.AirtableBaseurl, cfg.Integration.AirtableApiKey)
 	if err != nil {
 		return nil, err
 	}
@@ -34,5 +35,6 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		Transaction:       NewTransactionDB(db),
 		FirebaseMessaging: integration.NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 		Airtable:          airtable,
+		StorageClient:     integration.NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),
 	}, nil
 }

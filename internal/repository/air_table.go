@@ -1,4 +1,4 @@
-package integration
+package repository
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strconv"
+	"time"
 	"work-project/internal/airtable"
 )
 
@@ -29,7 +29,7 @@ func NewAirTableClient(baseUrl string, apiKey string) (*AirTableClient, error) {
 	}
 	return &AirTableClient{
 		client: &http.Client{
-			Timeout: 30,
+			Timeout: 30 * time.Second,
 		},
 		baseURL: baseURL,
 		apiKey:  apiKey,
@@ -38,9 +38,9 @@ func NewAirTableClient(baseUrl string, apiKey string) (*AirTableClient, error) {
 
 func (r *AirTableClient) GetProducts(ctx context.Context) ([]airtable.BaseObject[airtable.ProductListResponse], error) {
 	requestURL := r.baseURL.JoinPath("/Stores")
-	req, err := r.newRequest(ctx, http.MethodPost, requestURL, nil)
+	req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
 	if err != nil {
-		return []airtable.BaseObject[airtable.ProductListResponse]{}, err
+		return nil, err
 	}
 	resp, err := r.client.Do(req)
 	if err != nil {
@@ -48,12 +48,8 @@ func (r *AirTableClient) GetProducts(ctx context.Context) ([]airtable.BaseObject
 	}
 	defer resp.Body.Close()
 
-	if err != nil {
-		return nil, err
-	}
-
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error while get airtable products. Response code " + strconv.Itoa(resp.StatusCode))
+		return nil, fmt.Errorf("error while getting Airtable products. Response code: %d", resp.StatusCode)
 	}
 
 	rawResponse, err := io.ReadAll(resp.Body)
@@ -72,7 +68,7 @@ func (r *AirTableClient) GetProducts(ctx context.Context) ([]airtable.BaseObject
 func (r *AirTableClient) newRequest(
 	ctx context.Context,
 	method string,
-	requestUrl *url.URL,
+	requestURL *url.URL,
 	body interface{},
 ) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -81,11 +77,10 @@ func (r *AirTableClient) newRequest(
 		if err != nil {
 			return nil, err
 		}
-
 		bodyReader = bytes.NewBuffer(rawBody)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, requestUrl.String(), bodyReader)
+	req, err := http.NewRequestWithContext(ctx, method, requestURL.String(), bodyReader)
 	if err != nil {
 		return nil, err
 	}
@@ -94,10 +89,7 @@ func (r *AirTableClient) newRequest(
 		req.Header.Add("Content-Type", "application/json")
 	}
 
-	authHeader := fmt.Sprintf("%s %s", "Bearer", r.apiKey)
-	if authHeader != "" {
-		req.Header.Add("Authorization", authHeader)
-	}
+	req.Header.Add("Authorization", "Bearer "+r.apiKey)
 
 	return req, nil
 }

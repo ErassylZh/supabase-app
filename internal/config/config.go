@@ -21,9 +21,9 @@ type (
 	}
 
 	Database struct {
-		ApiKey      string `envconfig:"API_KEY"`
-		SupabaseUrl string `envconfig:"SUPABASE_URL"`
-		Dsn         string `envconfig:"DATABASE_DSN"`
+		SupabaseApiKey string `envconfig:"SUPABASE_API_KEY"`
+		SupabaseUrl    string `envconfig:"SUPABASE_URL"`
+		Dsn            string `envconfig:"DATABASE_DSN"`
 	}
 	Security struct {
 		Secret string `envconfig:"SECRET"`
