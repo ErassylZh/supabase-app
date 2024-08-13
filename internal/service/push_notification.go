@@ -5,7 +5,6 @@ import (
 	"firebase.google.com/go/messaging"
 	"work-project/internal/model"
 	"work-project/internal/repository"
-	"work-project/internal/repository/integration"
 )
 
 type PushNotification interface {
@@ -15,10 +14,10 @@ type PushNotification interface {
 
 type PushNotificationService struct {
 	pushNotification  repository.PushNotification
-	firebaseMessaging integration.FirebaseMessaging
+	firebaseMessaging repository.FirebaseMessaging
 }
 
-func NewPushNotificationService(pushNotification repository.PushNotification, firebaseMessaging integration.FirebaseMessaging) *PushNotificationService {
+func NewPushNotificationService(pushNotification repository.PushNotification, firebaseMessaging repository.FirebaseMessaging) *PushNotificationService {
 	return &PushNotificationService{pushNotification: pushNotification, firebaseMessaging: firebaseMessaging}
 }
 

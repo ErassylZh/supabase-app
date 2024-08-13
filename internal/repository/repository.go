@@ -3,6 +3,7 @@ package repository
 import (
 	"gorm.io/gorm"
 	"work-project/internal/config"
+	"work-project/internal/repository/integration"
 )
 
 type Repositories struct {
@@ -16,7 +17,7 @@ type Repositories struct {
 	UserDeviceToken  UserDeviceToken
 	Product          Product
 
-	FirebaseMessaging integration.FirebaseMessaging
+	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
 	StorageClient     integration.StorageClient
 }
