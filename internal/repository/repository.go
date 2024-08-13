@@ -14,6 +14,7 @@ type Repositories struct {
 	PushNotification PushNotification
 	Transaction      Transaction
 	Balance          Balance
+	Product          Product
 
 	FirebaseMessaging integration.FirebaseMessaging
 	Airtable          AirTable
@@ -33,6 +34,7 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		PushNotification:  NewPushNotificationDB(db),
 		Balance:           NewBalanceDB(db),
 		Transaction:       NewTransactionDB(db),
+		Product:           NewProductDb(db),
 		FirebaseMessaging: integration.NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 		Airtable:          airtable,
 		StorageClient:     integration.NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),

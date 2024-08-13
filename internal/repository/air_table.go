@@ -37,7 +37,7 @@ func NewAirTableClient(baseUrl string, apiKey string) (*AirTableClient, error) {
 }
 
 func (r *AirTableClient) GetProducts(ctx context.Context) ([]airtable.BaseObject[airtable.ProductListResponse], error) {
-	requestURL := r.baseURL.JoinPath("/Stores")
+	requestURL := r.baseURL.JoinPath("/Store")
 	req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
 	if err != nil {
 		return nil, err

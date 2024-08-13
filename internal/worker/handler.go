@@ -33,8 +33,9 @@ func (h *Handler) Init() {
 	)
 	airTableSync := NewAirTableSync(
 		h.repositories.Airtable,
+		h.repositories.Product,
 	)
-	if err = s.Every(uint64(5)).Seconds().Do(airTableSync.Run); err != nil {
+	if err = s.Every(uint64(300)).Seconds().Do(airTableSync.Run); err != nil {
 		log.Println("worker failed", "err", err.Error())
 	}
 

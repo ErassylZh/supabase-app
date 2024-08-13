@@ -9,15 +9,20 @@ type BaseResponse[T any] struct {
 type BaseObject[T any] struct {
 	Id          string    `json:"id"`
 	CreatedTime time.Time `json:"createdTime"`
-	Fields      []T       `json:"fields"`
+	Fields      *T        `json:"fields"`
 }
 
 type ProductListResponse struct {
 	Count       int     `json:"count"`
 	Point       int     `json:"point"`
+	Sapphire    int     `json:"sapphire"`
 	Description string  `json:"description"`
 	Title       string  `json:"title"`
 	Image       []Image `json:"image"`
+	Sku         string  `json:"sku"`
+	ProductType string  `json:"product_type"`
+	SellType    string  `json:"sell_type"`
+	Status      string  `json:"status"`
 }
 
 type Image struct {
