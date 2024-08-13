@@ -21,15 +21,17 @@ type (
 	}
 
 	Database struct {
-		ApiKey      string `envconfig:"API_KEY"`
-		SupabaseUrl string `envconfig:"SUPABASE_URL"`
-		Dsn         string `envconfig:"DATABASE_DSN"`
+		SupabaseApiKey string `envconfig:"SUPABASE_API_KEY"`
+		SupabaseUrl    string `envconfig:"SUPABASE_URL"`
+		Dsn            string `envconfig:"DATABASE_DSN"`
 	}
 	Security struct {
 		Secret string `envconfig:"SECRET"`
 	}
 	Integration struct {
 		PathToFirebaseConfig       string `envconfig:"PATH_TO_FIREBASE_CONFIG" default:"haco-firebase-config.json"`
+		AirtableBaseurl            string `envconfig:"AIRTABLE_BASE_URL"`
+		AirtableApiKey             string `envconfig:"AIRTABLE_API_KEY"`
 		PushNotificationReadPeriod int    `envconfig:"PUSH_NOTIFICATION_READ_PERIOD" default:"300"`
 	}
 )

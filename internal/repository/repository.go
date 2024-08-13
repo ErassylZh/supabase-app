@@ -14,11 +14,18 @@ type Repositories struct {
 	Transaction      Transaction
 	Balance          Balance
 	UserDeviceToken  UserDeviceToken
+	Product          Product
 
-	FirebaseMessaging FirebaseMessaging
+	FirebaseMessaging integration.FirebaseMessaging
+	Airtable          AirTable
+	StorageClient     integration.StorageClient
 }
 
 func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
+	airtable, err := NewAirTableClient(cfg.Integration.AirtableBaseurl, cfg.Integration.AirtableApiKey)
+	if err != nil {
+		return nil, err
+	}
 	return &Repositories{
 		User:              NewUserDB(db),
 		Profile:           NewProfileDB(db),
@@ -28,6 +35,9 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		Balance:           NewBalanceDB(db),
 		Transaction:       NewTransactionDB(db),
 		UserDeviceToken:   NewUserDeviceTokenDB(db),
+		Product:           NewProductDb(db),
 		FirebaseMessaging: NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
+		Airtable:          airtable,
+		StorageClient:     integration.NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),
 	}, nil
 }
