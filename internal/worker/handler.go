@@ -38,6 +38,8 @@ func (h *Handler) Init() {
 	airTableSync := NewAirTableSync(
 		h.repositories.Airtable,
 		h.repositories.Product,
+		h.repositories.StorageClient,
+		h.repositories.Image,
 	)
 	if err = s.Every(uint64(h.cfg.Integration.PushNotificationReadPeriod)).Seconds().Do(pushNotificationReader.Run); err != nil {
 		log.Println("worker failed", "err", err.Error())

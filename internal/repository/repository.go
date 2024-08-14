@@ -3,7 +3,6 @@ package repository
 import (
 	"gorm.io/gorm"
 	"work-project/internal/config"
-	"work-project/internal/repository/integration"
 )
 
 type Repositories struct {
@@ -16,10 +15,11 @@ type Repositories struct {
 	Balance          Balance
 	UserDeviceToken  UserDeviceToken
 	Product          Product
+	Image            Image
 
 	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
-	StorageClient     integration.StorageClient
+	StorageClient     StorageClient
 }
 
 func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
@@ -37,8 +37,9 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		Transaction:       NewTransactionDB(db),
 		UserDeviceToken:   NewUserDeviceTokenDB(db),
 		Product:           NewProductDb(db),
+		Image:             NewImageDb(db),
 		FirebaseMessaging: NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 		Airtable:          airtable,
-		StorageClient:     integration.NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),
+		StorageClient:     NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),
 	}, nil
 }

@@ -11,15 +11,27 @@ import (
 type AirTableSync struct {
 	airTable repository.AirTable
 	product  repository.Product
+	storage  repository.StorageClient
+	Image    repository.Image
 }
 
-func NewAirTableSync(airTable repository.AirTable, product repository.Product) *AirTableSync {
-	return &AirTableSync{airTable: airTable, product: product}
+func NewAirTableSync(airTable repository.AirTable, product repository.Product, storage repository.StorageClient, image repository.Image) *AirTableSync {
+	return &AirTableSync{airTable: airTable, product: product, storage: storage, Image: image}
 }
 
 func (h *AirTableSync) Run() (err error) {
 	ctx := context.Background()
+	err = h.syncProducts(ctx)
+	if err != nil {
+		log.Println("error while sync products", "err", err)
+		return err
+	}
 
+	log.Println("airtable sync end successful")
+	return
+}
+
+func (h *AirTableSync) syncProducts(ctx context.Context) error {
 	products, err := h.airTable.GetProducts(ctx)
 	if err != nil {
 		return err
@@ -77,11 +89,26 @@ func (h *AirTableSync) Run() (err error) {
 		})
 	}
 	if len(newProducts) > 0 {
-		_, err = h.product.CreateMany(ctx, newProducts)
+		newProducts, err = h.product.CreateMany(ctx, newProducts)
 		if err != nil {
 			log.Println(ctx, "error while create new products from airtable ", "err", err)
 			return err
 		}
+
+		//imagesProduct := make([]model.Image, 0)
+		//for _, np := range newProducts {
+		//	for _, img := range productsAirtableBySku[np.Sku].Fields.Image {
+		//		file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
+		//		if err != nil {
+		//			return err
+		//		}
+		//		imagesProduct = append(imagesProduct, model.Image{
+		//			ProductID: &np.ProductID,
+		//			ImageUrl:  file,
+		//			FileName:  img.FileName,
+		//		})
+		//	}
+		//}
 	}
 
 	if len(updateProducts) > 0 {
@@ -91,6 +118,5 @@ func (h *AirTableSync) Run() (err error) {
 			return err
 		}
 	}
-	log.Println("airtable sync end successful")
-	return
+	return nil
 }

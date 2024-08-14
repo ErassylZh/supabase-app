@@ -1,4 +1,4 @@
-package integration
+package repository
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 )
 
 type Storage interface {
-	CreateImage(ctx context.Context, bucketName string, fileUrl string) (string, error)
+	CreateImage(ctx context.Context, bucketName string, fileName, fileUrl string) (string, error)
 }
 
 type StorageClient struct {
@@ -23,8 +23,8 @@ func NewStorageClient(supabaseURL string, supabaseKey string) StorageClient {
 	return StorageClient{supabaseURL: supabaseURL, supabaseKey: supabaseKey}
 }
 
-func (s *StorageClient) CreateImage(ctx context.Context, bucketName string, fileUrl string) (string, error) {
-	uploadURL := fmt.Sprintf("%s/storage/v1/object/%s/%s", s.supabaseURL, bucketName, "")
+func (s *StorageClient) CreateImage(ctx context.Context, bucketName string, fileName, fileUrl string) (string, error) {
+	uploadURL := fmt.Sprintf("%s/storage/v1/s3/object/%s/%s", s.supabaseURL, bucketName, "")
 	file, err := downloadFileInMemory(fileUrl)
 	if err != nil {
 		return "", err
@@ -34,10 +34,23 @@ func (s *StorageClient) CreateImage(ctx context.Context, bucketName string, file
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
+	contentType := http.DetectContentType(file)
+
+	switch contentType {
+	case "image/jpeg":
+		fileName = "image.jpg"
+	case "image/png":
+		fileName = "image.png"
+	case "image/webp":
+		fileName = "image.webp"
+	default:
+		return "", fmt.Errorf("unsupported file type: %s", contentType)
+	}
 
 	req.Header.Set("Authorization", "Bearer "+s.supabaseKey)
-	req.Header.Set("Content-Type", "application/octet-stream")
 	req.Header.Set("x-upsert", "true")
+	req.Header.Set("Content-Type", contentType)
+
 	client := &http.Client{
 		Timeout: 30 * time.Second,
 	}
