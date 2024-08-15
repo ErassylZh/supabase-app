@@ -38,6 +38,7 @@ func (h *Handler) Init() {
 	airTableSync := NewAirTableSync(
 		h.repositories.Airtable,
 		h.repositories.Product,
+		h.repositories.Post,
 		h.repositories.StorageClient,
 		h.repositories.Image,
 	)

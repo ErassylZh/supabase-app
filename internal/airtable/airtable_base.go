@@ -46,4 +46,5 @@ type Post struct {
 	Logo         []Image  `json:"logo"`
 	Language     string   `json:"language"`
 	HashtagName  []string `json:"hashtag_name"`
+	Uuid         string   `json:"uuid"`
 }
