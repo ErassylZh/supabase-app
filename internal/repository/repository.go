@@ -15,6 +15,7 @@ type Repositories struct {
 	Balance          Balance
 	UserDeviceToken  UserDeviceToken
 	Product          Product
+	Post             Post
 	Image            Image
 
 	FirebaseMessaging FirebaseMessaging
