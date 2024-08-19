@@ -97,6 +97,7 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 
 		imagesProduct := make([]model.Image, 0)
 		for _, np := range newProducts {
+			productId := np.ProductID
 			for _, img := range productsAirtableBySku[np.Sku].Fields.Image {
 				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
 				if err != nil {
@@ -105,7 +106,7 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 				}
 				log.Println(ctx, "file for "+np.Title+" saved")
 				imagesProduct = append(imagesProduct, model.Image{
-					ProductID: &np.ProductID,
+					ProductID: &productId,
 					ImageUrl:  file,
 					FileName:  img.FileName,
 				})

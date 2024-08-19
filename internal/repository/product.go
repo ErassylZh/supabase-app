@@ -10,6 +10,7 @@ type Product interface {
 	CreateMany(ctx context.Context, products []model.Product) ([]model.Product, error)
 	GetAll(ctx context.Context) ([]model.Product, error)
 	UpdateMany(ctx context.Context, products []model.Product) ([]model.Product, error)
+	GetAllListing(ctx context.Context) ([]model.Product, error)
 }
 
 type ProductDb struct {
@@ -49,6 +50,18 @@ func (r *ProductDb) UpdateMany(ctx context.Context, products []model.Product) ([
 		if err := db.Model(&model.Product{}).Where("product_id = ?", product.ProductID).Updates(&product).Error; err != nil {
 			return nil, err
 		}
+	}
+	return products, nil
+}
+func (r *ProductDb) GetAllListing(ctx context.Context) (products []model.Product, err error) {
+	db := r.db.WithContext(ctx)
+	err = db.Model(&model.Product{}).
+		Where("status = ?", model.PRODUCT_STATUS_PUBLISH).
+		Preload("Images").
+		Find(&products).
+		Error
+	if err != nil {
+		return nil, err
 	}
 	return products, nil
 }
