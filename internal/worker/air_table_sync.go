@@ -12,11 +12,11 @@ type AirTableSync struct {
 	airTable repository.AirTable
 	product  repository.Product
 	storage  repository.StorageClient
-	Image    repository.Image
+	image    repository.Image
 }
 
 func NewAirTableSync(airTable repository.AirTable, product repository.Product, storage repository.StorageClient, image repository.Image) *AirTableSync {
-	return &AirTableSync{airTable: airTable, product: product, storage: storage, Image: image}
+	return &AirTableSync{airTable: airTable, product: product, storage: storage, image: image}
 }
 
 func (h *AirTableSync) Run() (err error) {
@@ -95,20 +95,27 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 			return err
 		}
 
-		//imagesProduct := make([]model.Image, 0)
-		//for _, np := range newProducts {
-		//	for _, img := range productsAirtableBySku[np.Sku].Fields.Image {
-		//		file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
-		//		if err != nil {
-		//			return err
-		//		}
-		//		imagesProduct = append(imagesProduct, model.Image{
-		//			ProductID: &np.ProductID,
-		//			ImageUrl:  file,
-		//			FileName:  img.FileName,
-		//		})
-		//	}
-		//}
+		imagesProduct := make([]model.Image, 0)
+		for _, np := range newProducts {
+			for _, img := range productsAirtableBySku[np.Sku].Fields.Image {
+				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
+				if err != nil {
+					log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
+					return err
+				}
+				log.Println(ctx, "file for "+np.Title+" saved")
+				imagesProduct = append(imagesProduct, model.Image{
+					ProductID: &np.ProductID,
+					ImageUrl:  file,
+					FileName:  img.FileName,
+				})
+			}
+		}
+		_, err = h.image.CreateMany(ctx, imagesProduct)
+		if err != nil {
+			log.Println(ctx, "error while create images from airtable ", "err", err)
+			return err
+		}
 	}
 
 	if len(updateProducts) > 0 {

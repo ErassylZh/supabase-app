@@ -13,7 +13,7 @@ const (
 
 type Image struct {
 	CreatedAt time.Time `gorm:"column:created_at" json:"created_at"`
-	ImageID   uint      `gorm:"column:image_id" json:"image_id"`
+	ImageID   uint      `gorm:"primaryKey;column:image_id" json:"image_id"`
 	FileName  string    `gorm:"column:file_name" json:"file_name"`
 	ImageUrl  string    `gorm:"column:image_url" json:"url"`
 	ProductID *uint     `gorm:"column:product_id" json:"product_id"`
