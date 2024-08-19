@@ -39,20 +39,10 @@ func NewAirTableClient(baseUrl string, apiKey string) (*AirTableClient, error) {
 
 func (r *AirTableClient) GetProducts(ctx context.Context) ([]airtable.BaseObject[airtable.ProductListResponse], error) {
 	requestURL := r.baseURL.JoinPath("/Store")
-	return r.fetchData[airtable.ProductListResponse](ctx, requestURL)
-}
-
-func (r *AirTableClient) GetPosts(ctx context.Context) ([]airtable.BaseObject[airtable.Post], error) {
-	requestURL := r.baseURL.JoinPath("/Post") // Пример пути для получения постов
-	return r.fetchData[airtable.Post](ctx, requestURL)
-}
-
-func (r *AirTableClient) fetchData[T any](ctx context.Context, requestURL *url.URL) ([]airtable.BaseObject[T], error) {
 	req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
 	if err != nil {
 		return nil, err
 	}
-
 	resp, err := r.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -60,7 +50,7 @@ func (r *AirTableClient) fetchData[T any](ctx context.Context, requestURL *url.U
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error while fetching data from Airtable. Response code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("error while getting Airtable products. Response code: %d", resp.StatusCode)
 	}
 
 	rawResponse, err := io.ReadAll(resp.Body)
@@ -68,7 +58,36 @@ func (r *AirTableClient) fetchData[T any](ctx context.Context, requestURL *url.U
 		return nil, err
 	}
 
-	var response airtable.BaseResponse[T]
+	var response airtable.BaseResponse[airtable.ProductListResponse]
+	if err := json.Unmarshal(rawResponse, &response); err != nil {
+		return nil, err
+	}
+
+	return response.Records, nil
+}
+
+func (r *AirTableClient) GetPosts(ctx context.Context) ([]airtable.BaseObject[airtable.Post], error) {
+	requestURL := r.baseURL.JoinPath("/Post")
+	req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := r.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error while getting Airtable posts. Response code: %d", resp.StatusCode)
+	}
+
+	rawResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response airtable.BaseResponse[airtable.Post]
 	if err := json.Unmarshal(rawResponse, &response); err != nil {
 		return nil, err
 	}
