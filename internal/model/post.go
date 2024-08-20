@@ -27,13 +27,20 @@ const (
 	POST_RATING_STATUS_NORMAL  PostRatingStatus = "Normal"
 )
 
+type PostImageType string
+
+const (
+	POST_IMAGE_TYPE_IMAGE PostImageType = "image"
+	POST_IMAGE_TYPE_LOGO  PostImageType = "logo"
+)
+
 type Post struct {
 	CreatedAt    time.Time
-	PostID       uint    `gorm:"primary_key;column:post_id" json:"post_id"`
+	PostID       uint    `gorm:"primaryKey;column:post_id" json:"post_id"`
 	Company      *string `gorm:"column:company" json:"company"`
 	Logo         *string `gorm:"column:logo" json:"logo"`
 	Language     *string `gorm:"column:language" json:"language"`
-	Title        *string `gorm:"column:title" json:"title"`
+	Title        string  `gorm:"column:title" json:"title"`
 	Description  *string `gorm:"column:description" json:"description"`
 	Status       *string `gorm:"column:status" json:"status"`
 	Image        *string `gorm:"column:image" json:"image"`

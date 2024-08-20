@@ -39,6 +39,7 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		UserDeviceToken:   NewUserDeviceTokenDB(db),
 		Product:           NewProductDb(db),
 		Image:             NewImageDb(db),
+		Post:              NewPostDb(db),
 		FirebaseMessaging: NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 		Airtable:          airtable,
 		StorageClient:     NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),

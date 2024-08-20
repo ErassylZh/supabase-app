@@ -33,6 +33,7 @@ type (
 		AirtableBaseurl            string `envconfig:"AIRTABLE_BASE_URL"`
 		AirtableApiKey             string `envconfig:"AIRTABLE_API_KEY"`
 		PushNotificationReadPeriod int    `envconfig:"PUSH_NOTIFICATION_READ_PERIOD" default:"300"`
+		AirtableSyncPeriod         int    `envconfig:"AIRTABLE_SYNC_PERIOD" default:"300"`
 	}
 )
 
