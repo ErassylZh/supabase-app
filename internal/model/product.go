@@ -28,18 +28,18 @@ const (
 
 // airtable store
 type Product struct {
-	CreatedAt         time.Time
-	ProductID         uint   `gorm:"primaryKey;column:product_id" json:"product_id"`
-	AirtableProductId string `gorm:"column:airtable_product_id" json:"airtable_product_id"`
-	Title             string `gorm:"column:title" json:"title"`
-	Description       string `gorm:"column:description" json:"description"`
-	Count             int    `gorm:"column:count" json:"count"`
-	Point             int    `gorm:"column:point" json:"point"`
-	Sapphire          int    `gorm:"column:sapphire" json:"sapphire"`
-	Status            string `gorm:"column:status" json:"status"`
-	Sku               string `gorm:"column:sku" json:"sku"`
-	ProductType       string `gorm:"column:product_type" json:"product_type"`
-	SellType          string `gorm:"column:sell_type" json:"sell_type"`
+	CreatedAt         time.Time `gorm:"column:created_at" json:"created_at"`
+	ProductID         uint      `gorm:"primaryKey;column:product_id" json:"product_id"`
+	AirtableProductId string    `gorm:"column:airtable_product_id" json:"airtable_product_id"`
+	Title             string    `gorm:"column:title" json:"title"`
+	Description       string    `gorm:"column:description" json:"description"`
+	Count             int       `gorm:"column:count" json:"count"`
+	Point             int       `gorm:"column:point" json:"point"`
+	Sapphire          int       `gorm:"column:sapphire" json:"sapphire"`
+	Status            string    `gorm:"column:status" json:"status"`
+	Sku               string    `gorm:"column:sku" json:"sku"`
+	ProductType       string    `gorm:"column:product_type" json:"product_type"`
+	SellType          string    `gorm:"column:sell_type" json:"sell_type"`
 }
 
 func (u Product) TableName() string {
