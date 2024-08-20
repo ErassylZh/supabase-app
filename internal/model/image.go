@@ -9,6 +9,7 @@ type BucketName string
 
 const (
 	BUCKET_NAME_PRODUCT BucketName = "product"
+	BUCKET_NAME_POST    BucketName = "post"
 )
 
 type Image struct {
