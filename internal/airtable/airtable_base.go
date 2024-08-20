@@ -34,16 +34,17 @@ type Image struct {
 
 type Post struct {
 	Title        string   `json:"title"`
-	Company      string   `json:"company"`
-	Body         string   `json:"body"`
-	Status       string   `json:"status"`
-	RatingStatus string   `json:"rating_status"`
-	Description  string   `json:"description"`
+	Company      *string  `json:"company"`
+	Body         *string  `json:"body"`
+	Status       *string  `json:"status"`
+	RatingStatus *string  `json:"rating_status"`
+	Description  *string  `json:"description"`
 	Image        []Image  `json:"image"`
-	QuizTime     int      `json:"quiz_time"`
-	ReadTime     int      `json:"read_time"`
-	Point        int      `json:"point"`
+	QuizTime     *int     `json:"quiz_time"`
+	ReadTime     *int     `json:"read_time"`
+	Point        *int     `json:"point"`
 	Logo         []Image  `json:"logo"`
-	Language     string   `json:"language"`
+	Language     *string  `json:"language"`
 	HashtagName  []string `json:"hashtag_name"`
+	Uuid         string   `json:"uuid"`
 }
