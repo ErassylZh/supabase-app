@@ -15,6 +15,10 @@ func (h *Handler) initReferral(v1 *gin.RouterGroup) {
 		"/referral",
 		middleware.GinErrorHandle(h.AddReferralCode),
 	)
+	v1.GET(
+		"/referral/available",
+		middleware.GinErrorHandle(h.GetAvailableReferralCodeOfUser),
+	)
 }
 
 func (h *Handler) AddReferralCode(c *gin.Context) error {
@@ -40,6 +44,20 @@ func (h *Handler) GetReferralCodeOfUser(c *gin.Context) error {
 		return err
 	}
 	referralCode, err := h.usecases.Referral.GetReferralCodeByUser(ctx, userId)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(referralCode, c)
+}
+
+func (h *Handler) GetAvailableReferralCodeOfUser(c *gin.Context) error {
+	ctx := c.Request.Context()
+	token := c.GetHeader("Authorization")
+	userId, err := h.services.Auth.VerifyToken(token)
+	if err != nil {
+		return err
+	}
+	referralCode, err := h.usecases.Referral.CheckAvailable(ctx, userId)
 	if err != nil {
 		return err
 	}

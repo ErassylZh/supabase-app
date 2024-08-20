@@ -10,12 +10,14 @@ import (
 	"time"
 	"work-project/internal/model"
 	"work-project/internal/repository"
+	"work-project/internal/schema"
 	"work-project/internal/service"
 )
 
 type Referral interface {
 	GetReferralCodeByUser(ctx context.Context, userID string) (model.ReferralCode, error)
 	AcceptReferralCode(ctx context.Context, userID string, referralCode string) (model.ReferralCode, error)
+	CheckAvailable(ctx context.Context, userID string) (schema.CheckAvailable, error)
 }
 
 type ReferralUsecase struct {
@@ -111,6 +113,17 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 		return model.ReferralCode{}, err
 	}
 	return model.ReferralCode{}, nil
+}
+
+func (u *ReferralUsecase) CheckAvailable(ctx context.Context, userID string) (schema.CheckAvailable, error) {
+	_, err := u.referralRepository.GetByInvitedUserId(ctx, userID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return schema.CheckAvailable{}, err
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return schema.CheckAvailable{AlreadyUsedReferralCode: false}, nil
+	}
+	return schema.CheckAvailable{AlreadyUsedReferralCode: true}, nil
 }
 
 const referralCodeLength = 10
