@@ -17,6 +17,7 @@ type Repositories struct {
 	Product          Product
 	Post             Post
 	Image            Image
+	Mark             Mark
 
 	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
