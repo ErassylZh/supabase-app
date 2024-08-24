@@ -30,5 +30,6 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initNotification(v1)
 		h.initUserDeviceToken(v1)
 		h.initProduct(v1)
+		h.initPost(v1)
 	}
 }

@@ -47,4 +47,5 @@ type Post struct {
 	Language     *string  `json:"language"`
 	HashtagName  []string `json:"hashtag_name"`
 	Uuid         string   `json:"uuid"`
+	Hashtags     []string `json:"hashtags"`
 }

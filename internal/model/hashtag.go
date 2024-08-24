@@ -1,10 +1,14 @@
 package model
 
-import "time"
+import (
+	"fmt"
+)
 
 type Hashtag struct {
-	CreatedAt         time.Time `gorm:"column:created_at" json:"created_at"`
-	HashtagId         uint      `gorm:"column:hashtag_id" json:"hashtag_id"`
-	AirtableHashtagId *string   `gorm:"column:airtable_hashtag_id" json:"airtable_hashtag_id"`
-	Name              string    `gorm:"column:name" json:"name"`
+	HashtagID uint   `gorm:"primaryKey;column:hashtag_id" json:"hashtag_id"`
+	Name      string `gorm:"column:name" json:"name"`
+}
+
+func (h *Hashtag) TableName() string {
+	return fmt.Sprintf("public.hashtag")
 }

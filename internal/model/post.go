@@ -38,20 +38,19 @@ type Post struct {
 	CreatedAt    time.Time `gorm:"column:created_at" json:"created_at"`
 	PostID       uint      `gorm:"primaryKey;column:post_id" json:"post_id"`
 	Company      *string   `gorm:"column:company" json:"company"`
-	Logo         *string   `gorm:"column:logo" json:"logo"`
 	Language     *string   `gorm:"column:language" json:"language"`
 	Title        string    `gorm:"column:title" json:"title"`
 	Description  *string   `gorm:"column:description" json:"description"`
 	Status       *string   `gorm:"column:status" json:"status"`
-	Image        *string   `gorm:"column:image" json:"image"`
-	Hashtags     *string   `gorm:"column:hashtags" json:"hashtags"`
-	HashtagName  *string   `gorm:"column:hashtag_name" json:"hashtag_name"`
 	Body         *string   `gorm:"column:body" json:"body"`
 	ReadTime     *int      `gorm:"column:read_time" json:"read_time"`
 	Point        *int      `gorm:"column:point" json:"point"`
 	QuizTime     *int      `gorm:"column:quiz_time" json:"quiz_time"`
 	RatingStatus *string   `gorm:"column:rating_status" json:"rating_status"`
 	Uuid         string    `gorm:"column:uuid" json:"uuid"`
+
+	Images   []Image   `json:"images"`
+	Hashtags []Hashtag `gorm:"many2many:public.post_hashtag;foreignKey:PostID;joinForeignKey:PostID;References:HashtagID;joinReferences:HashtagID;" json:"hashtags"`
 }
 
 func (p Post) TableName() string {

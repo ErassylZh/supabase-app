@@ -29,7 +29,7 @@ func Run(cfg *config.Config) {
 		PreferSimpleProtocol: true,
 	}), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   "wa.",
+			//TablePrefix:   "wa.",
 			SingularTable: false,
 		},
 	})

@@ -14,6 +14,7 @@ type Services struct {
 	Balance          Balance
 	UserDeviceToken  UserDeviceToken
 	Product          Product
+	Post             Post
 }
 
 type Deps struct {
@@ -29,5 +30,6 @@ func NewServices(deps Deps) *Services {
 		Balance:          NewBalanceService(deps.Repos.Balance, deps.Repos.Transaction),
 		UserDeviceToken:  NewUserDeviceTokenService(deps.Repos.UserDeviceToken),
 		Product:          NewProductService(deps.Repos.Product),
+		Post:             NewPostService(deps.Repos.Post),
 	}
 }

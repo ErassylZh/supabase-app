@@ -9,20 +9,31 @@ import (
 )
 
 type AirTableSync struct {
-	airTable repository.AirTable
-	product  repository.Product
-	post     repository.Post
-	storage  repository.StorageClient
-	image    repository.Image
+	airTable    repository.AirTable
+	product     repository.Product
+	post        repository.Post
+	storage     repository.StorageClient
+	image       repository.Image
+	hashtag     repository.Hashtag
+	postHashtag repository.PostHashtag
 }
 
-func NewAirTableSync(airTable repository.AirTable, product repository.Product, post repository.Post, storage repository.StorageClient, image repository.Image) *AirTableSync {
+func NewAirTableSync(
+	airTable repository.AirTable,
+	product repository.Product,
+	post repository.Post,
+	storage repository.StorageClient,
+	image repository.Image,
+	hashtag repository.Hashtag,
+	postHashtag repository.PostHashtag) *AirTableSync {
 	return &AirTableSync{
-		airTable: airTable,
-		product:  product,
-		post:     post,
-		storage:  storage,
-		image:    image,
+		airTable:    airTable,
+		product:     product,
+		post:        post,
+		storage:     storage,
+		image:       image,
+		hashtag:     hashtag,
+		postHashtag: postHashtag,
 	}
 }
 
@@ -148,6 +159,9 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 
 	postsAirtableByUuid := make(map[string]airtable.BaseObject[airtable.Post])
 	for _, post := range posts {
+		if post.Fields.Company == nil {
+			continue
+		}
 		postsAirtableByUuid[post.Fields.Uuid] = post
 	}
 
@@ -168,9 +182,9 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			if post.Company != postsAirtableByUuid[uuid].Fields.Company ||
 				post.Language != postsAirtableByUuid[uuid].Fields.Language ||
 				post.Title != postsAirtableByUuid[uuid].Fields.Title ||
-				//post.Description != postsAirtableByUuid[uuid].Fields.Description ||
+				post.Description != postsAirtableByUuid[uuid].Fields.Description ||
 				post.Status != postsAirtableByUuid[uuid].Fields.Status ||
-				//post.Body != postsAirtableByUuid[uuid].Fields.Body ||
+				post.Body != postsAirtableByUuid[uuid].Fields.Body ||
 				post.ReadTime != postsAirtableByUuid[uuid].Fields.ReadTime ||
 				post.Point != postsAirtableByUuid[uuid].Fields.Point ||
 				post.QuizTime != postsAirtableByUuid[uuid].Fields.QuizTime ||
@@ -190,6 +204,7 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			}
 			continue
 		}
+
 		newPosts = append(newPosts, model.Post{
 			Company:      postsAirtableByUuid[uuid].Fields.Company,
 			Language:     postsAirtableByUuid[uuid].Fields.Language,
@@ -212,43 +227,60 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			return err
 		}
 
-		imagesProduct := make([]model.Image, 0)
+		//imagesProduct := make([]model.Image, 0)
+		postHashtags := make([]model.PostHashtag, 0)
 		for _, np := range newPosts {
 			postId := np.PostID
-			for _, img := range postsAirtableByUuid[np.Uuid].Fields.Image {
-				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
+			for _, hashtag := range postsAirtableByUuid[np.Uuid].Fields.HashtagName {
+				hashtagObj, err := h.hashtag.GetByName(ctx, hashtag)
 				if err != nil {
-					log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
 					return err
 				}
-				log.Println(ctx, "image file for "+np.Title+" saved")
-				imagesProduct = append(imagesProduct, model.Image{
-					PostID:   &postId,
-					ImageUrl: file,
-					FileName: img.FileName,
-					Type:     string(model.POST_IMAGE_TYPE_IMAGE),
+				postHashtags = append(postHashtags, model.PostHashtag{
+					PostId:    postId,
+					HashtagId: hashtagObj.HashtagID,
 				})
 			}
-			for _, img := range postsAirtableByUuid[np.Uuid].Fields.Logo {
-				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
-				if err != nil {
-					log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
-					return err
-				}
-				log.Println(ctx, "logo file for "+np.Title+" saved")
-				imagesProduct = append(imagesProduct, model.Image{
-					PostID:   &postId,
-					ImageUrl: file,
-					FileName: img.FileName,
-					Type:     string(model.POST_IMAGE_TYPE_LOGO),
-				})
-			}
+
+			//for _, img := range postsAirtableByUuid[np.Uuid].Fields.Image {
+			//	file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
+			//	if err != nil {
+			//		log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
+			//		return err
+			//	}
+			//	log.Println(ctx, "image file for "+np.Title+" saved")
+			//	imagesProduct = append(imagesProduct, model.Image{
+			//		PostID:   &postId,
+			//		ImageUrl: file,
+			//		FileName: img.FileName,
+			//		Type:     string(model.POST_IMAGE_TYPE_IMAGE),
+			//	})
+			//}
+			//for _, img := range postsAirtableByUuid[np.Uuid].Fields.Logo {
+			//	file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
+			//	if err != nil {
+			//		log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
+			//		return err
+			//	}
+			//	log.Println(ctx, "logo file for "+np.Title+" saved")
+			//	imagesProduct = append(imagesProduct, model.Image{
+			//		PostID:   &postId,
+			//		ImageUrl: file,
+			//		FileName: img.FileName,
+			//		Type:     string(model.POST_IMAGE_TYPE_LOGO),
+			//	})
+			//}
 		}
-		_, err = h.image.CreateMany(ctx, imagesProduct)
+		_, err = h.postHashtag.CreateMany(ctx, postHashtags)
 		if err != nil {
-			log.Println(ctx, "error while create images from airtable ", "err", err)
+			log.Println(ctx, "error while create post hashtags from airtable ", "err", err)
 			return err
 		}
+		//_, err = h.image.CreateMany(ctx, imagesProduct)
+		//if err != nil {
+		//	log.Println(ctx, "error while create images from airtable ", "err", err)
+		//	return err
+		//}
 	}
 
 	if len(updatePosts) > 0 {
