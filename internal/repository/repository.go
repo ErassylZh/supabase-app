@@ -19,6 +19,9 @@ type Repositories struct {
 	Image            Image
 	Hashtag          Hashtag
 	PostHashtag      PostHashtag
+	Stories          Stories
+	StoryPage        StoryPage
+	StoryPageUser    StoryPageUser
 
 	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
@@ -44,6 +47,9 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		Post:              NewPostDb(db),
 		PostHashtag:       NewPostHashtagDb(db),
 		Hashtag:           NewHashtagDB(db),
+		Stories:           NewStoriesDB(db),
+		StoryPage:         NewStoryPageDB(db),
+		StoryPageUser:     NewStoryPageUserDB(db),
 		FirebaseMessaging: NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 		Airtable:          airtable,
 		StorageClient:     NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),

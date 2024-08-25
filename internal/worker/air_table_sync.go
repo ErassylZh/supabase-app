@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"log"
+	"time"
 	"work-project/internal/airtable"
 	"work-project/internal/model"
 	"work-project/internal/repository"
@@ -16,6 +17,8 @@ type AirTableSync struct {
 	image       repository.Image
 	hashtag     repository.Hashtag
 	postHashtag repository.PostHashtag
+	stories     repository.Stories
+	storyPage   repository.StoryPage
 }
 
 func NewAirTableSync(
@@ -39,12 +42,17 @@ func NewAirTableSync(
 
 func (h *AirTableSync) Run() (err error) {
 	ctx := context.Background()
-	if err := h.syncProducts(ctx); err != nil {
-		log.Println("error while syncing products:", err)
-		return err
-	}
+	//if err := h.syncProducts(ctx); err != nil {
+	//	log.Println("error while syncing products:", err)
+	//	return err
+	//}
+	//
+	//if err := h.syncPosts(ctx); err != nil {
+	//	log.Println("error while syncing posts:", err)
+	//	return err
+	//}
 
-	if err := h.syncPosts(ctx); err != nil {
+	if err := h.syncStories(ctx); err != nil {
 		log.Println("error while syncing posts:", err)
 		return err
 	}
@@ -310,6 +318,77 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 		_, err = h.post.UpdateMany(ctx, updatePosts)
 		if err != nil {
 			log.Println(ctx, "error while updating existing posts from airtable:", err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (h *AirTableSync) syncStories(ctx context.Context) error {
+	stories, err := h.airTable.GetStories(ctx)
+	if err != nil {
+		return err
+	}
+
+	storiesAirtableByTitle := make(map[string][]airtable.BaseObject[airtable.Stories])
+	for _, story := range stories {
+		if story.Fields.Status == string(model.POST_STATUS_DRAFT) {
+			continue
+		}
+		storiesAirtableByTitle[story.Fields.Title] = []airtable.BaseObject[airtable.Stories]{}
+	}
+	for _, story := range stories {
+		if story.Fields.Status == string(model.POST_STATUS_DRAFT) {
+			continue
+		}
+		storiesAirtableByTitle[story.Fields.Title] = append(storiesAirtableByTitle[story.Fields.Title], story)
+	}
+
+	storiesDb, err := h.stories.GetAll(ctx)
+	storiesDbByTitle := make(map[string]model.Stories)
+	for _, story := range storiesDb {
+		storiesDbByTitle[story.Title] = story
+	}
+
+	createStories := make([]model.Stories, 0)
+	for key := range storiesAirtableByTitle {
+		if _, ok := storiesDbByTitle[key]; ok {
+			//update here
+			continue
+		}
+		createStories = append(createStories, model.Stories{
+			CreatedAt: time.Now(),
+			StartTime: storiesAirtableByTitle[key][0].Fields.StartTime,
+			EndTime:   storiesAirtableByTitle[key][0].Fields.EndTime,
+			Title:     storiesAirtableByTitle[key][0].Fields.Title,
+		})
+	}
+
+	createStoryPages := make([]model.StoryPage, 0)
+	if len(createStories) > 0 {
+		createStories, err = h.stories.CreateMany(ctx, createStories)
+		if err != nil {
+			return err
+		}
+		for _, story := range createStories {
+			storyId := story.StoriesId
+			for _, data := range storiesAirtableByTitle[story.Title] {
+				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), data.Fields.Image[0].FileName, data.Fields.Image[0].Url)
+				if err != nil {
+					log.Println(ctx, "some err while create image", "err", err, "stories name", story.Title)
+				}
+				createStoryPages = append(createStoryPages, model.StoryPage{
+					StoryPageId: storyId,
+					ImagePath:   file,
+					Text:        data.Fields.Text,
+					PageOrder:   data.Fields.Order,
+				})
+			}
+		}
+
+		err = h.storyPage.CreateMany(ctx, createStoryPages)
+		if err != nil {
 			return err
 		}
 	}

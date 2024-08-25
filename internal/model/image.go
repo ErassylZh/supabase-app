@@ -10,6 +10,7 @@ type BucketName string
 const (
 	BUCKET_NAME_PRODUCT BucketName = "product"
 	BUCKET_NAME_POST    BucketName = "post"
+	BUCKET_NAME_STORIES BucketName = "stories"
 )
 
 type Image struct {

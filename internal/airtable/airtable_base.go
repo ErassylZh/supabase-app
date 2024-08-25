@@ -49,3 +49,13 @@ type Post struct {
 	Uuid         string   `json:"uuid"`
 	Hashtags     []string `json:"hashtags"`
 }
+
+type Stories struct {
+	Title     string    `json:"title"`
+	Text      string    `json:"text"`
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
+	Status    string    `json:"status"`
+	Order     int       `json:"order"`
+	Image     []Image   `json:"image"`
+}

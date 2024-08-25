@@ -15,6 +15,7 @@ import (
 type AirTable interface {
 	GetProducts(ctx context.Context) ([]airtable.BaseObject[airtable.ProductListResponse], error)
 	GetPosts(ctx context.Context) ([]airtable.BaseObject[airtable.Post], error)
+	GetStories(ctx context.Context) ([]airtable.BaseObject[airtable.Stories], error)
 }
 
 type AirTableClient struct {
@@ -88,6 +89,35 @@ func (r *AirTableClient) GetPosts(ctx context.Context) ([]airtable.BaseObject[ai
 	}
 
 	var response airtable.BaseResponse[airtable.Post]
+	if err := json.Unmarshal(rawResponse, &response); err != nil {
+		return nil, err
+	}
+
+	return response.Records, nil
+}
+
+func (r *AirTableClient) GetStories(ctx context.Context) ([]airtable.BaseObject[airtable.Stories], error) {
+	requestURL := r.baseURL.JoinPath("/Stories")
+	req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := r.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error while getting Airtable posts. Response code: %d", resp.StatusCode)
+	}
+
+	rawResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response airtable.BaseResponse[airtable.Stories]
 	if err := json.Unmarshal(rawResponse, &response); err != nil {
 		return nil, err
 	}

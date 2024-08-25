@@ -15,6 +15,7 @@ type Services struct {
 	UserDeviceToken  UserDeviceToken
 	Product          Product
 	Post             Post
+	Stories          Stories
 }
 
 type Deps struct {
@@ -31,5 +32,6 @@ func NewServices(deps Deps) *Services {
 		UserDeviceToken:  NewUserDeviceTokenService(deps.Repos.UserDeviceToken),
 		Product:          NewProductService(deps.Repos.Product),
 		Post:             NewPostService(deps.Repos.Post),
+		Stories:          NewStoriesService(deps.Repos.Stories, deps.Repos.StoryPage, deps.Repos.StoryPageUser),
 	}
 }
