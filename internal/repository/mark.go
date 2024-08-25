@@ -7,10 +7,10 @@ import (
 )
 
 type Mark interface {
-	Create(ctx context.Context, mark *model.Mark) error
-	FindByUserID(ctx context.Context, userID uint) ([]model.Mark, error)
-	Delete(ctx context.Context, markID uint) error
-	FindPostsByUserID(ctx context.Context, userID uint) ([]model.Post, error)
+	CreateMark(ctx context.Context, mark *model.Mark) error
+	FindByUserID(ctx context.Context, userID string) ([]model.Mark, error)
+	DeleteMark(ctx context.Context, markID uint) error
+	FindPostsByUserID(ctx context.Context, userID string) ([]model.Post, error)
 }
 
 type MarkDb struct {
@@ -21,7 +21,7 @@ func NewMarkDb(db *gorm.DB) *MarkDb {
 	return &MarkDb{db: db}
 }
 
-func (r *MarkDb) Create(ctx context.Context, marks []model.Mark) ([]model.Mark, error) {
+func (r *MarkDb) CreateMark(ctx context.Context, marks []model.Mark) ([]model.Mark, error) {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.Mark{}).
 		Create(&marks).
@@ -32,7 +32,7 @@ func (r *MarkDb) Create(ctx context.Context, marks []model.Mark) ([]model.Mark, 
 	return marks, nil
 }
 
-func (r *MarkDb) FindByUserID(ctx context.Context, userID uint) ([]model.Mark, error) {
+func (r *MarkDb) FindByUserID(ctx context.Context, userID string) ([]model.Mark, error) {
 	var marks []model.Mark
 	db := r.db.WithContext(ctx)
 	err := db.Where("user_id = ?", userID).Find(&marks).Error
@@ -45,7 +45,7 @@ func (r *MarkDb) FindByUserID(ctx context.Context, userID uint) ([]model.Mark, e
 	return marks, nil
 }
 
-func (r *MarkDb) Delete(ctx context.Context, markID uint) error {
+func (r *MarkDb) DeleteMark(ctx context.Context, markID uint) error {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Mark{})
 	err := q.Where("mark_id = ?", markID).Delete(&model.Mark{}).Error
@@ -55,18 +55,19 @@ func (r *MarkDb) Delete(ctx context.Context, markID uint) error {
 	return nil
 }
 
-func (r *MarkDb) FindPostsByUserID(ctx context.Context, userID uint) ([]model.Post, error) {
-	var posts []model.Post
+func (r *MarkDb) FindPostsByUserID(ctx context.Context, userID string) ([]model.Post, error) {
+	var marks []model.Mark
 	db := r.db.WithContext(ctx)
-
-	err := db.Table("marks").
-		Select("posts.*").
-		Joins("JOIN posts ON marks.post_id = posts.id").
-		Where("marks.user_id = ?", userID).
-		Scan(&posts).Error
-
+	err := db.Model(&model.Mark{}).
+		Where("user_id = ?", userID).
+		Preload("Post").
+		Find(&marks).Error
 	if err != nil {
 		return nil, err
+	}
+	var posts []model.Post
+	for _, mark := range marks {
+		posts = append(posts, mark.Post)
 	}
 	return posts, nil
 }
