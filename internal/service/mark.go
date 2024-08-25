@@ -40,9 +40,6 @@ func (s *MarkService) CreateMark(ctx context.Context, mark *model.Mark) error {
 }
 
 func (s *MarkService) FindByUserID(ctx context.Context, userID string) ([]model.Mark, error) {
-	if userID == "" {
-		return nil, errors.New("invalid userID")
-	}
 	marks, err := s.markRepo.FindByUserID(ctx, userID)
 	if err != nil {
 		return nil, errors.New("failed to find marks: " + err.Error())
@@ -51,15 +48,9 @@ func (s *MarkService) FindByUserID(ctx context.Context, userID string) ([]model.
 }
 
 func (s *MarkService) DeleteMark(ctx context.Context, markID uint) error {
-	if markID == 0 {
-		return errors.New("invalid markID")
-	}
 	return s.markRepo.DeleteMark(ctx, markID)
 }
 
 func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string) ([]model.Post, error) {
-	if userID == "" {
-		return nil, errors.New("invalid userID")
-	}
 	return s.markRepo.FindPostsByUserID(ctx, userID)
 }

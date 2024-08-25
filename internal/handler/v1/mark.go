@@ -10,31 +10,36 @@ import (
 
 func (h *Handler) initMark(v1 *gin.RouterGroup) {
 	v1.POST(
-		"/marks",
+		"/mark",
 		middleware.GinErrorHandle(h.CreateMark),
 	)
 	v1.GET(
-		"/marks",
+		"/user/mark",
 		middleware.GinErrorHandle(h.FindMarksByUserID),
 	)
 	v1.DELETE(
-		"/marks",
+		"/mark/:mark_id",
 		middleware.GinErrorHandle(h.DeleteMark),
 	)
 	v1.GET(
-		"/marks",
+		"/user/post",
 		middleware.GinErrorHandle(h.FindPostsByUserID),
 	)
 }
 
 func (h *Handler) CreateMark(c *gin.Context) error {
 	ctx := c.Request.Context()
+	token := c.GetHeader("Authorization")
+	userID, err := h.services.Auth.VerifyToken(token)
+	if err != nil {
+		return err
+	}
 	var mark model.Mark
 	if err := c.ShouldBindJSON(&mark); err != nil {
 		return err
 	}
-	err := h.services.Mark.CreateMark(ctx, &mark)
-	if err != nil {
+	mark.UserID = userID
+	if err := h.services.Mark.CreateMark(ctx, &mark); err != nil {
 		return err
 	}
 	return schema.Respond(mark, c)
