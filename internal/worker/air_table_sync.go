@@ -179,6 +179,10 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 	updatePosts := make([]model.Post, 0)
 	for uuid := range postsAirtableByUuid {
 		if post, exists := postsDbByUuid[uuid]; exists {
+			var existsHashtags []string
+			for _, ht := range post.Hashtags {
+				existsHashtags = append(existsHashtags, ht.Name)
+			}
 			if post.Company != postsAirtableByUuid[uuid].Fields.Company ||
 				post.Language != postsAirtableByUuid[uuid].Fields.Language ||
 				post.Title != postsAirtableByUuid[uuid].Fields.Title ||
@@ -201,6 +205,27 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				post.QuizTime = postsAirtableByUuid[uuid].Fields.QuizTime
 				post.RatingStatus = postsAirtableByUuid[uuid].Fields.RatingStatus
 				updatePosts = append(updatePosts, post)
+			}
+			if !h.compareHashtags(existsHashtags, postsAirtableByUuid[uuid].Fields.HashtagName) {
+				err = h.postHashtag.DeleteByPostId(ctx, post.PostID)
+				if err != nil {
+					return err
+				}
+				var postHashtags []model.PostHashtag
+				for _, name := range postsAirtableByUuid[uuid].Fields.HashtagName {
+					ht, err := h.hashtag.GetByName(ctx, name)
+					if err != nil {
+						return err
+					}
+					postHashtags = append(postHashtags, model.PostHashtag{
+						PostId:    post.PostID,
+						HashtagId: ht.HashtagID,
+					})
+				}
+				_, err = h.postHashtag.CreateMany(ctx, postHashtags)
+				if err != nil {
+					return err
+				}
 			}
 			continue
 		}
@@ -227,7 +252,7 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			return err
 		}
 
-		//imagesProduct := make([]model.Image, 0)
+		imagesProduct := make([]model.Image, 0)
 		postHashtags := make([]model.PostHashtag, 0)
 		for _, np := range newPosts {
 			postId := np.PostID
@@ -242,45 +267,43 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				})
 			}
 
-			//for _, img := range postsAirtableByUuid[np.Uuid].Fields.Image {
-			//	file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
-			//	if err != nil {
-			//		log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
-			//		return err
-			//	}
-			//	log.Println(ctx, "image file for "+np.Title+" saved")
-			//	imagesProduct = append(imagesProduct, model.Image{
-			//		PostID:   &postId,
-			//		ImageUrl: file,
-			//		FileName: img.FileName,
-			//		Type:     string(model.POST_IMAGE_TYPE_IMAGE),
-			//	})
-			//}
-			//for _, img := range postsAirtableByUuid[np.Uuid].Fields.Logo {
-			//	file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
-			//	if err != nil {
-			//		log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
-			//		return err
-			//	}
-			//	log.Println(ctx, "logo file for "+np.Title+" saved")
-			//	imagesProduct = append(imagesProduct, model.Image{
-			//		PostID:   &postId,
-			//		ImageUrl: file,
-			//		FileName: img.FileName,
-			//		Type:     string(model.POST_IMAGE_TYPE_LOGO),
-			//	})
-			//}
+			for _, img := range postsAirtableByUuid[np.Uuid].Fields.Image {
+				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_POST), img.FileName, img.Url)
+				if err != nil {
+					log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
+				}
+				log.Println(ctx, "image file for "+np.Title+" saved")
+				imagesProduct = append(imagesProduct, model.Image{
+					PostID:   &postId,
+					ImageUrl: file,
+					FileName: img.FileName,
+					Type:     string(model.POST_IMAGE_TYPE_IMAGE),
+				})
+			}
+			for _, img := range postsAirtableByUuid[np.Uuid].Fields.Logo {
+				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_POST), img.FileName, img.Url)
+				if err != nil {
+					log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
+				}
+				log.Println(ctx, "logo file for "+np.Title+" saved")
+				imagesProduct = append(imagesProduct, model.Image{
+					PostID:   &postId,
+					ImageUrl: file,
+					FileName: img.FileName,
+					Type:     string(model.POST_IMAGE_TYPE_LOGO),
+				})
+			}
 		}
 		_, err = h.postHashtag.CreateMany(ctx, postHashtags)
 		if err != nil {
 			log.Println(ctx, "error while create post hashtags from airtable ", "err", err)
 			return err
 		}
-		//_, err = h.image.CreateMany(ctx, imagesProduct)
-		//if err != nil {
-		//	log.Println(ctx, "error while create images from airtable ", "err", err)
-		//	return err
-		//}
+		_, err = h.image.CreateMany(ctx, imagesProduct)
+		if err != nil {
+			log.Println(ctx, "error while create images from airtable ", "err", err)
+			return err
+		}
 	}
 
 	if len(updatePosts) > 0 {
@@ -292,4 +315,22 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (h *AirTableSync) compareHashtags(dbHashtags, airtableHashtags []string) bool {
+	if len(dbHashtags) != len(airtableHashtags) {
+		return false
+	}
+
+	hashtagSet := make(map[string]bool)
+	for _, hashtag := range dbHashtags {
+		hashtagSet[hashtag] = true
+	}
+
+	for _, hashtag := range airtableHashtags {
+		if !hashtagSet[hashtag] {
+			return false
+		}
+	}
+	return true
 }

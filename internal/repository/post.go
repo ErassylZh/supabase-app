@@ -35,6 +35,7 @@ func (r *PostDb) CreateMany(ctx context.Context, posts []model.Post) ([]model.Po
 func (r *PostDb) GetAll(ctx context.Context) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 	err = db.Model(&model.Post{}).
+		Preload("Hashtags").
 		Find(&posts).
 		Error
 	if err != nil {
