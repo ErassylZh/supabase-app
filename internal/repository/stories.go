@@ -47,7 +47,9 @@ func (r *StoriesDB) CreateMany(ctx context.Context, stories []model.Stories) ([]
 func (r *StoriesDB) GetAllActive(ctx context.Context) (stories []model.Stories, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Stories{})
-	err = q.Preload("StoryPages").
+	err = q.Preload("StoryPages", func(db *gorm.DB) *gorm.DB {
+		return db.Order("page_order ASC")
+	}).
 		Where("start_time < ? and end_time > ?", time.Now(), time.Now()).
 		Find(&stories).
 		Error

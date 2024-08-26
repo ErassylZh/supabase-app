@@ -21,7 +21,10 @@ func (h *Handler) initStories(v1 *gin.RouterGroup) {
 func (h *Handler) ReadStoriesByUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
-	userId, _ := h.services.Auth.VerifyToken(token)
+	userId, err := h.services.Auth.VerifyToken(token)
+	if err != nil {
+		return err
+	}
 
 	storiesId, err := strconv.ParseUint(c.Query("story_page_id"), 10, 64)
 	if err != nil {
@@ -39,10 +42,7 @@ func (h *Handler) GetActiveStories(c *gin.Context) error {
 	ctx := c.Request.Context()
 
 	token := c.GetHeader("Authorization")
-	userId, err := h.services.Auth.VerifyToken(token)
-	if err != nil {
-		return err
-	}
+	userId, _ := h.services.Auth.VerifyToken(token)
 	response, err := h.services.Stories.GetByUserId(ctx, userId)
 	if err != nil {
 		return err

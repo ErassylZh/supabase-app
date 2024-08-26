@@ -43,14 +43,16 @@ func (h *Handler) Init() {
 		h.repositories.Image,
 		h.repositories.Hashtag,
 		h.repositories.PostHashtag,
+		h.repositories.Stories,
+		h.repositories.StoryPage,
 	)
 	if err = s.Every(uint64(h.cfg.Integration.PushNotificationReadPeriod)).Seconds().Do(pushNotificationReader.Run); err != nil {
 		log.Println("worker failed", "err", err.Error())
 	}
-	//if err = s.Every(uint64(h.cfg.Integration.AirtableSyncPeriod)).Seconds().Do(airTableSync.Run); err != nil {
-	//	log.Println("worker failed", "err", err.Error())
-	//}
-	airTableSync.Run()
+	if err = s.Every(uint64(h.cfg.Integration.AirtableSyncPeriod)).Seconds().Do(airTableSync.Run); err != nil {
+		log.Println("worker failed", "err", err.Error())
+	}
+	//airTableSync.Run()
 
 	<-s.Start()
 	return

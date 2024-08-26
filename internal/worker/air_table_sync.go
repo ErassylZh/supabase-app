@@ -28,7 +28,10 @@ func NewAirTableSync(
 	storage repository.StorageClient,
 	image repository.Image,
 	hashtag repository.Hashtag,
-	postHashtag repository.PostHashtag) *AirTableSync {
+	postHashtag repository.PostHashtag,
+	stories repository.Stories,
+	storyPage repository.StoryPage,
+) *AirTableSync {
 	return &AirTableSync{
 		airTable:    airTable,
 		product:     product,
@@ -37,20 +40,22 @@ func NewAirTableSync(
 		image:       image,
 		hashtag:     hashtag,
 		postHashtag: postHashtag,
+		stories:     stories,
+		storyPage:   storyPage,
 	}
 }
 
 func (h *AirTableSync) Run() (err error) {
 	ctx := context.Background()
-	//if err := h.syncProducts(ctx); err != nil {
-	//	log.Println("error while syncing products:", err)
-	//	return err
-	//}
-	//
-	//if err := h.syncPosts(ctx); err != nil {
-	//	log.Println("error while syncing posts:", err)
-	//	return err
-	//}
+	if err := h.syncProducts(ctx); err != nil {
+		log.Println("error while syncing products:", err)
+		return err
+	}
+
+	if err := h.syncPosts(ctx); err != nil {
+		log.Println("error while syncing posts:", err)
+		return err
+	}
 
 	if err := h.syncStories(ctx); err != nil {
 		log.Println("error while syncing posts:", err)
@@ -302,10 +307,13 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				})
 			}
 		}
-		_, err = h.postHashtag.CreateMany(ctx, postHashtags)
-		if err != nil {
-			log.Println(ctx, "error while create post hashtags from airtable ", "err", err)
-			return err
+		if len(postHashtags) > 0 {
+			_, err = h.postHashtag.CreateMany(ctx, postHashtags)
+			if err != nil {
+				log.Println(ctx, "error while create post hashtags from airtable ", "err", err)
+				return err
+			}
+
 		}
 		_, err = h.image.CreateMany(ctx, imagesProduct)
 		if err != nil {
@@ -379,10 +387,10 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 					log.Println(ctx, "some err while create image", "err", err, "stories name", story.Title)
 				}
 				createStoryPages = append(createStoryPages, model.StoryPage{
-					StoryPageId: storyId,
-					ImagePath:   file,
-					Text:        data.Fields.Text,
-					PageOrder:   data.Fields.Order,
+					StoriesId: storyId,
+					ImagePath: file,
+					Text:      data.Fields.Text,
+					PageOrder: data.Fields.Order,
 				})
 			}
 		}
