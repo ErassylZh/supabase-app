@@ -25,7 +25,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.services.Post.GetListing(ctx, userId)
+	posts, err := h.usecases.Post.GetListing(ctx, userId)
 	if err != nil {
 		return err
 	}

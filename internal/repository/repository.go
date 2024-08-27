@@ -22,6 +22,7 @@ type Repositories struct {
 	Stories          Stories
 	StoryPage        StoryPage
 	StoryPageUser    StoryPageUser
+	Mark             Mark
 
 	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
@@ -50,6 +51,7 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		Stories:           NewStoriesDB(db),
 		StoryPage:         NewStoryPageDB(db),
 		StoryPageUser:     NewStoryPageUserDB(db),
+		Mark:              NewMarkDb(db),
 		FirebaseMessaging: NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 		Airtable:          airtable,
 		StorageClient:     NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),
