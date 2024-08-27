@@ -9,6 +9,7 @@ import (
 type StoryPage interface {
 	GetAllByStoryId(ctx context.Context, storyId uint) ([]model.StoryPage, error)
 	CreateMany(ctx context.Context, stories []model.StoryPage) error
+	UpdateMany(ctx context.Context, pages []model.StoryPage) ([]model.StoryPage, error)
 }
 
 type StoryPageDB struct {
@@ -36,4 +37,16 @@ func (r *StoryPageDB) CreateMany(ctx context.Context, stories []model.StoryPage)
 	q := db.Model(&model.StoryPage{})
 	err := q.Create(&stories).Error
 	return err
+}
+
+func (r *StoryPageDB) UpdateMany(ctx context.Context, pages []model.StoryPage) ([]model.StoryPage, error) {
+	db := r.db.WithContext(ctx)
+
+	for _, page := range pages {
+		if err := db.Model(&model.StoryPage{}).Where("story_page_id = ?", page.StoryPageId).Updates(&page).Error; err != nil {
+			return nil, err
+		}
+	}
+	return pages, nil
+
 }

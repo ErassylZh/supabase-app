@@ -58,4 +58,5 @@ type Stories struct {
 	Status    string    `json:"status"`
 	Order     int       `json:"order"`
 	Image     []Image   `json:"image"`
+	Uuid      string    `json:"uuid"`
 }

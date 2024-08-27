@@ -12,6 +12,7 @@ type StoryPage struct {
 	StoriesId   uint      `gorm:"column:stories_id" json:"stories_id"`
 	Text        string    `gorm:"column:text" json:"text"`
 	PageOrder   int       `gorm:"column:page_order" json:"page_order"`
+	Uuid        string    `gorm:"column:uuid" json:"uuid"`
 }
 
 func (u *StoryPage) TableName() string {
