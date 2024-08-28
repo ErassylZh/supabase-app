@@ -32,5 +32,6 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initProduct(v1)
 		h.initPost(v1)
 		h.initStories(v1)
+		h.initMark(v1)
 	}
 }

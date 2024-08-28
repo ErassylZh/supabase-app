@@ -36,7 +36,10 @@ func (r *MarkDb) Create(ctx context.Context, marks model.Mark) error {
 func (r *MarkDb) FindByUserID(ctx context.Context, userID string) ([]model.Mark, error) {
 	var marks []model.Mark
 	db := r.db.WithContext(ctx)
-	err := db.Where("user_id = ?", userID).Find(&marks).Error
+	err := db.Where("user_id = ?", userID).
+		Preload("Posts").
+		Find(&marks).
+		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
