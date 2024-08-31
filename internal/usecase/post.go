@@ -50,10 +50,23 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string) ([]schema.
 	for _, um := range userMarks {
 		postIdMark[um.PostID] = um
 	}
+
+	userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
+	if err != nil {
+		return nil, err
+	}
+	postIdRead := make(map[uint]bool)
+	for _, up := range userPosts {
+		postIdRead[up.PostId] = true
+	}
+
 	for i := range posts {
 		um, exists := postIdMark[posts[i].PostID]
 		posts[i].IsMarked = exists
 		posts[i].MarkId = &um.MarkID
+
+		_, exists = postIdRead[posts[i].PostID]
+		posts[i].IsAlreadyRead = exists
 	}
 
 	return posts, nil
