@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
+	"work-project/internal/model"
 	"work-project/internal/schema"
 	"work-project/internal/service"
 )
@@ -36,13 +37,14 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string) ([]schema.
 		return nil, err
 	}
 
-	postIdMark := make(map[uint]bool)
+	postIdMark := make(map[uint]model.Mark)
 	for _, um := range userMarks {
-		postIdMark[um.PostID] = true
+		postIdMark[um.PostID] = um
 	}
 	for i := range posts {
-		_, exists := postIdMark[posts[i].PostID]
+		um, exists := postIdMark[posts[i].PostID]
 		posts[i].IsMarked = exists
+		posts[i].MarkId = &um.MarkID
 	}
 
 	return posts, nil
