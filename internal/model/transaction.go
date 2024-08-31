@@ -28,13 +28,13 @@ const (
 )
 
 type Transaction struct {
-	CreatedAt       time.Time `gorm:"column:created_at" json:"created_at"`
-	TransactionId   uint      `gorm:"primaryKey;column:transaction_id" json:"transaction_id"`
-	UserId          string    `gorm:"column:user_id" json:"user_id"`
-	TransactionType string    `gorm:"column:transaction_type" json:"transaction_type"`
-	Coins           int       `gorm:"column:coins" json:"coins"`
-	Sapphires       int       `gorm:"column:sapphires" json:"sapphires"`
-	Reason          string    `gorm:"column:reason" json:"reason"`
+	CreatedAt         time.Time `gorm:"column:created_at" json:"created_at"`
+	TransactionId     uint      `gorm:"primaryKey;column:transaction_id" json:"transaction_id"`
+	UserId            string    `gorm:"column:user_id" json:"user_id"`
+	TransactionType   string    `gorm:"column:transaction_type" json:"transaction_type"`
+	Coins             int       `gorm:"column:coins" json:"coins"`
+	Sapphires         int       `gorm:"column:sapphires" json:"sapphires"`
+	TransactionReason string    `gorm:"column:reason" json:"reason"`
 }
 
 func (u Transaction) TableName() string {

@@ -18,6 +18,6 @@ type Deps struct {
 func NewUsecases(deps Deps) *Usecases {
 	return &Usecases{
 		Referral: NewReferralUsecase(deps.Repositories.ReferralCode, deps.Repositories.Referral, deps.Services.PushNotification, deps.Services.Balance, deps.Services.UserDeviceToken),
-		Post:     NewPostUsecase(deps.Services.Post, deps.Services.Mark),
+		Post:     NewPostUsecase(deps.Services),
 	}
 }

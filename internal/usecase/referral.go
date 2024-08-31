@@ -85,12 +85,12 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 
 	//todo потом возможно поменяем койны и сапфиры которые даем за реферал
 	_, err = u.balanceService.CreateTransaction(ctx, referralCode.UserID, model.Transaction{
-		Coins:           10,
-		Sapphires:       0,
-		UserId:          referralCode.UserID,
-		CreatedAt:       time.Now(),
-		TransactionType: string(model.TRANSACTION_TYPE_INCOME),
-		Reason:          string(model.TRANSACTION_REASON_REFERRAL),
+		Coins:             10,
+		Sapphires:         0,
+		UserId:            referralCode.UserID,
+		CreatedAt:         time.Now(),
+		TransactionType:   string(model.TRANSACTION_TYPE_INCOME),
+		TransactionReason: string(model.TRANSACTION_REASON_REFERRAL),
 	})
 	if err != nil {
 		return model.ReferralCode{}, err
@@ -102,12 +102,12 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 	}
 
 	_, err = u.balanceService.CreateTransaction(ctx, userID, model.Transaction{
-		Coins:           10,
-		Sapphires:       0,
-		UserId:          userID,
-		CreatedAt:       time.Now(),
-		TransactionType: string(model.TRANSACTION_TYPE_INCOME),
-		Reason:          string(model.TRANSACTION_REASON_REFERRAL),
+		Coins:             10,
+		Sapphires:         0,
+		UserId:            userID,
+		CreatedAt:         time.Now(),
+		TransactionType:   string(model.TRANSACTION_TYPE_INCOME),
+		TransactionReason: string(model.TRANSACTION_REASON_REFERRAL),
 	})
 	if err != nil {
 		return model.ReferralCode{}, err

@@ -2,12 +2,14 @@ package service
 
 import (
 	"context"
+	"work-project/internal/model"
 	"work-project/internal/repository"
 	"work-project/internal/schema"
 )
 
 type Post interface {
 	GetListing(ctx context.Context, userId *string) ([]schema.PostResponse, error)
+	GetByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 }
 
 type PostService struct {
@@ -30,4 +32,8 @@ func (s *PostService) GetListing(ctx context.Context, userId *string) ([]schema.
 	}
 
 	return result, nil
+}
+
+func (s *PostService) GetByIds(ctx context.Context, ids []uint) ([]model.Post, error) {
+	return s.postRepo.GetAllByIds(ctx, ids)
 }

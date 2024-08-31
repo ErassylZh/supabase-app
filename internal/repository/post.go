@@ -11,6 +11,7 @@ type Post interface {
 	GetAll(ctx context.Context) ([]model.Post, error)
 	UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
 	GetAllForListing(ctx context.Context) ([]model.Post, error)
+	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 }
 
 type PostDb struct {
@@ -59,6 +60,21 @@ func (r *PostDb) GetAllForListing(ctx context.Context) (posts []model.Post, err 
 	db := r.db.WithContext(ctx)
 	err = db.Model(&model.Post{}).
 		Where("status = ?", model.PRODUCT_STATUS_PUBLISH).
+		Preload("Images").
+		Preload("Hashtags").
+		Find(&posts).
+		Error
+	if err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
+func (r *PostDb) GetAllByIds(ctx context.Context, ids []uint) (posts []model.Post, err error) {
+	db := r.db.WithContext(ctx)
+	err = db.Model(&model.Post{}).
+		Where("status = ? and post_id in (?)", model.PRODUCT_STATUS_PUBLISH, ids).
 		Preload("Images").
 		Preload("Hashtags").
 		Find(&posts).
