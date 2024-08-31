@@ -399,34 +399,34 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 		})
 	}
 
-	//createStoryPages := make([]model.StoryPage, 0)
-	//if len(createStories) > 0 {
-	//	createStories, err = h.stories.CreateMany(ctx, createStories)
-	//	if err != nil {
-	//		return err
-	//	}
-	//	for _, story := range createStories {
-	//		storyId := story.StoriesId
-	//		for _, data := range storiesAirtableByTitle[story.Title] {
-	//			file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), data.Fields.Image[0].FileName, data.Fields.Image[0].Url)
-	//			if err != nil {
-	//				log.Println(ctx, "some err while create image", "err", err, "stories name", story.Title)
-	//			}
-	//			createStoryPages = append(createStoryPages, model.StoryPage{
-	//				StoriesId: storyId,
-	//				ImagePath: file,
-	//				Text:      data.Fields.Text,
-	//				PageOrder: data.Fields.Order,
-	//				Uuid:      data.Fields.Uuid,
-	//			})
-	//		}
-	//	}
-	//
-	//	err = h.storyPage.CreateMany(ctx, createStoryPages)
-	//	if err != nil {
-	//		return err
-	//	}
-	//}
+	createStoryPages := make([]model.StoryPage, 0)
+	if len(createStories) > 0 {
+		createStories, err = h.stories.CreateMany(ctx, createStories)
+		if err != nil {
+			return err
+		}
+		for _, story := range createStories {
+			storyId := story.StoriesId
+			for _, data := range storiesAirtableByTitle[story.Title] {
+				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), data.Fields.Image[0].FileName, data.Fields.Image[0].Url)
+				if err != nil {
+					log.Println(ctx, "some err while create image", "err", err, "stories name", story.Title)
+				}
+				createStoryPages = append(createStoryPages, model.StoryPage{
+					StoriesId: storyId,
+					ImagePath: file,
+					Text:      data.Fields.Text,
+					PageOrder: data.Fields.Order,
+					Uuid:      data.Fields.Uuid,
+				})
+			}
+		}
+
+		err = h.storyPage.CreateMany(ctx, createStoryPages)
+		if err != nil {
+			return err
+		}
+	}
 
 	if len(updateStoryPages) > 0 {
 		for i := range updateStoryPages {
