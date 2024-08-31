@@ -17,6 +17,7 @@ type Services struct {
 	Post             Post
 	Stories          Stories
 	Mark             Mark
+	Hashtag          Hashtag
 }
 
 type Deps struct {
@@ -35,5 +36,6 @@ func NewServices(deps Deps) *Services {
 		Post:             NewPostService(deps.Repos.Post),
 		Stories:          NewStoriesService(deps.Repos.Stories, deps.Repos.StoryPage, deps.Repos.StoryPageUser),
 		Mark:             NewMarkService(deps.Repos.Mark, deps.Repos.Post),
+		Hashtag:          NewHashtagService(deps.Repos.Hashtag),
 	}
 }

@@ -206,7 +206,8 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				post.ReadTime != postsAirtableByUuid[uuid].Fields.ReadTime ||
 				post.Point != postsAirtableByUuid[uuid].Fields.Point ||
 				post.QuizTime != postsAirtableByUuid[uuid].Fields.QuizTime ||
-				post.RatingStatus != postsAirtableByUuid[uuid].Fields.RatingStatus {
+				post.RatingStatus != postsAirtableByUuid[uuid].Fields.RatingStatus ||
+				post.Sapphire != postsAirtableByUuid[uuid].Fields.Sapphire {
 
 				post.Company = postsAirtableByUuid[uuid].Fields.Company
 				post.Language = postsAirtableByUuid[uuid].Fields.Language
@@ -218,6 +219,7 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				post.Point = postsAirtableByUuid[uuid].Fields.Point
 				post.QuizTime = postsAirtableByUuid[uuid].Fields.QuizTime
 				post.RatingStatus = postsAirtableByUuid[uuid].Fields.RatingStatus
+				post.Sapphire = postsAirtableByUuid[uuid].Fields.Sapphire
 				updatePosts = append(updatePosts, post)
 			}
 			if !h.compareHashtags(existsHashtags, postsAirtableByUuid[uuid].Fields.HashtagName) {
@@ -256,6 +258,7 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			Point:        postsAirtableByUuid[uuid].Fields.Point,
 			QuizTime:     postsAirtableByUuid[uuid].Fields.QuizTime,
 			RatingStatus: postsAirtableByUuid[uuid].Fields.RatingStatus,
+			Sapphire:     postsAirtableByUuid[uuid].Fields.Sapphire,
 		})
 	}
 

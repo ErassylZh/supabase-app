@@ -33,5 +33,6 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initPost(v1)
 		h.initStories(v1)
 		h.initMark(v1)
+		h.initHashtag(v1)
 	}
 }

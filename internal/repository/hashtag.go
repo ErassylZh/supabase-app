@@ -9,6 +9,7 @@ import (
 type Hashtag interface {
 	GetByID(ctx context.Context, id uint) (model.Hashtag, error)
 	GetByName(ctx context.Context, hashtagName string) (model.Hashtag, error)
+	GetAll(ctx context.Context) ([]model.Hashtag, error)
 }
 
 type HashtagDB struct {
@@ -41,4 +42,15 @@ func (r *HashtagDB) GetByName(ctx context.Context, hashtagName string) (hashtag 
 		return hashtag, err
 	}
 	return hashtag, nil
+}
+
+func (r *HashtagDB) GetAll(ctx context.Context) (hashtags []model.Hashtag, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Hashtag{})
+	err = q.Find(&hashtags).
+		Error
+	if err != nil {
+		return hashtags, err
+	}
+	return hashtags, nil
 }

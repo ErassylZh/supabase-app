@@ -48,6 +48,7 @@ type Post struct {
 	HashtagName  []string `json:"hashtag_name"`
 	Uuid         string   `json:"uuid"`
 	Hashtags     []string `json:"hashtags"`
+	Sapphire     int      `json:"sapphire"`
 }
 
 type Stories struct {
