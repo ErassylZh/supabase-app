@@ -16,6 +16,17 @@ type BalanceDB struct {
 	db *gorm.DB
 }
 
+func (r *BalanceDB) Create(ctx context.Context, balance model.Balance) (model.Balance, error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Balance{})
+	err := q.Create(&balance).
+		Error
+	if err != nil {
+		return balance, err
+	}
+	return balance, nil
+}
+
 func NewBalanceDB(db *gorm.DB) *BalanceDB {
 	return &BalanceDB{db: db}
 }
