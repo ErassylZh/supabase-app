@@ -9,6 +9,7 @@ import (
 type Balance interface {
 	GetByUserID(ctx context.Context, userId string) (model.Balance, error)
 	Update(ctx context.Context, balance model.Balance) error
+	Create(ctx context.Context, balance model.Balance) (model.Balance, error)
 }
 
 type BalanceDB struct {

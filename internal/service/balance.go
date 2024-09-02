@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"errors"
+	"gorm.io/gorm"
 	"work-project/internal/model"
 	"work-project/internal/repository"
 )
@@ -22,7 +24,18 @@ func NewBalanceService(balanceRepo repository.Balance, transactionRepo repositor
 }
 
 func (s *BalanceService) GetByUserId(ctx context.Context, userId string) (model.Balance, error) {
-	return s.balanceRepo.GetByUserID(ctx, userId)
+	balance, err := s.balanceRepo.GetByUserID(ctx, userId)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return s.balanceRepo.Create(ctx, model.Balance{
+			UserId:    userId,
+			Sapphires: 0,
+			Coins:     0,
+		})
+	}
+	if err != nil {
+		return model.Balance{}, err
+	}
+	return balance, nil
 }
 
 func (s *BalanceService) GetTransactionHistory(ctx context.Context, userId string) ([]model.Transaction, error) {
