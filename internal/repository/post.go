@@ -10,7 +10,7 @@ type Post interface {
 	CreateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
 	GetAll(ctx context.Context) ([]model.Post, error)
 	UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
-	GetAllForListing(ctx context.Context) ([]model.Post, error)
+	GetAllForListing(ctx context.Context, hashtagIds []uint) ([]model.Post, error)
 	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 }
 
@@ -55,15 +55,23 @@ func (r *PostDb) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Po
 	}
 	return posts, nil
 }
-
-func (r *PostDb) GetAllForListing(ctx context.Context) (posts []model.Post, err error) {
+func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
-	err = db.Model(&model.Post{}).
-		Where("status = ?", model.PRODUCT_STATUS_PUBLISH).
+
+	query := db.Model(&model.Post{}).
+		Joins("JOIN public.post_hashtag ON public.post_hashtag.post_id = public.post.post_id").
+		Joins("JOIN public.hashtag ON public.hashtag.hashtag_id = public.post_hashtag.hashtag_id").
+		Where("public.post.status = ?", model.PRODUCT_STATUS_PUBLISH).
 		Preload("Images").
 		Preload("Hashtags").
-		Find(&posts).
-		Error
+		Group("public.post.post_id")
+
+	// If hashtagIds are provided, apply the filter
+	if len(hashtagIds) > 0 {
+		query = query.Where("public.hashtag.hashtag_id IN ?", hashtagIds)
+	}
+
+	err = query.Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}

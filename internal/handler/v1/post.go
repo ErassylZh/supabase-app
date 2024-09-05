@@ -35,6 +35,13 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 	ctx := c.Request.Context()
 	var userId *string
 	token := c.GetHeader("Authorization")
+	hashtagIDsStr := c.QueryArray("hashtag_id")
+	hashtagIds := make([]uint, 0)
+	for _, msi := range hashtagIDsStr {
+		id, _ := strconv.ParseUint(msi, 10, 64)
+		hashtagIds = append(hashtagIds, uint(id))
+	}
+
 	if token != "" {
 		userIdStr, err := h.services.Auth.VerifyToken(token)
 		if err != nil {
@@ -43,7 +50,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId)
+	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds)
 	if err != nil {
 		return err
 	}
