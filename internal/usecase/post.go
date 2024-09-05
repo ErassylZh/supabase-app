@@ -13,6 +13,7 @@ type Post interface {
 	GetListing(ctx context.Context, userId *string) ([]schema.PostResponse, error)
 	SaveQuizPoints(ctx context.Context, data model.UserPost) (model.UserPost, error)
 	GetArchive(ctx context.Context, userId string) ([]model.Post, error)
+	CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error)
 }
 
 type PostUsecase struct {
@@ -106,4 +107,12 @@ func (u *PostUsecase) GetArchive(ctx context.Context, userId string) ([]model.Po
 		postIds = append(postIds, up.PostId)
 	}
 	return u.postService.GetByIds(ctx, postIds)
+}
+
+func (u *PostUsecase) CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error) {
+	userPost, err := u.userPostService.GetByUserAndPost(ctx, userId, postId)
+	if err != nil {
+		return false, err
+	}
+	return userPost.QuizSapphires == nil && userPost.QuizPoints == nil, nil
 }
