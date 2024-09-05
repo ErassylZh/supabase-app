@@ -9,7 +9,7 @@ import (
 func (h *Handler) initHashtag(v1 *gin.RouterGroup) {
 	v1.GET(
 		"/hashtag",
-		middleware.GinErrorHandle(h.GetBalanceOfUser),
+		middleware.GinErrorHandle(h.GetAllHashtags),
 	)
 }
 
