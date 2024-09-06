@@ -8,6 +8,7 @@ import (
 
 type StoryPageUser interface {
 	GetAllByStoryPageId(ctx context.Context, storyPageId uint) ([]model.StoryPageUser, error)
+	GetAllByStoryIdUserID(ctx context.Context, storyId []uint, userId string) ([]model.StoryPageUser, error)
 	Create(ctx context.Context, user model.StoryPageUser) error
 }
 
@@ -36,4 +37,20 @@ func (r *StoryPageUserDB) Create(ctx context.Context, data model.StoryPageUser) 
 	q := db.Model(&model.StoryPageUser{})
 	err := q.Create(&data).Error
 	return err
+}
+
+func (r *StoryPageUserDB) GetAllByStoryIdUserID(ctx context.Context, storyIds []uint, userId string) (stories []model.StoryPageUser, err error) {
+	db := r.db.WithContext(ctx)
+
+	err = db.Table("story_page_user AS spu").
+		Select("spu.*").
+		Joins("JOIN story_page sp ON spu.story_page_id = sp.story_page_id").
+		Joins("JOIN stories s ON s.stories_id = sp.stories_id and s.stories_id in (?)", storyIds).
+		Where("spu.user_id = ?", userId).
+		Find(&stories).
+		Error
+	if err != nil {
+		return stories, err
+	}
+	return stories, nil
 }

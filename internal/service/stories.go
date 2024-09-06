@@ -25,7 +25,29 @@ func (s *StoriesService) GetByUserId(ctx context.Context, userId string) ([]mode
 	if len(userId) == 0 {
 		return s.storiesRepo.GetAllActive(ctx)
 	}
-	return s.storiesRepo.GetAllActiveByUser(ctx, userId)
+	stories, err := s.storiesRepo.GetAllActive(ctx)
+	if err != nil {
+		return nil, err
+	}
+	storyIds := make([]uint, len(stories))
+	for i, story := range stories {
+		storyIds[i] = story.StoriesId
+	}
+	userPages, err := s.storyPageUserRepo.GetAllByStoryIdUserID(ctx, storyIds, userId)
+	if err != nil {
+		return nil, err
+	}
+	for i := range stories {
+		for j := range stories[i].StoryPages {
+			for _, up := range userPages {
+				if up.StoryPageId == stories[i].StoryPages[j].StoryPageId {
+					stories[i].StoryPages[j].IsReaded = true
+					break
+				}
+			}
+		}
+	}
+	return stories, nil
 }
 
 func (s *StoriesService) ReadStory(ctx context.Context, userId string, storyId uint) error {
