@@ -390,6 +390,7 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 					})
 				}
 			}
+			continue
 		}
 		createStories = append(createStories, model.Stories{
 			CreatedAt: time.Now(),

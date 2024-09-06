@@ -62,9 +62,11 @@ func (r *StoriesDB) GetAllActive(ctx context.Context) (stories []model.Stories, 
 func (r *StoriesDB) GetAllActiveByUser(ctx context.Context, userId string) (stories []model.Stories, err error) {
 	db := r.db.WithContext(ctx)
 	var ids []uint
-	db.Table("story_page_user").
-		Select("story_page_id").
-		Where("user_id = ?", "test").Scan(&ids)
+	if len(userId) > 0 {
+		db.Table("story_page_user").
+			Select("story_page_id").
+			Where("user_id = ?", userId).Scan(&ids)
+	}
 
 	db.Table("stories AS s").
 		Select("s.*").
