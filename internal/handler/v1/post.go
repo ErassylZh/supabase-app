@@ -3,6 +3,7 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"strings"
 	"work-project/internal/middleware"
 	"work-project/internal/model"
 	"work-project/internal/schema"
@@ -35,9 +36,9 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 	ctx := c.Request.Context()
 	var userId *string
 	token := c.GetHeader("Authorization")
-	hashtagIDsStr := c.QueryArray("hashtag_id")
+	hashtagIDsStr := c.Query("hashtag_id")
 	hashtagIds := make([]uint, 0)
-	for _, msi := range hashtagIDsStr {
+	for _, msi := range strings.Split(hashtagIDsStr, ",") {
 		id, _ := strconv.ParseUint(msi, 10, 64)
 		hashtagIds = append(hashtagIds, uint(id))
 	}
