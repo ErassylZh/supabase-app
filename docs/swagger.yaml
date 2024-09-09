@@ -1,0 +1,945 @@
+basePath: /
+definitions:
+  model.Balance:
+    properties:
+      balance_id:
+        type: integer
+      coins:
+        type: integer
+      sapphires:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  model.Collection:
+    properties:
+      collection_id:
+        type: integer
+      image_path:
+        type: string
+      name:
+        type: string
+      name_kz:
+        type: string
+      name_ru:
+        type: string
+    type: object
+  model.Hashtag:
+    properties:
+      hashtag_id:
+        type: integer
+      image_path:
+        type: string
+      name:
+        type: string
+      name_kz:
+        type: string
+      name_ru:
+        type: string
+    type: object
+  model.Image:
+    properties:
+      created_at:
+        type: string
+      file_name:
+        type: string
+      image_id:
+        type: integer
+      post_id:
+        type: integer
+      product_id:
+        type: integer
+      type:
+        type: string
+      url:
+        type: string
+    type: object
+  model.Mark:
+    properties:
+      created_at:
+        type: string
+      mark_id:
+        type: integer
+      post:
+        $ref: '#/definitions/model.Post'
+      post_id:
+        type: integer
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: string
+    type: object
+  model.Post:
+    properties:
+      body:
+        type: string
+      collections:
+        items:
+          $ref: '#/definitions/model.Collection'
+        type: array
+      company:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      hashtags:
+        items:
+          $ref: '#/definitions/model.Hashtag'
+        type: array
+      images:
+        items:
+          $ref: '#/definitions/model.Image'
+        type: array
+      language:
+        type: string
+      point:
+        type: integer
+      post_id:
+        type: integer
+      quiz_time:
+        type: integer
+      rating_status:
+        type: string
+      read_time:
+        type: integer
+      sapphire:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      uuid:
+        type: string
+    type: object
+  model.PushNotification:
+    properties:
+      condition:
+        type: string
+      created_at:
+        type: string
+      is_sended:
+        type: boolean
+      push_notification_id:
+        type: integer
+      text:
+        type: string
+      title:
+        type: string
+      token:
+        type: string
+      topic:
+        type: string
+    type: object
+  model.ReferralCode:
+    properties:
+      created_at:
+        type: string
+      referral_code:
+        type: string
+      referral_code_id:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  model.Stories:
+    properties:
+      created_at:
+        type: string
+      end_time:
+        type: string
+      start_time:
+        type: string
+      stories_id:
+        type: integer
+      story_pages:
+        items:
+          $ref: '#/definitions/model.StoryPage'
+        type: array
+      title:
+        type: string
+    type: object
+  model.StoryPage:
+    properties:
+      created_at:
+        type: string
+      image_path:
+        type: string
+      is_readed:
+        type: boolean
+      page_order:
+        type: integer
+      stories_id:
+        type: integer
+      story_page_id:
+        type: integer
+      text:
+        type: string
+      uuid:
+        type: string
+    type: object
+  model.Transaction:
+    properties:
+      coins:
+        type: integer
+      created_at:
+        type: string
+      reason:
+        type: string
+      sapphires:
+        type: integer
+      transaction_id:
+        type: integer
+      transaction_type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  model.User:
+    properties:
+      confirmation_send_at:
+        type: string
+      confirmation_token:
+        type: string
+      email:
+        type: string
+      email_confirmed_at:
+        type: string
+      encrypted_password:
+        type: string
+      id:
+        type: string
+    type: object
+  model.UserDeviceToken:
+    properties:
+      device_token:
+        type: string
+      user_device_token_id:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  model.UserPost:
+    properties:
+      created_at:
+        type: string
+      post_id:
+        type: integer
+      quiz_points:
+        type: integer
+      quiz_sapphires:
+        type: integer
+      user_id:
+        type: string
+      user_post_id:
+        type: integer
+    type: object
+  schema.CheckAvailable:
+    properties:
+      already_used_referral_code:
+        type: boolean
+    type: object
+  schema.Empty:
+    type: object
+  schema.PostResponse:
+    properties:
+      body:
+        type: string
+      collections:
+        items:
+          $ref: '#/definitions/model.Collection'
+        type: array
+      company:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      hashtags:
+        items:
+          $ref: '#/definitions/model.Hashtag'
+        type: array
+      images:
+        items:
+          $ref: '#/definitions/model.Image'
+        type: array
+      is_already_read:
+        type: boolean
+      is_marked:
+        type: boolean
+      language:
+        type: string
+      mark_id:
+        type: integer
+      point:
+        type: integer
+      post_id:
+        type: integer
+      quiz_time:
+        type: integer
+      rating_status:
+        type: string
+      read_time:
+        type: integer
+      sapphire:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      uuid:
+        type: string
+    type: object
+  schema.Response-array_model_Collection:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.Collection'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_model_Hashtag:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.Hashtag'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_model_Mark:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.Mark'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_model_PushNotification:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.PushNotification'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_model_Stories:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.Stories'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_model_Transaction:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.Transaction'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_model_UserDeviceToken:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.UserDeviceToken'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_schema_PostResponse:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/schema.PostResponse'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-model_Balance:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.Balance'
+      status:
+        type: boolean
+    type: object
+  schema.Response-model_Mark:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.Mark'
+      status:
+        type: boolean
+    type: object
+  schema.Response-model_ReferralCode:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.ReferralCode'
+      status:
+        type: boolean
+    type: object
+  schema.Response-model_User:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.User'
+      status:
+        type: boolean
+    type: object
+  schema.Response-model_UserDeviceToken:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.UserDeviceToken'
+      status:
+        type: boolean
+    type: object
+  schema.Response-model_UserPost:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.UserPost'
+      status:
+        type: boolean
+    type: object
+  schema.Response-schema_CheckAvailable:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/schema.CheckAvailable'
+      status:
+        type: boolean
+    type: object
+  schema.Response-schema_Empty:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/schema.Empty'
+      status:
+        type: boolean
+    type: object
+  schema.UserDeviceTokenCreateRequest:
+    properties:
+      token:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: Это пример сервера с использованием Swagger в Gin.
+  title: swagger API
+  version: "1.0"
+paths:
+  /api/v1/balance:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Balance'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить баланс
+      tags:
+      - balance
+  /api/v1/balance/collection:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: получить все коллекций
+      tags:
+      - collection
+  /api/v1/balance/history:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Transaction'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить историю транзакций
+      tags:
+      - balance
+  /api/v1/hashtag:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Hashtag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: получить все коллекций
+      tags:
+      - hashtag
+  /api/v1/mark:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Mark'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: все избранное пользователя
+      tags:
+      - mark
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateMark
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Mark'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Mark'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: сохранить в избранное
+      tags:
+      - mark
+  /api/v1/mark/:mark_id:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Mark'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: удалить в избранное
+      tags:
+      - mark
+  /api/v1/notification:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_PushNotification'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить уведомления
+      tags:
+      - notification
+  /api/v1/post:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: hashtag_id
+        in: query
+        name: hashtag_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_schema_PostResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: список постов
+      tags:
+      - post
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: post
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_UserPost'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: сохраниь что квиз прочитан
+      tags:
+      - post
+  /api/v1/post/archive:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_schema_PostResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: архивные посты
+      tags:
+      - post
+  /api/v1/post/check-quiz:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: post_id
+        in: query
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_UserPost'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: проверить что квиз прочитан
+      tags:
+      - post
+  /api/v1/referral:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_ReferralCode'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить реферал код юзера
+      tags:
+      - referral
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: story_page_id
+        in: query
+        name: referralCode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_ReferralCode'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: пометить прочитанным сторис
+      tags:
+      - referral
+  /api/v1/referral/available:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_CheckAvailable'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить активность рефералки
+      tags:
+      - stories
+  /api/v1/stories:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Stories'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить список сторисов
+      tags:
+      - stories
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: story_page_id
+        in: query
+        name: story_page_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: пометить сторис прочитанным
+      tags:
+      - stories
+  /api/v1/user-device-token:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: deviceTokenId
+        in: query
+        name: deviceTokenId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: удалить токен девайса токены пользователя
+      tags:
+      - user-device-token
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_UserDeviceToken'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить токен девайса токены пользователя
+      tags:
+      - user-device-token
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create device token
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.UserDeviceTokenCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_UserDeviceToken'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: сохранить токен девайса токена
+      tags:
+      - user-device-token
+  /api/v1/user/:user_id:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: удалить пользователя
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить пользователя
+      tags:
+      - user
+swagger: "2.0"
