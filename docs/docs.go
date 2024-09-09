@@ -280,11 +280,6 @@ const docTemplate = `{
         },
         "/api/v1/post": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -294,28 +289,26 @@ const docTemplate = `{
                 "tags": [
                     "post"
                 ],
-                "summary": "список постов",
+                "summary": "список группированных постов",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "hashtag_id",
                         "name": "hashtag_id",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "description": "collection_id",
                         "name": "collection_id",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-array_schema_PostResponse"
+                            "$ref": "#/definitions/schema.Response-schema_PostResponseByGroup"
                         }
                     },
                     "400": {
@@ -433,6 +426,60 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-model_UserPost"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/post/filter": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "summary": "список постов с фильтром",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "hashtag_id",
+                        "name": "hashtag_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "collection_id",
+                        "name": "collection_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "all, post, partner",
+                        "name": "post_type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_schema_PostResponse"
                         }
                     },
                     "400": {
@@ -1247,6 +1294,29 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.PostResponseByGroup": {
+            "type": "object",
+            "properties": {
+                "bestsellers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.PostResponse"
+                    }
+                },
+                "other": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.PostResponse"
+                    }
+                },
+                "partners": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.PostResponse"
+                    }
+                }
+            }
+        },
         "schema.Response-array_model_Collection": {
             "type": "object",
             "properties": {
@@ -1489,6 +1559,20 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/schema.Empty"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-schema_PostResponseByGroup": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/schema.PostResponseByGroup"
                 },
                 "status": {
                     "type": "boolean"

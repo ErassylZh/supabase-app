@@ -10,10 +10,11 @@ import (
 )
 
 type Post interface {
-	GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint) ([]schema.PostResponse, error)
+	GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string) ([]schema.PostResponse, error)
 	SaveQuizPoints(ctx context.Context, data model.UserPost) (model.UserPost, error)
 	GetArchive(ctx context.Context, userId string) ([]model.Post, error)
 	CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error)
+	GetListingWithGroup(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint) (schema.PostResponseByGroup, error)
 }
 
 type PostUsecase struct {
@@ -32,7 +33,7 @@ func NewPostUsecase(services *service.Services) *PostUsecase {
 	}
 }
 
-func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint) ([]schema.PostResponse, error) {
+func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string) ([]schema.PostResponse, error) {
 	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds)
 	if err != nil {
 		return nil, err
@@ -69,8 +70,26 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds
 		_, exists = postIdRead[posts[i].PostID]
 		posts[i].IsAlreadyRead = exists
 	}
+	if postType == "all" {
+		return posts, nil
+	}
 
-	return posts, nil
+	result := make([]schema.PostResponse, 0)
+
+	for _, post := range posts {
+		isPartner := false
+		for _, ht := range post.Hashtags {
+			if ht.Name == string(model.HASHTAG_NAME_PARTNER) {
+				isPartner = true
+				break
+			}
+		}
+		if (postType == "partner" && isPartner) || (postType == "post" && !isPartner) {
+			result = append(result, post)
+		}
+	}
+
+	return result, nil
 }
 
 func (u *PostUsecase) SaveQuizPoints(ctx context.Context, data model.UserPost) (model.UserPost, error) {
@@ -115,4 +134,80 @@ func (u *PostUsecase) CheckQuiz(ctx context.Context, userId string, postId uint)
 		return false, err
 	}
 	return userPost.QuizSapphires == nil && userPost.QuizPoints == nil, nil
+}
+
+func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint) (schema.PostResponseByGroup, error) {
+	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds)
+	if err != nil {
+		return schema.PostResponseByGroup{}, err
+	}
+	if userId == nil {
+		result := schema.PostResponseByGroup{}
+		for _, post := range posts {
+			postAlreadyAdded := false
+			for _, hashtag := range post.Hashtags {
+				if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
+					postAlreadyAdded = true
+					result.Bestsellers = append(result.Bestsellers, post)
+				}
+				if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
+					postAlreadyAdded = true
+					result.Partners = append(result.Partners, post)
+				}
+			}
+			if !postAlreadyAdded {
+				result.Other = append(result.Other, post)
+			}
+		}
+
+		return result, nil
+	}
+
+	userMarks, err := u.markService.FindByUserID(ctx, *userId)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return schema.PostResponseByGroup{}, err
+	}
+
+	postIdMark := make(map[uint]model.Mark)
+	for _, um := range userMarks {
+		postIdMark[um.PostID] = um
+	}
+
+	userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
+	if err != nil {
+		return schema.PostResponseByGroup{}, err
+	}
+	postIdRead := make(map[uint]bool)
+	for _, up := range userPosts {
+		postIdRead[up.PostId] = true
+	}
+
+	for i := range posts {
+		um, exists := postIdMark[posts[i].PostID]
+		posts[i].IsMarked = exists
+		posts[i].MarkId = &um.MarkID
+
+		_, exists = postIdRead[posts[i].PostID]
+		posts[i].IsAlreadyRead = exists
+	}
+
+	result := schema.PostResponseByGroup{}
+	for _, post := range posts {
+		postAlreadyAdded := false
+		for _, hashtag := range post.Hashtags {
+			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
+				postAlreadyAdded = true
+				result.Bestsellers = append(result.Bestsellers, post)
+			}
+			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
+				postAlreadyAdded = true
+				result.Partners = append(result.Partners, post)
+			}
+		}
+		if !postAlreadyAdded {
+			result.Other = append(result.Other, post)
+		}
+	}
+
+	return result, nil
 }

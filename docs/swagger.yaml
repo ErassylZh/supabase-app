@@ -290,6 +290,21 @@ definitions:
       uuid:
         type: string
     type: object
+  schema.PostResponseByGroup:
+    properties:
+      bestsellers:
+        items:
+          $ref: '#/definitions/schema.PostResponse'
+        type: array
+      other:
+        items:
+          $ref: '#/definitions/schema.PostResponse'
+        type: array
+      partners:
+        items:
+          $ref: '#/definitions/schema.PostResponse'
+        type: array
+    type: object
   schema.Response-array_model_Collection:
     properties:
       message:
@@ -447,6 +462,15 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/schema.Empty'
+      status:
+        type: boolean
+    type: object
+  schema.Response-schema_PostResponseByGroup:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/schema.PostResponseByGroup'
       status:
         type: boolean
     type: object
@@ -632,12 +656,10 @@ paths:
       - description: hashtag_id
         in: query
         name: hashtag_id
-        required: true
         type: string
       - description: collection_id
         in: query
         name: collection_id
-        required: true
         type: string
       produces:
       - application/json
@@ -645,14 +667,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response-array_schema_PostResponse'
+            $ref: '#/definitions/schema.Response-schema_PostResponseByGroup'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      security:
-      - BearerAuth: []
-      summary: список постов
+      summary: список группированных постов
       tags:
       - post
     post:
@@ -725,6 +745,40 @@ paths:
       security:
       - BearerAuth: []
       summary: проверить что квиз прочитан
+      tags:
+      - post
+  /api/v1/post/filter:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: hashtag_id
+        in: query
+        name: hashtag_id
+        type: string
+      - description: collection_id
+        in: query
+        name: collection_id
+        type: string
+      - description: all, post, partner
+        in: query
+        name: post_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_schema_PostResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: список постов с фильтром
       tags:
       - post
   /api/v1/referral:

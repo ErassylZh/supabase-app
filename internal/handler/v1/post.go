@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
@@ -38,14 +39,13 @@ func (h *Handler) initPost(v1 *gin.RouterGroup) {
 
 // GetListingPosts
 // WhoAmi godoc
-// @Summary список постов
+// @Summary список группированных постов
 // @Accept json
 // @Produce json
-// @Success 200 {object} schema.Response[[]schema.PostResponse]
+// @Success 200 {object} schema.Response[schema.PostResponseByGroup]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @Security BearerAuth
-// @Param hashtag_id query string true "hashtag_id"
-// @Param collection_id query string true "collection_id"
+// @Param hashtag_id query string false "hashtag_id"
+// @Param collection_id query string false "collection_id"
 // @tags post
 // @Router /api/v1/post [get]
 func (h *Handler) GetListingPosts(c *gin.Context) error {
@@ -55,12 +55,18 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 	hashtagIDsStr := c.Query("hashtag_id")
 	hashtagIds := make([]uint, 0)
 	for _, msi := range strings.Split(hashtagIDsStr, ",") {
+		if msi == "" {
+			continue
+		}
 		id, _ := strconv.ParseUint(msi, 10, 64)
 		hashtagIds = append(hashtagIds, uint(id))
 	}
-	collectionIDsStr := c.Query("hashtag_id")
+	collectionIDsStr := c.Query("collection_id")
 	collectionIds := make([]uint, 0)
 	for _, msi := range strings.Split(collectionIDsStr, ",") {
+		if msi == "" {
+			continue
+		}
 		id, _ := strconv.ParseUint(msi, 10, 64)
 		collectionIds = append(collectionIds, uint(id))
 	}
@@ -73,7 +79,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds)
+	posts, err := h.usecases.Post.GetListingWithGroup(ctx, userId, hashtagIds, collectionIds)
 	if err != nil {
 		return err
 	}
@@ -203,6 +209,19 @@ func (h *Handler) CheckQuiz(c *gin.Context) error {
 	return schema.Respond(posts, c)
 }
 
+// GetFilterPosts
+// WhoAmi godoc
+// @Summary список постов с фильтром
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]schema.PostResponse]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @Param hashtag_id query string false "hashtag_id"
+// @Param collection_id query string false "collection_id"
+// @Param post_type query string true "all, post, partner"
+// @tags post
+// @Router /api/v1/post/filter [get]
 func (h *Handler) GetFilterPosts(c *gin.Context) error {
 	ctx := c.Request.Context()
 	var userId *string
@@ -213,6 +232,17 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 		id, _ := strconv.ParseUint(msi, 10, 64)
 		hashtagIds = append(hashtagIds, uint(id))
 	}
+	collectionIDsStr := c.Query("collection_id")
+	collectionIds := make([]uint, 0)
+	for _, msi := range strings.Split(collectionIDsStr, ",") {
+		id, _ := strconv.ParseUint(msi, 10, 64)
+		collectionIds = append(collectionIds, uint(id))
+	}
+
+	postType := c.Query("post_type")
+	if postType != "all" && postType != "post" && postType != "partner" {
+		return fmt.Errorf("incorrect post_type value")
+	}
 
 	if token != "" {
 		userIdStr, err := h.services.Auth.VerifyToken(token)
@@ -222,7 +252,7 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, nil)
+	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds, postType)
 	if err != nil {
 		return err
 	}
