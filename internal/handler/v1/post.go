@@ -24,11 +24,11 @@ func (h *Handler) initPost(v1 *gin.RouterGroup) {
 	)
 	v1.GET(
 		"/post/archive",
-		middleware.GinErrorHandle(h.GetListingPosts),
+		middleware.GinErrorHandle(h.GetArchivePosts),
 	)
 	v1.GET(
 		"/post/check-quiz",
-		middleware.GinErrorHandle(h.SaveQuizPoints),
+		middleware.GinErrorHandle(h.CheckQuiz),
 	)
 	v1.GET(
 		"/post/filter",
@@ -36,6 +36,17 @@ func (h *Handler) initPost(v1 *gin.RouterGroup) {
 	)
 }
 
+// GetListingPosts
+// WhoAmi godoc
+// @Summary список постов
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]schema.PostResponse]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @Param hashtag_id query int true "hashtag_id"
+// @tags post
+// @Router /api/v1/post [get]
 func (h *Handler) GetListingPosts(c *gin.Context) error {
 	ctx := c.Request.Context()
 	var userId *string
@@ -63,6 +74,17 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 	return schema.Respond(posts, c)
 }
 
+// ReadPost
+// WhoAmi godoc
+// @Summary прочесть книгу
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.UserPost]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @Param data body model.UserPost true "post"
+// @tags post
+// @Router /api/v1/post [post]
 func (h *Handler) ReadPost(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -84,6 +106,17 @@ func (h *Handler) ReadPost(c *gin.Context) error {
 	return schema.Respond(posts, c)
 }
 
+// SaveQuizPoints
+// WhoAmi godoc
+// @Summary сохраниь что квиз прочитан
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.UserPost]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @Param data body model.UserPost true "post"
+// @tags post
+// @Router /api/v1/post [post]
 func (h *Handler) SaveQuizPoints(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -105,6 +138,16 @@ func (h *Handler) SaveQuizPoints(c *gin.Context) error {
 	return schema.Respond(posts, c)
 }
 
+// GetArchivePosts
+// WhoAmi godoc
+// @Summary архивные посты
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]schema.PostResponse]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags post
+// @Router /api/v1/post/archive [get]
 func (h *Handler) GetArchivePosts(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -121,6 +164,17 @@ func (h *Handler) GetArchivePosts(c *gin.Context) error {
 	return schema.Respond(posts, c)
 }
 
+// CheckQuiz
+// WhoAmi godoc
+// @Summary проверить что квиз прочитан
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.UserPost]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @Param post_id query int true "post_id"
+// @tags post
+// @Router /api/v1/post/check-quiz [get]
 func (h *Handler) CheckQuiz(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")

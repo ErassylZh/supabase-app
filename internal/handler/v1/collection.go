@@ -13,6 +13,15 @@ func (h *Handler) initCollection(v1 *gin.RouterGroup) {
 	)
 }
 
+// GetAllCollections
+// WhoAmi godoc
+// @Summary получить все коллекций
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.Collection]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @tags collection
+// @Router /api/v1/balance/collection [get]
 func (h *Handler) GetAllCollections(c *gin.Context) error {
 	ctx := c.Request.Context()
 	collections, err := h.services.Collection.GetAll(ctx)

@@ -18,6 +18,17 @@ func (h *Handler) initStories(v1 *gin.RouterGroup) {
 	)
 }
 
+// ReadStoriesByUser
+// WhoAmi godoc
+// @Summary пометить сторис прочитанным
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[schema.Empty]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param story_page_id query int true "story_page_id"
+// @Security BearerAuth
+// @tags stories
+// @Router /api/v1/stories [post]
 func (h *Handler) ReadStoriesByUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -38,6 +49,16 @@ func (h *Handler) ReadStoriesByUser(c *gin.Context) error {
 	return schema.Respond(schema.Empty{}, c)
 }
 
+// GetActiveStories
+// WhoAmi godoc
+// @Summary получить список сторисов
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.Stories]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags stories
+// @Router /api/v1/stories [get]
 func (h *Handler) GetActiveStories(c *gin.Context) error {
 	ctx := c.Request.Context()
 

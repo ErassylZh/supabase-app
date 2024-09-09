@@ -23,6 +23,17 @@ func (h *Handler) initMark(v1 *gin.RouterGroup) {
 	)
 }
 
+// CreateMark
+// WhoAmi godoc
+// @Summary сохранить в избранное
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.Mark]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param data body model.Mark true "CreateMark"
+// @Security BearerAuth
+// @tags mark
+// @Router /api/v1/mark [post]
 func (h *Handler) CreateMark(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -41,6 +52,16 @@ func (h *Handler) CreateMark(c *gin.Context) error {
 	return schema.Respond(mark, c)
 }
 
+// FindMarksByUserID
+// WhoAmi godoc
+// @Summary все избранное пользователя
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.Mark]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags mark
+// @Router /api/v1/mark [get]
 func (h *Handler) FindMarksByUserID(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -55,6 +76,16 @@ func (h *Handler) FindMarksByUserID(c *gin.Context) error {
 	return schema.Respond(marks, c)
 }
 
+// DeleteMark
+// WhoAmi godoc
+// @Summary удалить в избранное
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.Mark]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags mark
+// @Router /api/v1/mark/:mark_id [delete]
 func (h *Handler) DeleteMark(c *gin.Context) error {
 	ctx := c.Request.Context()
 	markID, err := strconv.ParseUint(c.Param("mark_id"), 10, 64)

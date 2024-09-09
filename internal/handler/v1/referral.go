@@ -21,6 +21,17 @@ func (h *Handler) initReferral(v1 *gin.RouterGroup) {
 	)
 }
 
+// AddReferralCode
+// WhoAmi godoc
+// @Summary пометить прочитанным сторис
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.ReferralCode]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param referralCode query string true "story_page_id"
+// @Security BearerAuth
+// @tags referral
+// @Router /api/v1/referral [post]
 func (h *Handler) AddReferralCode(c *gin.Context) error {
 	ctx := c.Request.Context()
 	referralCode := c.Query("referralCode")
@@ -36,6 +47,16 @@ func (h *Handler) AddReferralCode(c *gin.Context) error {
 	return schema.Respond(referral, c)
 }
 
+// GetReferralCodeOfUser
+// WhoAmi godoc
+// @Summary получить реферал код юзера
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.ReferralCode]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags referral
+// @Router /api/v1/referral [get]
 func (h *Handler) GetReferralCodeOfUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -50,6 +71,16 @@ func (h *Handler) GetReferralCodeOfUser(c *gin.Context) error {
 	return schema.Respond(referralCode, c)
 }
 
+// GetAvailableReferralCodeOfUser
+// WhoAmi godoc
+// @Summary получить активность рефералки
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[schema.CheckAvailable]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags stories
+// @Router /api/v1/referral/available [get]
 func (h *Handler) GetAvailableReferralCodeOfUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")

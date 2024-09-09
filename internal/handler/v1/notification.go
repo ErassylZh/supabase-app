@@ -13,6 +13,16 @@ func (h *Handler) initNotification(v1 *gin.RouterGroup) {
 	)
 }
 
+// GetNotification
+// WhoAmi godoc
+// @Summary получить уведомления
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.PushNotification]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags notification
+// @Router /api/v1/notification [get]
 func (h *Handler) GetNotification(c *gin.Context) error {
 	ctx := c.Request.Context()
 	tokenDevice := c.Param("token")

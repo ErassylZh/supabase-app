@@ -22,6 +22,17 @@ func (h *Handler) initUserDeviceToken(v1 *gin.RouterGroup) {
 	)
 }
 
+// AddUserDeviceToken
+// WhoAmi godoc
+// @Summary сохранить токен девайса токена
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.UserDeviceToken]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @Param data body schema.UserDeviceTokenCreateRequest true "Create device token"
+// @tags user-device-token
+// @Router /api/v1/user-device-token [post]
 func (h *Handler) AddUserDeviceToken(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -42,6 +53,16 @@ func (h *Handler) AddUserDeviceToken(c *gin.Context) error {
 	return schema.Respond(result, c)
 }
 
+// GetDeviceTokensOfUser
+// WhoAmi godoc
+// @Summary получить токен девайса токены пользователя
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.UserDeviceToken]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags user-device-token
+// @Router /api/v1/user-device-token [get]
 func (h *Handler) GetDeviceTokensOfUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -56,6 +77,17 @@ func (h *Handler) GetDeviceTokensOfUser(c *gin.Context) error {
 	return schema.Respond(result, c)
 }
 
+// DeleteDeviceToken
+// WhoAmi godoc
+// @Summary удалить токен девайса токены пользователя
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[schema.Empty]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @Param deviceTokenId query int true "deviceTokenId"
+// @tags user-device-token
+// @Router /api/v1/user-device-token [delete]
 func (h *Handler) DeleteDeviceToken(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")

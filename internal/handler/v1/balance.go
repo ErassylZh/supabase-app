@@ -17,6 +17,16 @@ func (h *Handler) initBalance(v1 *gin.RouterGroup) {
 	)
 }
 
+// GetBalanceOfUser
+// WhoAmi godoc
+// @Summary получить баланс
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.Balance]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @tags balance
+// @Security BearerAuth
+// @Router /api/v1/balance [get]
 func (h *Handler) GetBalanceOfUser(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -31,6 +41,16 @@ func (h *Handler) GetBalanceOfUser(c *gin.Context) error {
 	return schema.Respond(balance, c)
 }
 
+// GetHistoryOfTransactions
+// WhoAmi godoc
+// @Summary получить историю транзакций
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.Transaction]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @tags balance
+// @Security BearerAuth
+// @Router /api/v1/balance/history [get]
 func (h *Handler) GetHistoryOfTransactions(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")

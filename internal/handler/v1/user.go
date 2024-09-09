@@ -17,6 +17,16 @@ func (h *Handler) initUser(v1 *gin.RouterGroup) {
 	)
 }
 
+// DeleteUserById
+// WhoAmi godoc
+// @Summary удалить пользователя
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[schema.Empty]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags user
+// @Router /api/v1/user/:user_id [delete]
 func (h *Handler) DeleteUserById(c *gin.Context) error {
 	ctx := c.Request.Context()
 	userId := c.Param("user_id")
@@ -27,6 +37,16 @@ func (h *Handler) DeleteUserById(c *gin.Context) error {
 	return schema.Respond(schema.Empty{}, c)
 }
 
+// GetUserByID
+// WhoAmi godoc
+// @Summary получить пользователя
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.User]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags user
+// @Router /api/v1/user/:user_id [get]
 func (h *Handler) GetUserByID(c *gin.Context) error {
 	ctx := c.Request.Context()
 	userId := c.Param("user_id")

@@ -1,10 +1,16 @@
 package main
 
 import (
+	_ "work-project/docs"
 	"work-project/internal/app"
 	"work-project/internal/config"
 )
 
+// @title           swagger API
+// @version         1.0
+// @description     Это пример сервера с использованием Swagger в Gin.
+// @host            localhost:8000
+// @BasePath        /
 func main() {
 
 	cfg, err := config.GetConfig()

@@ -2,6 +2,8 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
 	"work-project/internal/config"
 	v1 "work-project/internal/handler/v1"
@@ -42,6 +44,8 @@ func (h *Handler) Init(cfg *config.Config) (*gin.Engine, error) {
 		middlewares.Recovery(middleware.GinRecoveryFn),
 		//h.authMiddleware.SetCurrentUser(),
 	)
+	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	app.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, map[string]string{"message": "pong"})
 	})
