@@ -129,7 +129,7 @@ func (h *Handler) ReadPost(c *gin.Context) error {
 // @Security BearerAuth
 // @Param data body model.UserPost true "post"
 // @tags post
-// @Router /api/v1/post [post]
+// @Router /api/v1/post//save-quiz [post]
 func (h *Handler) SaveQuizPoints(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
