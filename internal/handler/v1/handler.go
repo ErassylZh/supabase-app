@@ -34,5 +34,6 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initStories(v1)
 		h.initMark(v1)
 		h.initHashtag(v1)
+		h.initCollection(v1)
 	}
 }

@@ -37,6 +37,7 @@ func (r *PostDb) GetAll(ctx context.Context) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 	err = db.Model(&model.Post{}).
 		Preload("Hashtags").
+		Preload("Collections").
 		Find(&posts).
 		Error
 	if err != nil {
@@ -64,6 +65,7 @@ func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint) (posts
 		Where("public.post.status = ?", model.PRODUCT_STATUS_PUBLISH).
 		Preload("Images").
 		Preload("Hashtags").
+		Preload("Collections").
 		Group("public.post.post_id")
 
 	// If hashtagIds are provided, apply the filter
@@ -85,6 +87,7 @@ func (r *PostDb) GetAllByIds(ctx context.Context, ids []uint) (posts []model.Pos
 		Where("status = ? and post_id in (?)", model.PRODUCT_STATUS_PUBLISH, ids).
 		Preload("Images").
 		Preload("Hashtags").
+		Preload("Collections").
 		Find(&posts).
 		Error
 	if err != nil {

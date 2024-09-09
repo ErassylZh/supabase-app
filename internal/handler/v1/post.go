@@ -30,6 +30,10 @@ func (h *Handler) initPost(v1 *gin.RouterGroup) {
 		"/post/check-quiz",
 		middleware.GinErrorHandle(h.SaveQuizPoints),
 	)
+	v1.GET(
+		"/post/filter",
+		middleware.GinErrorHandle(h.GetFilterPosts),
+	)
 }
 
 func (h *Handler) GetListingPosts(c *gin.Context) error {
@@ -131,6 +135,33 @@ func (h *Handler) CheckQuiz(c *gin.Context) error {
 	}
 
 	posts, err := h.usecases.Post.CheckQuiz(ctx, userId, uint(postId))
+	if err != nil {
+		return err
+	}
+
+	return schema.Respond(posts, c)
+}
+
+func (h *Handler) GetFilterPosts(c *gin.Context) error {
+	ctx := c.Request.Context()
+	var userId *string
+	token := c.GetHeader("Authorization")
+	hashtagIDsStr := c.Query("hashtag_id")
+	hashtagIds := make([]uint, 0)
+	for _, msi := range strings.Split(hashtagIDsStr, ",") {
+		id, _ := strconv.ParseUint(msi, 10, 64)
+		hashtagIds = append(hashtagIds, uint(id))
+	}
+
+	if token != "" {
+		userIdStr, err := h.services.Auth.VerifyToken(token)
+		if err != nil {
+			return err
+		}
+		userId = &userIdStr
+	}
+
+	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds)
 	if err != nil {
 		return err
 	}

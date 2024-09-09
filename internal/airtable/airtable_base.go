@@ -48,6 +48,7 @@ type Post struct {
 	HashtagName  []string `json:"hashtag_name"`
 	Uuid         string   `json:"uuid"`
 	Hashtags     []string `json:"hashtags"`
+	Collections  []string `json:"collections"`
 	Sapphire     int      `json:"sapphire"`
 }
 
@@ -63,6 +64,13 @@ type Stories struct {
 }
 
 type Hashtag struct {
+	Name   string   `json:"name"`
+	NameRu string   `json:"name_ru"`
+	NameKz string   `json:"name_kz"`
+	Image  *[]Image `json:"image"`
+}
+
+type Collection struct {
 	Name   string   `json:"name"`
 	NameRu string   `json:"name_ru"`
 	NameKz string   `json:"name_kz"`

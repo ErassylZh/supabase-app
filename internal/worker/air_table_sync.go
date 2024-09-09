@@ -11,15 +11,17 @@ import (
 )
 
 type AirTableSync struct {
-	airTable    repository.AirTable
-	product     repository.Product
-	post        repository.Post
-	storage     repository.StorageClient
-	image       repository.Image
-	hashtag     repository.Hashtag
-	postHashtag repository.PostHashtag
-	stories     repository.Stories
-	storyPage   repository.StoryPage
+	airTable       repository.AirTable
+	product        repository.Product
+	post           repository.Post
+	storage        repository.StorageClient
+	image          repository.Image
+	hashtag        repository.Hashtag
+	postHashtag    repository.PostHashtag
+	collection     repository.Collection
+	postCollection repository.PostCollection
+	stories        repository.Stories
+	storyPage      repository.StoryPage
 }
 
 func NewAirTableSync(
@@ -30,26 +32,35 @@ func NewAirTableSync(
 	image repository.Image,
 	hashtag repository.Hashtag,
 	postHashtag repository.PostHashtag,
+	collection repository.Collection,
+	postCollection repository.PostCollection,
 	stories repository.Stories,
 	storyPage repository.StoryPage,
 ) *AirTableSync {
 	return &AirTableSync{
-		airTable:    airTable,
-		product:     product,
-		post:        post,
-		storage:     storage,
-		image:       image,
-		hashtag:     hashtag,
-		postHashtag: postHashtag,
-		stories:     stories,
-		storyPage:   storyPage,
+		airTable:       airTable,
+		product:        product,
+		post:           post,
+		storage:        storage,
+		image:          image,
+		hashtag:        hashtag,
+		postHashtag:    postHashtag,
+		collection:     collection,
+		postCollection: postCollection,
+		stories:        stories,
+		storyPage:      storyPage,
 	}
 }
 
 func (h *AirTableSync) Run() (err error) {
 	ctx := context.Background()
 	if err := h.syncHashtags(ctx); err != nil {
-		log.Println("error while syncing products:", err)
+		log.Println("error while syncing hashtags:", err)
+		return err
+	}
+
+	if err := h.syncCollections(ctx); err != nil {
+		log.Println("error while syncing collection:", err)
 		return err
 	}
 
@@ -202,6 +213,10 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			for _, ht := range post.Hashtags {
 				existsHashtags = append(existsHashtags, ht.Name)
 			}
+			var existsCollections []string
+			for _, ht := range post.Collections {
+				existsCollections = append(existsCollections, ht.Name)
+			}
 			if post.Company != postsAirtableByUuid[uuid].Fields.Company ||
 				post.Language != postsAirtableByUuid[uuid].Fields.Language ||
 				post.Title != postsAirtableByUuid[uuid].Fields.Title ||
@@ -244,6 +259,27 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 					})
 				}
 				_, err = h.postHashtag.CreateMany(ctx, postHashtags)
+				if err != nil {
+					return err
+				}
+			}
+			if !h.compareHashtags(existsCollections, postsAirtableByUuid[uuid].Fields.Collections) {
+				err = h.postCollection.DeleteByPostId(ctx, post.PostID)
+				if err != nil {
+					return err
+				}
+				var postCollections []model.PostCollection
+				for _, name := range postsAirtableByUuid[uuid].Fields.Collections {
+					ht, err := h.collection.GetByName(ctx, name)
+					if err != nil {
+						return err
+					}
+					postCollections = append(postCollections, model.PostCollection{
+						PostId:       post.PostID,
+						CollectionId: ht.CollectionID,
+					})
+				}
+				_, err = h.postCollection.CreateMany(ctx, postCollections)
 				if err != nil {
 					return err
 				}
@@ -544,6 +580,86 @@ func (h *AirTableSync) syncHashtags(ctx context.Context) error {
 	}
 	if len(updateHashtags) > 0 {
 		_, err = h.hashtag.UpdateMany(ctx, updateHashtags)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (h *AirTableSync) syncCollections(ctx context.Context) error {
+	collections, err := h.airTable.GetCollections(ctx)
+	if err != nil {
+		return err
+	}
+
+	collectionsAirtableByName := make(map[string]airtable.BaseObject[airtable.Collection])
+	for _, post := range collections {
+		collectionsAirtableByName[post.Fields.Name] = post
+	}
+
+	collectionsDb, err := h.collection.GetAll(ctx)
+	if err != nil {
+		return err
+	}
+
+	collectionDbByName := make(map[string]model.Collection)
+	for _, hashtag := range collectionsDb {
+		collectionDbByName[hashtag.Name] = hashtag
+	}
+
+	createCollections := make([]model.Collection, 0)
+	updateCollections := make([]model.Collection, 0)
+	for key := range collectionsAirtableByName {
+		if data, ok := collectionDbByName[key]; ok {
+			var images []airtable.Image
+			if collectionsAirtableByName[key].Fields.Image != nil {
+				images = *collectionsAirtableByName[key].Fields.Image
+			}
+
+			if data.NameRu != collectionsAirtableByName[key].Fields.NameRu ||
+				data.NameKz != collectionsAirtableByName[key].Fields.NameKz ||
+				(data.ImagePath == nil && images != nil && len(images) > 0) ||
+				(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
+				data.NameRu = collectionsAirtableByName[key].Fields.NameRu
+				data.NameKz = collectionsAirtableByName[key].Fields.NameKz
+				if (data.ImagePath == nil && images != nil && len(images) > 0) ||
+					(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
+					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), images[0].FileName, images[0].Url)
+					if err != nil {
+						log.Println(ctx, "some err while create image", "err", err, "hashtag name", data.Name)
+					}
+					data.ImagePath = &file
+				}
+				updateCollections = append(updateCollections, data)
+			}
+			continue
+		}
+		collection := model.Collection{
+			NameKz: collectionsAirtableByName[key].Fields.NameKz,
+			NameRu: collectionsAirtableByName[key].Fields.NameRu,
+			Name:   collectionsAirtableByName[key].Fields.Name,
+		}
+		if collectionsAirtableByName[key].Fields.Image != nil && len(*collectionsAirtableByName[key].Fields.Image) > 0 {
+			images := *collectionsAirtableByName[key].Fields.Image
+			file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), images[0].FileName, images[0].Url)
+			if err != nil {
+				log.Println(ctx, "some err while create image", "err", err, "collection name", collection.Name)
+			}
+			collection.ImagePath = &file
+		}
+		createCollections = append(createCollections, collection)
+	}
+
+	if len(createCollections) > 0 {
+		_, err = h.collection.CreateMany(ctx, createCollections)
+		if err != nil {
+			return err
+		}
+	}
+	if len(updateCollections) > 0 {
+		_, err = h.collection.UpdateMany(ctx, updateCollections)
 		if err != nil {
 			return err
 		}

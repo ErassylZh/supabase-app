@@ -50,8 +50,9 @@ type Post struct {
 	Uuid         string    `gorm:"column:uuid" json:"uuid"`
 	Sapphire     int       `gorm:"column:sapphire" json:"sapphire"`
 
-	Images   []Image   `json:"images"`
-	Hashtags []Hashtag `gorm:"many2many:public.post_hashtag;foreignKey:PostID;joinForeignKey:PostID;References:HashtagID;joinReferences:HashtagID;" json:"hashtags"`
+	Images      []Image      `json:"images"`
+	Hashtags    []Hashtag    `gorm:"many2many:public.post_hashtag;foreignKey:PostID;joinForeignKey:PostID;References:HashtagID;joinReferences:HashtagID;" json:"hashtags"`
+	Collections []Collection `gorm:"many2many:public.post_collection;foreignKey:PostID;joinForeignKey:PostID;References:CollectionID;joinReferences:CollectionID;" json:"collections"`
 }
 
 func (p Post) TableName() string {

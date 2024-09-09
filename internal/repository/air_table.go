@@ -17,6 +17,7 @@ type AirTable interface {
 	GetPosts(ctx context.Context) ([]airtable.BaseObject[airtable.Post], error)
 	GetStories(ctx context.Context) ([]airtable.BaseObject[airtable.Stories], error)
 	GetHashtags(ctx context.Context) ([]airtable.BaseObject[airtable.Hashtag], error)
+	GetCollections(ctx context.Context) ([]airtable.BaseObject[airtable.Collection], error)
 }
 
 type AirTableClient struct {
@@ -148,6 +149,35 @@ func (r *AirTableClient) GetHashtags(ctx context.Context) ([]airtable.BaseObject
 	}
 
 	var response airtable.BaseResponse[airtable.Hashtag]
+	if err := json.Unmarshal(rawResponse, &response); err != nil {
+		return nil, err
+	}
+
+	return response.Records, nil
+}
+
+func (r *AirTableClient) GetCollections(ctx context.Context) ([]airtable.BaseObject[airtable.Collection], error) {
+	requestURL := r.baseURL.JoinPath("/Collections")
+	req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := r.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error while getting Airtable hashtags. Response code: %d", resp.StatusCode)
+	}
+
+	rawResponse, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response airtable.BaseResponse[airtable.Collection]
 	if err := json.Unmarshal(rawResponse, &response); err != nil {
 		return nil, err
 	}

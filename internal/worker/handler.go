@@ -43,6 +43,8 @@ func (h *Handler) Init() {
 		h.repositories.Image,
 		h.repositories.Hashtag,
 		h.repositories.PostHashtag,
+		h.repositories.Collection,
+		h.repositories.PostCollection,
 		h.repositories.Stories,
 		h.repositories.StoryPage,
 	)

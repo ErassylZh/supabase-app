@@ -18,6 +18,7 @@ type Services struct {
 	Stories          Stories
 	Mark             Mark
 	Hashtag          Hashtag
+	Collection       Collection
 	UserPost         UserPost
 }
 
@@ -39,5 +40,6 @@ func NewServices(deps Deps) *Services {
 		Mark:             NewMarkService(deps.Repos.Mark, deps.Repos.Post),
 		Hashtag:          NewHashtagService(deps.Repos.Hashtag),
 		UserPost:         NewUserPostService(deps.Repos.UserPost),
+		Collection:       NewCollectionService(deps.Repos.Collection),
 	}
 }
