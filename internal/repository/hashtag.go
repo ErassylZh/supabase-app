@@ -10,6 +10,8 @@ type Hashtag interface {
 	GetByID(ctx context.Context, id uint) (model.Hashtag, error)
 	GetByName(ctx context.Context, hashtagName string) (model.Hashtag, error)
 	GetAll(ctx context.Context) ([]model.Hashtag, error)
+	CreateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error)
+	UpdateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error)
 }
 
 type HashtagDB struct {
@@ -51,6 +53,28 @@ func (r *HashtagDB) GetAll(ctx context.Context) (hashtags []model.Hashtag, err e
 		Error
 	if err != nil {
 		return hashtags, err
+	}
+	return hashtags, nil
+}
+
+func (r *HashtagDB) CreateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Hashtag{})
+	err := q.Create(&hashtags).
+		Error
+	if err != nil {
+		return hashtags, err
+	}
+	return hashtags, nil
+}
+
+func (r *HashtagDB) UpdateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error) {
+	db := r.db.WithContext(ctx)
+
+	for _, post := range hashtags {
+		if err := db.Model(&model.Hashtag{}).Where("hashtag_id = ?", post.HashtagID).Updates(&post).Error; err != nil {
+			return nil, err
+		}
 	}
 	return hashtags, nil
 }

@@ -48,6 +48,11 @@ func NewAirTableSync(
 
 func (h *AirTableSync) Run() (err error) {
 	ctx := context.Background()
+	if err := h.syncHashtags(ctx); err != nil {
+		log.Println("error while syncing products:", err)
+		return err
+	}
+
 	if err := h.syncProducts(ctx); err != nil {
 		log.Println("error while syncing products:", err)
 		return err
@@ -59,7 +64,7 @@ func (h *AirTableSync) Run() (err error) {
 	}
 
 	if err := h.syncStories(ctx); err != nil {
-		log.Println("error while syncing posts:", err)
+		log.Println("error while syncing stories:", err)
 		return err
 	}
 
@@ -465,4 +470,84 @@ func (h *AirTableSync) compareHashtags(dbHashtags, airtableHashtags []string) bo
 		}
 	}
 	return true
+}
+
+func (h *AirTableSync) syncHashtags(ctx context.Context) error {
+	hashtags, err := h.airTable.GetHashtags(ctx)
+	if err != nil {
+		return err
+	}
+
+	hashtagsAirtableByName := make(map[string]airtable.BaseObject[airtable.Hashtag])
+	for _, post := range hashtags {
+		hashtagsAirtableByName[post.Fields.Name] = post
+	}
+
+	hashtagsDb, err := h.hashtag.GetAll(ctx)
+	if err != nil {
+		return err
+	}
+
+	hashtagsDbByName := make(map[string]model.Hashtag)
+	for _, hashtag := range hashtagsDb {
+		hashtagsDbByName[hashtag.Name] = hashtag
+	}
+
+	createHashtags := make([]model.Hashtag, 0)
+	updateHashtags := make([]model.Hashtag, 0)
+	for key := range hashtagsAirtableByName {
+		if data, ok := hashtagsDbByName[key]; ok {
+			var images []airtable.Image
+			if hashtagsAirtableByName[key].Fields.Image != nil {
+				images = *hashtagsAirtableByName[key].Fields.Image
+			}
+
+			if data.NameRu != hashtagsAirtableByName[key].Fields.NameRu ||
+				data.NameKz != hashtagsAirtableByName[key].Fields.NameKz ||
+				(data.ImagePath == nil && images != nil && len(images) > 0) ||
+				(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
+				data.NameRu = hashtagsAirtableByName[key].Fields.NameRu
+				data.NameKz = hashtagsAirtableByName[key].Fields.NameKz
+				if (data.ImagePath == nil && images != nil && len(images) > 0) ||
+					(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
+					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_HASHTAG), images[0].FileName, images[0].Url)
+					if err != nil {
+						log.Println(ctx, "some err while create image", "err", err, "hashtag name", data.Name)
+					}
+					data.ImagePath = &file
+				}
+				updateHashtags = append(updateHashtags, data)
+			}
+			continue
+		}
+		hashtag := model.Hashtag{
+			NameKz: hashtagsAirtableByName[key].Fields.NameKz,
+			NameRu: hashtagsAirtableByName[key].Fields.NameRu,
+			Name:   hashtagsAirtableByName[key].Fields.Name,
+		}
+		if hashtagsAirtableByName[key].Fields.Image != nil && len(*hashtagsAirtableByName[key].Fields.Image) > 0 {
+			images := *hashtagsAirtableByName[key].Fields.Image
+			file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_HASHTAG), images[0].FileName, images[0].Url)
+			if err != nil {
+				log.Println(ctx, "some err while create image", "err", err, "hashtag name", hashtag.Name)
+			}
+			hashtag.ImagePath = &file
+		}
+		createHashtags = append(createHashtags, hashtag)
+	}
+
+	if len(createHashtags) > 0 {
+		_, err = h.hashtag.CreateMany(ctx, createHashtags)
+		if err != nil {
+			return err
+		}
+	}
+	if len(updateHashtags) > 0 {
+		_, err = h.hashtag.UpdateMany(ctx, updateHashtags)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -61,3 +61,10 @@ type Stories struct {
 	Image     []Image   `json:"image"`
 	Uuid      string    `json:"uuid"`
 }
+
+type Hashtag struct {
+	Name   string   `json:"name"`
+	NameRu string   `json:"name_ru"`
+	NameKz string   `json:"name_kz"`
+	Image  *[]Image `json:"image"`
+}
