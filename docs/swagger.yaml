@@ -633,7 +633,12 @@ paths:
         in: query
         name: hashtag_id
         required: true
-        type: integer
+        type: string
+      - description: collection_id
+        in: query
+        name: collection_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:

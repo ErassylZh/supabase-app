@@ -297,9 +297,16 @@ const docTemplate = `{
                 "summary": "список постов",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "hashtag_id",
                         "name": "hashtag_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "collection_id",
+                        "name": "collection_id",
                         "in": "query",
                         "required": true
                     }

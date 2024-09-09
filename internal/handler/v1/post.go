@@ -44,7 +44,8 @@ func (h *Handler) initPost(v1 *gin.RouterGroup) {
 // @Success 200 {object} schema.Response[[]schema.PostResponse]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @Param hashtag_id query int true "hashtag_id"
+// @Param hashtag_id query string true "hashtag_id"
+// @Param collection_id query string true "collection_id"
 // @tags post
 // @Router /api/v1/post [get]
 func (h *Handler) GetListingPosts(c *gin.Context) error {
@@ -57,6 +58,12 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 		id, _ := strconv.ParseUint(msi, 10, 64)
 		hashtagIds = append(hashtagIds, uint(id))
 	}
+	collectionIDsStr := c.Query("hashtag_id")
+	collectionIds := make([]uint, 0)
+	for _, msi := range strings.Split(collectionIDsStr, ",") {
+		id, _ := strconv.ParseUint(msi, 10, 64)
+		collectionIds = append(collectionIds, uint(id))
+	}
 
 	if token != "" {
 		userIdStr, err := h.services.Auth.VerifyToken(token)
@@ -66,7 +73,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds)
+	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds)
 	if err != nil {
 		return err
 	}
@@ -215,7 +222,7 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds)
+	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, nil)
 	if err != nil {
 		return err
 	}

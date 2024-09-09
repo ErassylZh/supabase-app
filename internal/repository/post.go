@@ -10,7 +10,7 @@ type Post interface {
 	CreateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
 	GetAll(ctx context.Context) ([]model.Post, error)
 	UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
-	GetAllForListing(ctx context.Context, hashtagIds []uint) ([]model.Post, error)
+	GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint) ([]model.Post, error)
 	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 }
 
@@ -56,12 +56,14 @@ func (r *PostDb) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Po
 	}
 	return posts, nil
 }
-func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint) (posts []model.Post, err error) {
+func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 
 	query := db.Model(&model.Post{}).
 		Joins("JOIN public.post_hashtag ON public.post_hashtag.post_id = public.post.post_id").
 		Joins("JOIN public.hashtag ON public.hashtag.hashtag_id = public.post_hashtag.hashtag_id").
+		Joins("JOIN public.post_collection ON public.post_collection.post_id = public.post.post_id").
+		Joins("JOIN public.collection ON public.collection.collection_id = public.collection.collection_id").
 		Where("public.post.status = ?", model.PRODUCT_STATUS_PUBLISH).
 		Preload("Images").
 		Preload("Hashtags").
@@ -70,7 +72,10 @@ func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint) (posts
 
 	// If hashtagIds are provided, apply the filter
 	if len(hashtagIds) > 0 {
-		query = query.Where("public.hashtag.hashtag_id IN ?", hashtagIds)
+		query = query.Where("public.hashtag.hashtag_id IN (?)", hashtagIds)
+	}
+	if len(collectionIds) > 0 {
+		query = query.Where("public.collection.collection_id IN (?)", collectionIds)
 	}
 
 	err = query.Find(&posts).Error
