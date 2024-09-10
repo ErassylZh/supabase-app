@@ -21,7 +21,7 @@ func (h *Handler) initCollection(v1 *gin.RouterGroup) {
 // @Success 200 {object} schema.Response[[]model.Collection]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @tags collection
-// @Router /api/v1/balance/collection [get]
+// @Router /api/v1/collection [get]
 func (h *Handler) GetAllCollections(c *gin.Context) error {
 	ctx := c.Request.Context()
 	collections, err := h.services.Collection.GetAll(ctx)

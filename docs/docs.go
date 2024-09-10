@@ -48,34 +48,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/balance/collection": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "collection"
-                ],
-                "summary": "получить все коллекций",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response-array_model_Collection"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response-schema_Empty"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/balance/history": {
             "get": {
                 "security": [
@@ -98,6 +70,34 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-array_model_Transaction"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/collection": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection"
+                ],
+                "summary": "получить все коллекций",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_Collection"
                         }
                     },
                     "400": {
@@ -929,6 +929,12 @@ const docTemplate = `{
                 },
                 "name_ru": {
                     "type": "string"
+                },
+                "posts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Post"
+                    }
                 }
             }
         },

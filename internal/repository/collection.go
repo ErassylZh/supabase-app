@@ -49,7 +49,8 @@ func (r *CollectionDB) GetByName(ctx context.Context, collectionName string) (co
 func (r *CollectionDB) GetAll(ctx context.Context) (collections []model.Collection, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Collection{})
-	err = q.Find(&collections).
+	err = q.Preload("Posts").
+		Find(&collections).
 		Error
 	if err != nil {
 		return collections, err

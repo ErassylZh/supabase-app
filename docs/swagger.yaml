@@ -23,6 +23,10 @@ definitions:
         type: string
       name_ru:
         type: string
+      posts:
+        items:
+          $ref: '#/definitions/model.Post'
+        type: array
     type: object
   model.Hashtag:
     properties:
@@ -506,24 +510,6 @@ paths:
       summary: получить баланс
       tags:
       - balance
-  /api/v1/balance/collection:
-    get:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schema.Response-array_model_Collection'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: получить все коллекций
-      tags:
-      - collection
   /api/v1/balance/history:
     get:
       consumes:
@@ -544,6 +530,24 @@ paths:
       summary: получить историю транзакций
       tags:
       - balance
+  /api/v1/collection:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: получить все коллекций
+      tags:
+      - collection
   /api/v1/hashtag:
     get:
       consumes:
