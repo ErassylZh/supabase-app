@@ -152,6 +152,8 @@ definitions:
         type: string
       end_time:
         type: string
+      icon_path:
+        type: string
       start_time:
         type: string
       stories_id:

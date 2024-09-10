@@ -1127,6 +1127,9 @@ const docTemplate = `{
                 "end_time": {
                     "type": "string"
                 },
+                "icon_path": {
+                    "type": "string"
+                },
                 "start_time": {
                     "type": "string"
                 },
