@@ -11,6 +11,7 @@ type Stories struct {
 	StartTime time.Time `gorm:"column:start_time" json:"start_time"`
 	EndTime   time.Time `gorm:"column:end_time" json:"end_time"`
 	Title     string    `gorm:"column:title" json:"title"`
+	IconPath  string    `gorm:"column:icon_path" json:"icon_path"`
 
 	StoryPages []StoryPage `json:"story_pages"`
 }

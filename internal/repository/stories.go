@@ -12,6 +12,7 @@ type Stories interface {
 	CreateMany(ctx context.Context, story []model.Stories) ([]model.Stories, error)
 	GetAllActive(ctx context.Context) ([]model.Stories, error)
 	GetAllActiveByUser(ctx context.Context, userId string) ([]model.Stories, error)
+	UpdateMany(ctx context.Context, posts []model.Stories) ([]model.Stories, error)
 }
 
 type StoriesDB struct {
@@ -78,4 +79,15 @@ func (r *StoriesDB) GetAllActiveByUser(ctx context.Context, userId string) (stor
 		return stories, err
 	}
 	return stories, nil
+}
+
+func (r *StoriesDB) UpdateMany(ctx context.Context, posts []model.Stories) ([]model.Stories, error) {
+	db := r.db.WithContext(ctx)
+
+	for _, post := range posts {
+		if err := db.Model(&model.Stories{}).Where("stories_id = ?", post.StoriesId).Updates(&post).Error; err != nil {
+			return nil, err
+		}
+	}
+	return posts, nil
 }

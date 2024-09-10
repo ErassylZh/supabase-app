@@ -61,6 +61,7 @@ type Stories struct {
 	Order     int       `json:"order"`
 	Image     []Image   `json:"image"`
 	Uuid      string    `json:"uuid"`
+	IconPath  string    `json:"icon_path"`
 }
 
 type Hashtag struct {

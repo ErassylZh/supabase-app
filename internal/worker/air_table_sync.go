@@ -413,6 +413,7 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 	}
 
 	createStories := make([]model.Stories, 0)
+	updateStories := make([]model.Stories, 0)
 	updateStoryPages := make([]model.StoryPage, 0)
 	for key := range storiesAirtableByTitle {
 		if _, ok := storiesDbByTitle[key]; ok {
@@ -431,6 +432,11 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 					})
 				}
 			}
+			if storiesDbByTitle[key].IconPath != storiesAirtableByTitle[key][0].Fields.IconPath ||
+				storiesDbByTitle[key].StartTime != storiesAirtableByTitle[key][0].Fields.StartTime ||
+				storiesDbByTitle[key].EndTime != storiesAirtableByTitle[key][0].Fields.EndTime {
+				updateStories = append(updateStories, storiesDbByTitle[key])
+			}
 			continue
 		}
 		createStories = append(createStories, model.Stories{
@@ -438,6 +444,7 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 			StartTime: storiesAirtableByTitle[key][0].Fields.StartTime,
 			EndTime:   storiesAirtableByTitle[key][0].Fields.EndTime,
 			Title:     storiesAirtableByTitle[key][0].Fields.Title,
+			IconPath:  storiesAirtableByTitle[key][0].Fields.IconPath,
 		})
 	}
 
@@ -483,6 +490,12 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 		_, err = h.storyPage.UpdateMany(ctx, updateStoryPages)
 		if err != nil {
 			log.Println(ctx, "error while updating existing posts from airtable:", err)
+			return err
+		}
+	}
+	if len(updateStories) > 0 {
+		_, err = h.stories.UpdateMany(ctx, updateStories)
+		if err != nil {
 			return err
 		}
 	}
