@@ -72,8 +72,8 @@ type Hashtag struct {
 }
 
 type Collection struct {
-	Name   string   `json:"name"`
-	NameRu string   `json:"name_ru"`
-	NameKz string   `json:"name_kz"`
-	Image  *[]Image `json:"image"`
+	Name    string   `json:"name"`
+	Image   *[]Image `json:"image"`
+	ImageRu *[]Image `json:"image_ru"`
+	ImageKz *[]Image `json:"image_kz"`
 }

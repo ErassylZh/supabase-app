@@ -630,33 +630,70 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 			if collectionsAirtableByName[key].Fields.Image != nil {
 				images = *collectionsAirtableByName[key].Fields.Image
 			}
+			var imagesRu []airtable.Image
+			if collectionsAirtableByName[key].Fields.ImageRu != nil {
+				images = *collectionsAirtableByName[key].Fields.ImageRu
+			}
+			var imagesKz []airtable.Image
+			if collectionsAirtableByName[key].Fields.ImageKz != nil {
+				images = *collectionsAirtableByName[key].Fields.ImageKz
+			}
+			isUpdate := false
 
-			if data.NameRu != collectionsAirtableByName[key].Fields.NameRu ||
-				data.NameKz != collectionsAirtableByName[key].Fields.NameKz ||
-				(data.ImagePath == nil && images != nil && len(images) > 0) ||
+			if (data.ImagePath == nil && images != nil && len(images) > 0) ||
 				(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
-				data.NameRu = collectionsAirtableByName[key].Fields.NameRu
-				data.NameKz = collectionsAirtableByName[key].Fields.NameKz
-				if (data.ImagePath == nil && images != nil && len(images) > 0) ||
-					(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
-					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), images[0].FileName, images[0].Url)
-					if err != nil {
-						log.Println(ctx, "some err while create image", "err", err, "hashtag name", data.Name)
-					}
-					data.ImagePath = &file
+				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), images[0].FileName, images[0].Url)
+				if err != nil {
+					log.Println(ctx, "some err while create image", "err", err, "hashtag name", data.Name)
 				}
+				data.ImagePath = &file
+				isUpdate = true
+			}
+			if (data.ImagePathKz == nil && imagesKz != nil && len(imagesKz) > 0) ||
+				(data.ImagePathKz != nil && imagesKz != nil && len(imagesKz) > 0 && strings.Contains(*data.ImagePathKz, imagesKz[0].FileName)) {
+				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), "_kz_"+imagesKz[0].FileName, imagesKz[0].Url)
+				if err != nil {
+					log.Println(ctx, "some err while create image", "err", err, "hashtag name", data.Name)
+				}
+				data.ImagePathKz = &file
+				isUpdate = true
+			}
+			if (data.ImagePathRu == nil && imagesRu != nil && len(imagesRu) > 0) ||
+				(data.ImagePathRu != nil && imagesRu != nil && len(imagesRu) > 0 && strings.Contains(*data.ImagePathRu, imagesRu[0].FileName)) {
+				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), "_ru_"+imagesRu[0].FileName, imagesRu[0].Url)
+				if err != nil {
+					log.Println(ctx, "some err while create image", "err", err, "hashtag name", data.Name)
+				}
+				data.ImagePathRu = &file
+				isUpdate = true
+			}
+			if isUpdate {
 				updateCollections = append(updateCollections, data)
 			}
 			continue
 		}
 		collection := model.Collection{
-			NameKz: collectionsAirtableByName[key].Fields.NameKz,
-			NameRu: collectionsAirtableByName[key].Fields.NameRu,
-			Name:   collectionsAirtableByName[key].Fields.Name,
+			Name: collectionsAirtableByName[key].Fields.Name,
 		}
 		if collectionsAirtableByName[key].Fields.Image != nil && len(*collectionsAirtableByName[key].Fields.Image) > 0 {
 			images := *collectionsAirtableByName[key].Fields.Image
 			file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), images[0].FileName, images[0].Url)
+			if err != nil {
+				log.Println(ctx, "some err while create image", "err", err, "collection name", collection.Name)
+			}
+			collection.ImagePath = &file
+		}
+		if collectionsAirtableByName[key].Fields.ImageRu != nil && len(*collectionsAirtableByName[key].Fields.ImageRu) > 0 {
+			images := *collectionsAirtableByName[key].Fields.ImageRu
+			file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), "_ru_"+images[0].FileName, images[0].Url)
+			if err != nil {
+				log.Println(ctx, "some err while create image", "err", err, "collection name", collection.Name)
+			}
+			collection.ImagePath = &file
+		}
+		if collectionsAirtableByName[key].Fields.ImageKz != nil && len(*collectionsAirtableByName[key].Fields.ImageKz) > 0 {
+			images := *collectionsAirtableByName[key].Fields.ImageKz
+			file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), "_kz_"+images[0].FileName, images[0].Url)
 			if err != nil {
 				log.Println(ctx, "some err while create image", "err", err, "collection name", collection.Name)
 			}
