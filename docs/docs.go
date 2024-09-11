@@ -535,6 +535,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/recommendation": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection"
+                ],
+                "summary": "получить все рекомендаций",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_Collection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/referral": {
             "get": {
                 "security": [
@@ -921,13 +949,16 @@ const docTemplate = `{
                 "image_path": {
                     "type": "string"
                 },
+                "image_path_kz": {
+                    "type": "string"
+                },
+                "image_path_ru": {
+                    "type": "string"
+                },
+                "is_recommendation": {
+                    "type": "boolean"
+                },
                 "name": {
-                    "type": "string"
-                },
-                "name_kz": {
-                    "type": "string"
-                },
-                "name_ru": {
                     "type": "string"
                 },
                 "posts": {
@@ -1646,7 +1677,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "157.90.227.125:8000",
+	Host:             "localhost:8000",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "swagger API",

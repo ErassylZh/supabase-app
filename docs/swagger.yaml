@@ -17,11 +17,13 @@ definitions:
         type: integer
       image_path:
         type: string
+      image_path_kz:
+        type: string
+      image_path_ru:
+        type: string
+      is_recommendation:
+        type: boolean
       name:
-        type: string
-      name_kz:
-        type: string
-      name_ru:
         type: string
       posts:
         items:
@@ -485,7 +487,7 @@ definitions:
       token:
         type: string
     type: object
-host: 157.90.227.125:8000
+host: localhost:8000
 info:
   contact: {}
   description: Это пример сервера с использованием Swagger в Gin.
@@ -814,6 +816,24 @@ paths:
       summary: сохраниь что квиз прочитан
       tags:
       - post
+  /api/v1/recommendation:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: получить все рекомендаций
+      tags:
+      - collection
   /api/v1/referral:
     get:
       consumes:

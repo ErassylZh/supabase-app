@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "157.90.227.125:8000",
+    "host": "localhost:8000",
     "basePath": "/",
     "paths": {
         "/api/v1/balance": {
@@ -529,6 +529,34 @@
                 }
             }
         },
+        "/api/v1/recommendation": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection"
+                ],
+                "summary": "получить все рекомендаций",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_Collection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/referral": {
             "get": {
                 "security": [
@@ -915,13 +943,16 @@
                 "image_path": {
                     "type": "string"
                 },
+                "image_path_kz": {
+                    "type": "string"
+                },
+                "image_path_ru": {
+                    "type": "string"
+                },
+                "is_recommendation": {
+                    "type": "boolean"
+                },
                 "name": {
-                    "type": "string"
-                },
-                "name_kz": {
-                    "type": "string"
-                },
-                "name_ru": {
                     "type": "string"
                 },
                 "posts": {

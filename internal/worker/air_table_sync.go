@@ -263,13 +263,13 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 					return err
 				}
 			}
-			if !h.compareHashtags(existsCollections, postsAirtableByUuid[uuid].Fields.Collections) {
+			if !h.compareHashtags(existsCollections, postsAirtableByUuid[uuid].Fields.CollectionName) {
 				err = h.postCollection.DeleteByPostId(ctx, post.PostID)
 				if err != nil {
 					return err
 				}
 				var postCollections []model.PostCollection
-				for _, name := range postsAirtableByUuid[uuid].Fields.Collections {
+				for _, name := range postsAirtableByUuid[uuid].Fields.CollectionName {
 					ht, err := h.collection.GetByName(ctx, name)
 					if err != nil {
 						return err
@@ -673,7 +673,8 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 			continue
 		}
 		collection := model.Collection{
-			Name: collectionsAirtableByName[key].Fields.Name,
+			Name:             collectionsAirtableByName[key].Fields.Name,
+			IsRecommendation: collectionsAirtableByName[key].Fields.IsRecommendation,
 		}
 		if collectionsAirtableByName[key].Fields.Image != nil && len(*collectionsAirtableByName[key].Fields.Image) > 0 {
 			images := *collectionsAirtableByName[key].Fields.Image
