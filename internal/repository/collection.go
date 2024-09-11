@@ -9,6 +9,7 @@ import (
 type Collection interface {
 	GetByID(ctx context.Context, id uint) (model.Collection, error)
 	GetByName(ctx context.Context, collectionName string) (model.Collection, error)
+	GetAll(ctx context.Context) ([]model.Collection, error)
 	GetAllCollection(ctx context.Context) ([]model.Collection, error)
 	GetAllRecommendation(ctx context.Context) ([]model.Collection, error)
 	CreateMany(ctx context.Context, collections []model.Collection) ([]model.Collection, error)
@@ -45,6 +46,17 @@ func (r *CollectionDB) GetByName(ctx context.Context, collectionName string) (co
 		return collection, err
 	}
 	return collection, nil
+}
+func (r *CollectionDB) GetAll(ctx context.Context) (collections []model.Collection, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Collection{})
+	err = q.Preload("Posts").
+		Find(&collections).
+		Error
+	if err != nil {
+		return collections, err
+	}
+	return collections, nil
 }
 
 func (r *CollectionDB) GetAllCollection(ctx context.Context) (collections []model.Collection, err error) {

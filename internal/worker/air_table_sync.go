@@ -667,6 +667,11 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 				data.ImagePathRu = &file
 				isUpdate = true
 			}
+			if data.IsRecommendation != collectionsAirtableByName[key].Fields.IsRecommendation {
+				data.IsRecommendation = collectionsAirtableByName[key].Fields.IsRecommendation
+				isUpdate = true
+			}
+
 			if isUpdate {
 				updateCollections = append(updateCollections, data)
 			}
