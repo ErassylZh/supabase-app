@@ -4,6 +4,7 @@ import "time"
 
 type BaseResponse[T any] struct {
 	Records []BaseObject[T] `json:"records"`
+	Offset  *string         `json:"offset"`
 }
 
 type BaseObject[T any] struct {

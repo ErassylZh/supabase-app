@@ -247,8 +247,9 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				if err != nil {
 					return err
 				}
+				names := postsAirtableByUuid[uuid].Fields.HashtagName
 				var postHashtags []model.PostHashtag
-				for _, name := range postsAirtableByUuid[uuid].Fields.HashtagName {
+				for _, name := range names {
 					ht, err := h.hashtag.GetByName(ctx, name)
 					if err != nil {
 						return err
@@ -268,8 +269,9 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				if err != nil {
 					return err
 				}
+				names := postsAirtableByUuid[uuid].Fields.CollectionName
 				var postCollections []model.PostCollection
-				for _, name := range postsAirtableByUuid[uuid].Fields.CollectionName {
+				for _, name := range names {
 					ht, err := h.collection.GetByName(ctx, name)
 					if err != nil {
 						return err

@@ -7,8 +7,8 @@ import (
 type HashtagName string
 
 const (
-	HASHTAG_NAME_BESTSELLER HashtagName = "bestseller"
-	HASHTAG_NAME_PARTNER    HashtagName = "partner"
+	HASHTAG_NAME_BESTSELLER HashtagName = "BESTSELLER"
+	HASHTAG_NAME_PARTNER    HashtagName = "PARTNERS"
 )
 
 type Hashtag struct {
