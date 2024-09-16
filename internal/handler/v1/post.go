@@ -229,12 +229,18 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 	hashtagIDsStr := c.Query("hashtag_id")
 	hashtagIds := make([]uint, 0)
 	for _, msi := range strings.Split(hashtagIDsStr, ",") {
+		if msi == "" {
+			continue
+		}
 		id, _ := strconv.ParseUint(msi, 10, 64)
 		hashtagIds = append(hashtagIds, uint(id))
 	}
 	collectionIDsStr := c.Query("collection_id")
 	collectionIds := make([]uint, 0)
 	for _, msi := range strings.Split(collectionIDsStr, ",") {
+		if msi == "" {
+			continue
+		}
 		id, _ := strconv.ParseUint(msi, 10, 64)
 		collectionIds = append(collectionIds, uint(id))
 	}
