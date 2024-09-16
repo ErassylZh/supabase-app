@@ -304,10 +304,6 @@ definitions:
         items:
           $ref: '#/definitions/schema.PostResponse'
         type: array
-      other:
-        items:
-          $ref: '#/definitions/schema.PostResponse'
-        type: array
       partners:
         items:
           $ref: '#/definitions/schema.PostResponse'

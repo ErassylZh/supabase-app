@@ -1387,12 +1387,6 @@ const docTemplate = `{
                         "$ref": "#/definitions/schema.PostResponse"
                     }
                 },
-                "other": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/schema.PostResponse"
-                    }
-                },
                 "partners": {
                     "type": "array",
                     "items": {
