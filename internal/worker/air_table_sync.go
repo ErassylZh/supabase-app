@@ -432,20 +432,28 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 					})
 				}
 			}
-			if storiesDbByTitle[key].IconPath != storiesAirtableByTitle[key][0].Fields.IconPath ||
-				storiesDbByTitle[key].StartTime != storiesAirtableByTitle[key][0].Fields.StartTime ||
-				storiesDbByTitle[key].EndTime != storiesAirtableByTitle[key][0].Fields.EndTime {
+			if storiesDbByTitle[key].StartTime != storiesAirtableByTitle[key][0].Fields.StartTime ||
+				storiesDbByTitle[key].EndTime != storiesAirtableByTitle[key][0].Fields.EndTime ||
+				(storiesAirtableByTitle[key][0].Fields.Image != nil && !strings.Contains(storiesDbByTitle[key].IconPath, storiesAirtableByTitle[key][0].Fields.Image[0].FileName)) {
 				updateStories = append(updateStories, storiesDbByTitle[key])
 			}
 			continue
 		}
-		createStories = append(createStories, model.Stories{
+		story := model.Stories{
 			CreatedAt: time.Now(),
 			StartTime: storiesAirtableByTitle[key][0].Fields.StartTime,
 			EndTime:   storiesAirtableByTitle[key][0].Fields.EndTime,
 			Title:     storiesAirtableByTitle[key][0].Fields.Title,
-			IconPath:  storiesAirtableByTitle[key][0].Fields.IconPath,
-		})
+		}
+		if storiesAirtableByTitle[key][0].Fields.Icon != nil {
+			images := *storiesAirtableByTitle[key][0].Fields.Icon
+			file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), images[0].FileName, images[0].Url)
+			if err != nil {
+				log.Println(ctx, "some err while create image", "err", err, "story name", story.Title)
+			}
+			story.IconPath = file
+		}
+		createStories = append(createStories, story)
 	}
 
 	createStoryPages := make([]model.StoryPage, 0)

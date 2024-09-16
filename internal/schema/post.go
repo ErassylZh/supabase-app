@@ -12,5 +12,5 @@ type PostResponse struct {
 type PostResponseByGroup struct {
 	Bestsellers []PostResponse `json:"bestsellers"`
 	Partners    []PostResponse `json:"partners"`
-	Other       []PostResponse `json:"other"`
+	Other       []PostResponse `json:"-"`
 }
