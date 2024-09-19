@@ -642,11 +642,11 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 			}
 			var imagesRu []airtable.Image
 			if collectionsAirtableByName[key].Fields.ImageRu != nil {
-				images = *collectionsAirtableByName[key].Fields.ImageRu
+				imagesRu = *collectionsAirtableByName[key].Fields.ImageRu
 			}
 			var imagesKz []airtable.Image
 			if collectionsAirtableByName[key].Fields.ImageKz != nil {
-				images = *collectionsAirtableByName[key].Fields.ImageKz
+				imagesKz = *collectionsAirtableByName[key].Fields.ImageKz
 			}
 			isUpdate := false
 
