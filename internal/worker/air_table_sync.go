@@ -219,7 +219,7 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			}
 			if post.Company != postsAirtableByUuid[uuid].Fields.Company ||
 				post.Language != postsAirtableByUuid[uuid].Fields.Language ||
-				post.Title != postsAirtableByUuid[uuid].Fields.Title ||
+				strings.EqualFold(post.Title, postsAirtableByUuid[uuid].Fields.Title) ||
 				post.Description != postsAirtableByUuid[uuid].Fields.Description ||
 				post.Status != postsAirtableByUuid[uuid].Fields.Status ||
 				post.Body != postsAirtableByUuid[uuid].Fields.Body ||
@@ -589,11 +589,10 @@ func (h *AirTableSync) syncHashtags(ctx context.Context) error {
 			if hashtagsAirtableByName[key].Fields.Image != nil {
 				images = *hashtagsAirtableByName[key].Fields.Image
 			}
-
-			if data.NameRu != hashtagsAirtableByName[key].Fields.NameRu ||
-				data.NameKz != hashtagsAirtableByName[key].Fields.NameKz ||
+			if !strings.EqualFold(data.NameRu, hashtagsAirtableByName[key].Fields.NameRu) ||
+				!strings.EqualFold(data.NameKz, hashtagsAirtableByName[key].Fields.NameKz) ||
 				(data.ImagePath == nil && images != nil && len(images) > 0) ||
-				(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
+				!(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
 				data.NameRu = hashtagsAirtableByName[key].Fields.NameRu
 				data.NameKz = hashtagsAirtableByName[key].Fields.NameKz
 				if (data.ImagePath == nil && images != nil && len(images) > 0) ||
@@ -697,7 +696,7 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 			isUpdate := false
 
 			if (data.ImagePath == nil && images != nil && len(images) > 0) ||
-				(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
+				(data.ImagePath != nil && images != nil && len(images) > 0 && !strings.Contains(*data.ImagePath, images[0].FileName)) {
 				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), images[0].FileName, images[0].Url)
 				if err != nil {
 					log.Println(ctx, "some err while create image", "err", err, "hashtag name", data.Name)
@@ -706,7 +705,7 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 				isUpdate = true
 			}
 			if (data.ImagePathKz == nil && imagesKz != nil && len(imagesKz) > 0) ||
-				(data.ImagePathKz != nil && imagesKz != nil && len(imagesKz) > 0 && strings.Contains(*data.ImagePathKz, imagesKz[0].FileName)) {
+				(data.ImagePathKz != nil && imagesKz != nil && len(imagesKz) > 0 && !strings.Contains(*data.ImagePathKz, imagesKz[0].FileName)) {
 				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), "_kz_"+imagesKz[0].FileName, imagesKz[0].Url)
 				if err != nil {
 					log.Println(ctx, "some err while create image", "err", err, "hashtag name", data.Name)
@@ -715,7 +714,7 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 				isUpdate = true
 			}
 			if (data.ImagePathRu == nil && imagesRu != nil && len(imagesRu) > 0) ||
-				(data.ImagePathRu != nil && imagesRu != nil && len(imagesRu) > 0 && strings.Contains(*data.ImagePathRu, imagesRu[0].FileName)) {
+				(data.ImagePathRu != nil && imagesRu != nil && len(imagesRu) > 0 && !strings.Contains(*data.ImagePathRu, imagesRu[0].FileName)) {
 				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_COLLECTION), "_ru_"+imagesRu[0].FileName, imagesRu[0].Url)
 				if err != nil {
 					log.Println(ctx, "some err while create image", "err", err, "hashtag name", data.Name)
@@ -723,6 +722,7 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 				data.ImagePathRu = &file
 				isUpdate = true
 			}
+
 			if data.IsRecommendation != collectionsAirtableByName[key].Fields.IsRecommendation {
 				data.IsRecommendation = collectionsAirtableByName[key].Fields.IsRecommendation
 				isUpdate = true

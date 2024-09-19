@@ -13,7 +13,7 @@ type Stories struct {
 	Title     string    `gorm:"column:title" json:"title"`
 	IconPath  string    `gorm:"column:icon_path" json:"icon_path"`
 
-	StoryPages []StoryPage `json:"story_pages"`
+	StoryPages []StoryPage `gorm:"constraint:OnDelete:CASCADE;" json:"story_pages"`
 }
 
 func (u *Stories) TableName() string {

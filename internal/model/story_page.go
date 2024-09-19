@@ -14,6 +14,8 @@ type StoryPage struct {
 	PageOrder   int       `gorm:"column:page_order" json:"page_order"`
 	Uuid        string    `gorm:"column:uuid" json:"uuid"`
 	IsReaded    bool      `gorm:"-" json:"is_readed"`
+
+	StoryPageUser []StoryPageUser `gorm:"constraint:OnDelete:CASCADE;" json:"-"`
 }
 
 func (u *StoryPage) TableName() string {
