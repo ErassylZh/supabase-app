@@ -13,6 +13,7 @@ type Stories interface {
 	GetAllActive(ctx context.Context) ([]model.Stories, error)
 	GetAllActiveByUser(ctx context.Context, userId string) ([]model.Stories, error)
 	UpdateMany(ctx context.Context, posts []model.Stories) ([]model.Stories, error)
+	DeleteManyByTitle(ctx context.Context, titles []string) error
 }
 
 type StoriesDB struct {
@@ -90,4 +91,17 @@ func (r *StoriesDB) UpdateMany(ctx context.Context, posts []model.Stories) ([]mo
 		}
 	}
 	return posts, nil
+}
+
+func (r *StoriesDB) DeleteManyByTitle(ctx context.Context, titles []string) error {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Stories{}).
+		Where("title in (?)", titles).
+		Delete(&model.Stories{}).
+		Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

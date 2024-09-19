@@ -14,6 +14,7 @@ type Collection interface {
 	GetAllRecommendation(ctx context.Context) ([]model.Collection, error)
 	CreateMany(ctx context.Context, collections []model.Collection) ([]model.Collection, error)
 	UpdateMany(ctx context.Context, collections []model.Collection) ([]model.Collection, error)
+	DeleteMany(ctx context.Context, collections []uint) error
 }
 
 type CollectionDB struct {
@@ -64,6 +65,9 @@ func (r *CollectionDB) GetAllCollection(ctx context.Context) (collections []mode
 	q := db.Model(&model.Collection{})
 	err = q.Where("not is_recommendation").
 		Preload("Posts").
+		Preload("Posts.Images").
+		Preload("Posts.Hashtags").
+		Preload("Posts.Collections").
 		Find(&collections).
 		Error
 	if err != nil {
@@ -77,6 +81,9 @@ func (r *CollectionDB) GetAllRecommendation(ctx context.Context) (collections []
 	q := db.Model(&model.Collection{})
 	err = q.Where("is_recommendation").
 		Preload("Posts").
+		Preload("Posts.Images").
+		Preload("Posts.Hashtags").
+		Preload("Posts.Collections").
 		Find(&collections).
 		Error
 	if err != nil {
@@ -105,4 +112,16 @@ func (r *CollectionDB) UpdateMany(ctx context.Context, collections []model.Colle
 		}
 	}
 	return collections, nil
+}
+
+func (r *CollectionDB) DeleteMany(ctx context.Context, collectionIds []uint) error {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Collection{})
+	err := q.Where("collection_id in (?)", collectionIds).
+		Delete(&model.Collection{}).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

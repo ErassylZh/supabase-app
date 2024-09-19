@@ -12,6 +12,7 @@ type Hashtag interface {
 	GetAll(ctx context.Context) ([]model.Hashtag, error)
 	CreateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error)
 	UpdateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error)
+	DeleteMany(ctx context.Context, hashtagIds []uint) error
 }
 
 type HashtagDB struct {
@@ -77,4 +78,16 @@ func (r *HashtagDB) UpdateMany(ctx context.Context, hashtags []model.Hashtag) ([
 		}
 	}
 	return hashtags, nil
+}
+
+func (r *HashtagDB) DeleteMany(ctx context.Context, hashtagIds []uint) error {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Hashtag{})
+	err := q.Where("hashtag_id in (?)", hashtagIds).
+		Delete(&model.Hashtag{}).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

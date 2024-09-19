@@ -259,9 +259,11 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 						HashtagId: ht.HashtagID,
 					})
 				}
-				_, err = h.postHashtag.CreateMany(ctx, postHashtags)
-				if err != nil {
-					return err
+				if len(postHashtags) > 0 {
+					_, err = h.postHashtag.CreateMany(ctx, postHashtags)
+					if err != nil {
+						return err
+					}
 				}
 			}
 			if !h.compareHashtags(existsCollections, postsAirtableByUuid[uuid].Fields.CollectionName) {
@@ -281,9 +283,11 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 						CollectionId: ht.CollectionID,
 					})
 				}
-				_, err = h.postCollection.CreateMany(ctx, postCollections)
-				if err != nil {
-					return err
+				if len(postCollections) > 0 {
+					_, err = h.postCollection.CreateMany(ctx, postCollections)
+					if err != nil {
+						return err
+					}
 				}
 			}
 			continue
@@ -373,6 +377,17 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 		_, err = h.post.UpdateMany(ctx, updatePosts)
 		if err != nil {
 			log.Println(ctx, "error while updating existing posts from airtable:", err)
+			return err
+		}
+	}
+
+	if len(postsAirtableByUuid) > 0 {
+		uuids := make([]string, 0)
+		for key := range postsAirtableByUuid {
+			uuids = append(uuids, key)
+		}
+		err = h.post.DeleteAllNotInUuid(ctx, uuids)
+		if err != nil {
 			return err
 		}
 	}
@@ -510,6 +525,19 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 		}
 	}
 
+	deleteStoryTitles := make([]string, 0)
+	for key := range storiesDbByTitle {
+		if _, exists := storiesAirtableByTitle[key]; !exists {
+			deleteStoryTitles = append(deleteStoryTitles, key)
+		}
+	}
+	if len(deleteStoryTitles) > 0 {
+		err = h.stories.DeleteManyByTitle(ctx, deleteStoryTitles)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -554,6 +582,7 @@ func (h *AirTableSync) syncHashtags(ctx context.Context) error {
 
 	createHashtags := make([]model.Hashtag, 0)
 	updateHashtags := make([]model.Hashtag, 0)
+	deleteHashtags := make([]model.Hashtag, 0)
 	for key := range hashtagsAirtableByName {
 		if data, ok := hashtagsDbByName[key]; ok {
 			var images []airtable.Image
@@ -594,6 +623,12 @@ func (h *AirTableSync) syncHashtags(ctx context.Context) error {
 		}
 		createHashtags = append(createHashtags, hashtag)
 	}
+	for key := range hashtagsDbByName {
+		if _, ok := hashtagsAirtableByName[key]; ok {
+			continue
+		}
+		deleteHashtags = append(deleteHashtags, hashtagsDbByName[key])
+	}
 
 	if len(createHashtags) > 0 {
 		_, err = h.hashtag.CreateMany(ctx, createHashtags)
@@ -603,6 +638,16 @@ func (h *AirTableSync) syncHashtags(ctx context.Context) error {
 	}
 	if len(updateHashtags) > 0 {
 		_, err = h.hashtag.UpdateMany(ctx, updateHashtags)
+		if err != nil {
+			return err
+		}
+	}
+	if len(deleteHashtags) > 0 {
+		deleteHashtagIds := make([]uint, len(deleteHashtags))
+		for i, pr := range deleteHashtags {
+			deleteHashtagIds[i] = pr.HashtagID
+		}
+		err = h.hashtag.DeleteMany(ctx, deleteHashtagIds)
 		if err != nil {
 			return err
 		}
@@ -634,6 +679,7 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 
 	createCollections := make([]model.Collection, 0)
 	updateCollections := make([]model.Collection, 0)
+	deleteCollections := make([]model.Collection, 0)
 	for key := range collectionsAirtableByName {
 		if data, ok := collectionDbByName[key]; ok {
 			var images []airtable.Image
@@ -717,6 +763,12 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 		}
 		createCollections = append(createCollections, collection)
 	}
+	for key := range collectionDbByName {
+		if _, ok := collectionsAirtableByName[key]; ok {
+			continue
+		}
+		deleteCollections = append(deleteCollections, collectionDbByName[key])
+	}
 
 	if len(createCollections) > 0 {
 		_, err = h.collection.CreateMany(ctx, createCollections)
@@ -726,6 +778,16 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 	}
 	if len(updateCollections) > 0 {
 		_, err = h.collection.UpdateMany(ctx, updateCollections)
+		if err != nil {
+			return err
+		}
+	}
+	if len(deleteCollections) > 0 {
+		deleteCollectionIds := make([]uint, len(deleteCollections))
+		for i, pr := range deleteCollections {
+			deleteCollectionIds[i] = pr.CollectionID
+		}
+		err = h.collection.DeleteMany(ctx, deleteCollectionIds)
 		if err != nil {
 			return err
 		}

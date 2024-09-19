@@ -12,6 +12,7 @@ type Post interface {
 	UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
 	GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint) ([]model.Post, error)
 	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
+	DeleteAllNotInUuid(ctx context.Context, uuids []string) error
 }
 
 type PostDb struct {
@@ -101,4 +102,17 @@ func (r *PostDb) GetAllByIds(ctx context.Context, ids []uint) (posts []model.Pos
 	}
 
 	return posts, nil
+}
+
+func (r *PostDb) DeleteAllNotInUuid(ctx context.Context, uuids []string) error {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Post{}).
+		Where("uuid not in (?)", uuids).
+		Delete(&model.Post{}).
+		Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
