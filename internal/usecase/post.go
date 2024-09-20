@@ -39,36 +39,35 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds
 		return nil, err
 	}
 
-	if userId == nil {
-		return posts, nil
-	}
+	if userId != nil {
 
-	userMarks, err := u.markService.FindByUserID(ctx, *userId)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, err
-	}
+		userMarks, err := u.markService.FindByUserID(ctx, *userId)
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
 
-	postIdMark := make(map[uint]model.Mark)
-	for _, um := range userMarks {
-		postIdMark[um.PostID] = um
-	}
+		postIdMark := make(map[uint]model.Mark)
+		for _, um := range userMarks {
+			postIdMark[um.PostID] = um
+		}
 
-	userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
-	if err != nil {
-		return nil, err
-	}
-	postIdRead := make(map[uint]bool)
-	for _, up := range userPosts {
-		postIdRead[up.PostId] = true
-	}
+		userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
+		if err != nil {
+			return nil, err
+		}
+		postIdRead := make(map[uint]bool)
+		for _, up := range userPosts {
+			postIdRead[up.PostId] = true
+		}
 
-	for i := range posts {
-		um, exists := postIdMark[posts[i].PostID]
-		posts[i].IsMarked = exists
-		posts[i].MarkId = &um.MarkID
+		for i := range posts {
+			um, exists := postIdMark[posts[i].PostID]
+			posts[i].IsMarked = exists
+			posts[i].MarkId = &um.MarkID
 
-		_, exists = postIdRead[posts[i].PostID]
-		posts[i].IsAlreadyRead = exists
+			_, exists = postIdRead[posts[i].PostID]
+			posts[i].IsAlreadyRead = exists
+		}
 	}
 	if postType == "all" {
 		return posts, nil
