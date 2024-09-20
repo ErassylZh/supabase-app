@@ -17,6 +17,8 @@ type Hashtag struct {
 	NameRu    string  `gorm:"column:name_ru" json:"name_ru"`
 	NameKz    string  `gorm:"column:name_kz" json:"name_kz"`
 	ImagePath *string `gorm:"column:image_path" json:"image_path"`
+
+	Posts []Post `gorm:"many2many:public.post_hashtag;foreignKey:HashtagID;joinForeignKey:HashtagID;References:PostID;joinReferences:PostID;constraint:OnDelete:CASCADE;" json:"posts"`
 }
 
 func (h *Hashtag) TableName() string {

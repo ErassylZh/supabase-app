@@ -12,7 +12,7 @@ type Collection struct {
 	ImagePathRu      *string `gorm:"column:image_path_ru" json:"image_path_ru"`
 	IsRecommendation bool    `gorm:"column:is_recommendation" json:"is_recommendation"`
 
-	Posts []Post `gorm:"many2many:public.post_collection;foreignKey:CollectionID;joinForeignKey:CollectionID;References:PostID;joinReferences:PostID;" json:"posts"`
+	Posts []Post `gorm:"many2many:public.post_collection;foreignKey:CollectionID;joinForeignKey:CollectionID;References:PostID;joinReferences:PostID;constraint:OnDelete:CASCADE;" json:"posts"`
 }
 
 func (h *Collection) TableName() string {
