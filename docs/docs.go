@@ -469,6 +469,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "search",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "all, post, partner",
                         "name": "post_type",
                         "in": "query",
@@ -986,6 +992,12 @@ const docTemplate = `{
                 },
                 "name_ru": {
                     "type": "string"
+                },
+                "posts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Post"
+                    }
                 }
             }
         },

@@ -42,6 +42,10 @@ definitions:
         type: string
       name_ru:
         type: string
+      posts:
+        items:
+          $ref: '#/definitions/model.Post'
+        type: array
     type: object
   model.Image:
     properties:
@@ -763,6 +767,10 @@ paths:
       - description: collection_id
         in: query
         name: collection_id
+        type: string
+      - description: search
+        in: query
+        name: search
         type: string
       - description: all, post, partner
         in: query

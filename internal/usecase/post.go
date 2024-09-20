@@ -10,7 +10,7 @@ import (
 )
 
 type Post interface {
-	GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string) ([]schema.PostResponse, error)
+	GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string, search string) ([]schema.PostResponse, error)
 	SaveQuizPoints(ctx context.Context, data model.UserPost) (model.UserPost, error)
 	GetArchive(ctx context.Context, userId string) ([]model.Post, error)
 	CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error)
@@ -33,8 +33,8 @@ func NewPostUsecase(services *service.Services) *PostUsecase {
 	}
 }
 
-func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string) ([]schema.PostResponse, error) {
-	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds)
+func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string, search string) ([]schema.PostResponse, error) {
+	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds, search)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (u *PostUsecase) CheckQuiz(ctx context.Context, userId string, postId uint)
 }
 
 func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint) (schema.PostResponseByGroup, error) {
-	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds)
+	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds, "")
 	if err != nil {
 		return schema.PostResponseByGroup{}, err
 	}

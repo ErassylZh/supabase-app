@@ -219,6 +219,7 @@ func (h *Handler) CheckQuiz(c *gin.Context) error {
 // @Security BearerAuth
 // @Param hashtag_id query string false "hashtag_id"
 // @Param collection_id query string false "collection_id"
+// @Param search query string false "search"
 // @Param post_type query string true "all, post, partner"
 // @tags post
 // @Router /api/v1/post/filter [get]
@@ -245,6 +246,7 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 		collectionIds = append(collectionIds, uint(id))
 	}
 
+	search := c.Query("search")
 	postType := c.Query("post_type")
 	if postType != "all" && postType != "post" && postType != "partner" {
 		return fmt.Errorf("incorrect post_type value")
@@ -258,7 +260,7 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds, postType)
+	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds, postType, search)
 	if err != nil {
 		return err
 	}
