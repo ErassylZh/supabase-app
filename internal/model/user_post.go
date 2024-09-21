@@ -15,5 +15,5 @@ type UserPost struct {
 }
 
 func (u *UserPost) TableName() string {
-	return fmt.Sprintf("%s%s", "public", "user_post")
+	return fmt.Sprintf("%s.%s", "public", "user_post")
 }

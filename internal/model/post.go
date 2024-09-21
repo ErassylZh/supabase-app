@@ -49,6 +49,7 @@ type Post struct {
 	RatingStatus *string   `gorm:"column:rating_status" json:"rating_status"`
 	Uuid         string    `gorm:"column:uuid" json:"uuid"`
 	Sapphire     int       `gorm:"column:sapphire" json:"sapphire"`
+	Code         string    `gorm:"column:code" json:"code"`
 
 	Images      []Image      `json:"images"`
 	Hashtags    []Hashtag    `gorm:"many2many:public.post_hashtag;foreignKey:PostID;joinForeignKey:PostID;References:HashtagID;joinReferences:HashtagID;constraint:OnDelete:CASCADE;" json:"hashtags"`

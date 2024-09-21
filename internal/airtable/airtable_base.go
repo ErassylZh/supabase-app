@@ -36,6 +36,7 @@ type Image struct {
 type Post struct {
 	Title          string   `json:"title"`
 	Company        *string  `json:"company"`
+	Code           string   `json:"code"`
 	Body           *string  `json:"body"`
 	Status         *string  `json:"status"`
 	RatingStatus   *string  `json:"rating_status"`

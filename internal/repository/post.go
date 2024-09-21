@@ -14,6 +14,7 @@ type Post interface {
 	GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string) ([]model.Post, error)
 	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 	DeleteAllNotInUuid(ctx context.Context, uuids []string) error
+	GetAllGroupedByPostId(ctx context.Context, id uint) ([]model.Post, error)
 }
 
 type PostDb struct {
@@ -120,4 +121,27 @@ func (r *PostDb) DeleteAllNotInUuid(ctx context.Context, uuids []string) error {
 	}
 
 	return nil
+}
+
+func (r *PostDb) GetAllGroupedByPostId(ctx context.Context, id uint) (posts []model.Post, err error) {
+	db := r.db.WithContext(ctx)
+	var code string
+
+	err = db.Model(&model.Post{}).
+		Select("code").
+		Where("post_id = ?", id).
+		Scan(&code).
+		Error
+	if err != nil {
+		return []model.Post{}, err
+	}
+
+	err = db.Where("code IN (?)", code).
+		Find(&posts).
+		Error
+	if err != nil {
+		return []model.Post{}, err
+	}
+
+	return posts, nil
 }

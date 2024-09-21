@@ -227,7 +227,8 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				post.Point != postsAirtableByUuid[uuid].Fields.Point ||
 				post.QuizTime != postsAirtableByUuid[uuid].Fields.QuizTime ||
 				post.RatingStatus != postsAirtableByUuid[uuid].Fields.RatingStatus ||
-				post.Sapphire != postsAirtableByUuid[uuid].Fields.Sapphire {
+				post.Sapphire != postsAirtableByUuid[uuid].Fields.Sapphire ||
+				post.Code != postsAirtableByUuid[uuid].Fields.Code {
 
 				post.Company = postsAirtableByUuid[uuid].Fields.Company
 				post.Language = postsAirtableByUuid[uuid].Fields.Language
@@ -240,6 +241,7 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				post.QuizTime = postsAirtableByUuid[uuid].Fields.QuizTime
 				post.RatingStatus = postsAirtableByUuid[uuid].Fields.RatingStatus
 				post.Sapphire = postsAirtableByUuid[uuid].Fields.Sapphire
+				post.Code = postsAirtableByUuid[uuid].Fields.Code
 				updatePosts = append(updatePosts, post)
 			}
 			if !h.compareHashtags(existsHashtags, postsAirtableByUuid[uuid].Fields.HashtagName) {
