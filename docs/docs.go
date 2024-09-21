@@ -138,37 +138,6 @@ const docTemplate = `{
             }
         },
         "/api/v1/mark": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "mark"
-                ],
-                "summary": "все избранное пользователя",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response-array_model_Mark"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response-schema_Empty"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -926,6 +895,39 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/user/mark": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mark"
+                ],
+                "summary": "все избранное пользователя",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_Mark"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1054,6 +1056,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "body": {
+                    "type": "string"
+                },
+                "code": {
                     "type": "string"
                 },
                 "collections": {
@@ -1320,6 +1325,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "body": {
+                    "type": "string"
+                },
+                "code": {
                     "type": "string"
                 },
                 "collections": {

@@ -10,8 +10,8 @@ type Mark struct {
 	MarkID    uint      `gorm:"primaryKey;column:mark_id" json:"mark_id"`
 	UserID    string    `gorm:"not null;column:user_id" json:"user_id"`
 	PostID    uint      `gorm:"not null;column:post_id" json:"post_id"`
-	User      User      `gorm:"foreignKey:UserID;references:UserID" json:"user"`
-	Post      Post      `gorm:"foreignKey:PostID;references:PostID" json:"post"`
+	User      User      `json:"user"`
+	Post      Post      `json:"post"`
 }
 
 func (m Mark) TableName() string {

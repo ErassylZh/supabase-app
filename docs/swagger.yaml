@@ -83,6 +83,8 @@ definitions:
     properties:
       body:
         type: string
+      code:
+        type: string
       collections:
         items:
           $ref: '#/definitions/model.Collection'
@@ -256,6 +258,8 @@ definitions:
   schema.PostResponse:
     properties:
       body:
+        type: string
+      code:
         type: string
       collections:
         items:
@@ -571,25 +575,6 @@ paths:
       tags:
       - hashtag
   /api/v1/mark:
-    get:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schema.Response-array_model_Mark'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/schema.Response-schema_Empty'
-      security:
-      - BearerAuth: []
-      summary: все избранное пользователя
-      tags:
-      - mark
     post:
       consumes:
       - application/json
@@ -1058,4 +1043,24 @@ paths:
       summary: получить пользователя
       tags:
       - user
+  /api/v1/user/mark:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Mark'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: все избранное пользователя
+      tags:
+      - mark
 swagger: "2.0"

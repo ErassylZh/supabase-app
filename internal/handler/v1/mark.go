@@ -61,7 +61,7 @@ func (h *Handler) CreateMark(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags mark
-// @Router /api/v1/mark [get]
+// @Router /api/v1/user/mark [get]
 func (h *Handler) FindMarksByUserID(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -69,6 +69,7 @@ func (h *Handler) FindMarksByUserID(c *gin.Context) error {
 	if err != nil {
 		return err
 	}
+
 	marks, err := h.services.Mark.FindByUserID(ctx, userID)
 	if err != nil {
 		return err

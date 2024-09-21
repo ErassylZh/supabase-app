@@ -37,7 +37,7 @@ func (r *MarkDb) FindByUserID(ctx context.Context, userID string) ([]model.Mark,
 	var marks []model.Mark
 	db := r.db.WithContext(ctx)
 	err := db.Where("user_id = ?", userID).
-		Preload("Posts").
+		Preload("Post").
 		Find(&marks).
 		Error
 	if err != nil {
