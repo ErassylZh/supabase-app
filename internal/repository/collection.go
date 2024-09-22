@@ -10,8 +10,8 @@ type Collection interface {
 	GetByID(ctx context.Context, id uint) (model.Collection, error)
 	GetByName(ctx context.Context, collectionName string) (model.Collection, error)
 	GetAll(ctx context.Context) ([]model.Collection, error)
-	GetAllCollection(ctx context.Context) ([]model.Collection, error)
-	GetAllRecommendation(ctx context.Context) ([]model.Collection, error)
+	GetAllCollection(ctx context.Context, language string) ([]model.Collection, error)
+	GetAllRecommendation(ctx context.Context, language string) ([]model.Collection, error)
 	CreateMany(ctx context.Context, collections []model.Collection) ([]model.Collection, error)
 	UpdateMany(ctx context.Context, collections []model.Collection) ([]model.Collection, error)
 	DeleteMany(ctx context.Context, collections []uint) error
@@ -60,11 +60,11 @@ func (r *CollectionDB) GetAll(ctx context.Context) (collections []model.Collecti
 	return collections, nil
 }
 
-func (r *CollectionDB) GetAllCollection(ctx context.Context) (collections []model.Collection, err error) {
+func (r *CollectionDB) GetAllCollection(ctx context.Context, language string) (collections []model.Collection, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Collection{})
 	err = q.Where("not is_recommendation").
-		Preload("Posts").
+		Preload("Posts", "language = ?", language).
 		Preload("Posts.Images").
 		Preload("Posts.Hashtags").
 		Preload("Posts.Collections").
@@ -76,11 +76,11 @@ func (r *CollectionDB) GetAllCollection(ctx context.Context) (collections []mode
 	return collections, nil
 }
 
-func (r *CollectionDB) GetAllRecommendation(ctx context.Context) (collections []model.Collection, err error) {
+func (r *CollectionDB) GetAllRecommendation(ctx context.Context, language string) (collections []model.Collection, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Collection{})
 	err = q.Where("is_recommendation").
-		Preload("Posts").
+		Preload("Posts", "language = ?", language).
 		Preload("Posts.Images").
 		Preload("Posts.Hashtags").
 		Preload("Posts.Collections").

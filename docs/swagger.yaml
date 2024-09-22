@@ -143,6 +143,11 @@ definitions:
       topic:
         type: string
     type: object
+  model.ReadPost:
+    properties:
+      post_id:
+        type: integer
+    type: object
   model.ReferralCode:
     properties:
       created_at:
@@ -542,6 +547,12 @@ paths:
     get:
       consumes:
       - application/json
+      parameters:
+      - description: language
+        in: query
+        name: language
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -654,6 +665,11 @@ paths:
         in: query
         name: collection_id
         type: string
+      - description: language
+        in: query
+        name: language
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -677,7 +693,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/model.UserPost'
+          $ref: '#/definitions/model.ReadPost'
       produces:
       - application/json
       responses:
@@ -753,6 +769,11 @@ paths:
         in: query
         name: collection_id
         type: string
+      - description: language
+        in: query
+        name: language
+        required: true
+        type: string
       - description: search
         in: query
         name: search
@@ -809,6 +830,12 @@ paths:
     get:
       consumes:
       - application/json
+      parameters:
+      - description: language
+        in: query
+        name: language
+        required: true
+        type: string
       produces:
       - application/json
       responses:

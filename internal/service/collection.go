@@ -7,8 +7,8 @@ import (
 )
 
 type Collection interface {
-	GetAllCollection(ctx context.Context) ([]model.Collection, error)
-	GetAllRecommendation(ctx context.Context) ([]model.Collection, error)
+	GetAllCollection(ctx context.Context, language string) ([]model.Collection, error)
+	GetAllRecommendation(ctx context.Context, language string) ([]model.Collection, error)
 }
 
 type CollectionService struct {
@@ -19,10 +19,10 @@ func NewCollectionService(collectionRepo repository.Collection) *CollectionServi
 	return &CollectionService{collectionRepo: collectionRepo}
 }
 
-func (s *CollectionService) GetAllCollection(ctx context.Context) ([]model.Collection, error) {
-	return s.collectionRepo.GetAllCollection(ctx)
+func (s *CollectionService) GetAllCollection(ctx context.Context, language string) ([]model.Collection, error) {
+	return s.collectionRepo.GetAllCollection(ctx, language)
 }
 
-func (s *CollectionService) GetAllRecommendation(ctx context.Context) ([]model.Collection, error) {
-	return s.collectionRepo.GetAllRecommendation(ctx)
+func (s *CollectionService) GetAllRecommendation(ctx context.Context, language string) ([]model.Collection, error) {
+	return s.collectionRepo.GetAllRecommendation(ctx, language)
 }

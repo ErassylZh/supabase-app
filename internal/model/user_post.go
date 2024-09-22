@@ -17,3 +17,7 @@ type UserPost struct {
 func (u *UserPost) TableName() string {
 	return fmt.Sprintf("%s.%s", "public", "user_post")
 }
+
+type ReadPost struct {
+	PostId uint `gorm:"column:post_id" json:"post_id"`
+}

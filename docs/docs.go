@@ -93,6 +93,15 @@ const docTemplate = `{
                     "collection"
                 ],
                 "summary": "получить все коллекций",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -271,6 +280,13 @@ const docTemplate = `{
                         "description": "collection_id",
                         "name": "collection_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -311,7 +327,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserPost"
+                            "$ref": "#/definitions/model.ReadPost"
                         }
                     }
                 ],
@@ -438,6 +454,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "search",
                         "name": "search",
                         "in": "query"
@@ -522,6 +545,15 @@ const docTemplate = `{
                     "collection"
                 ],
                 "summary": "получить все рекомендаций",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1146,6 +1178,14 @@ const docTemplate = `{
                 },
                 "topic": {
                     "type": "string"
+                }
+            }
+        },
+        "model.ReadPost": {
+            "type": "object",
+            "properties": {
+                "post_id": {
+                    "type": "integer"
                 }
             }
         },

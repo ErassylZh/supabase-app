@@ -24,11 +24,13 @@ func (h *Handler) initCollection(v1 *gin.RouterGroup) {
 // @Produce json
 // @Success 200 {object} schema.Response[[]model.Collection]
 // @Failure 400 {object} schema.Response[schema.Empty]
+// @Param language query string true "language"
 // @tags collection
 // @Router /api/v1/collection [get]
 func (h *Handler) GetAllCollections(c *gin.Context) error {
 	ctx := c.Request.Context()
-	collections, err := h.services.Collection.GetAllCollection(ctx)
+	language := c.Query("language")
+	collections, err := h.services.Collection.GetAllCollection(ctx, language)
 	if err != nil {
 		return err
 	}
@@ -42,11 +44,13 @@ func (h *Handler) GetAllCollections(c *gin.Context) error {
 // @Produce json
 // @Success 200 {object} schema.Response[[]model.Collection]
 // @Failure 400 {object} schema.Response[schema.Empty]
+// @Param language query string true "language"
 // @tags collection
 // @Router /api/v1/recommendation [get]
 func (h *Handler) GetAllRecommendations(c *gin.Context) error {
 	ctx := c.Request.Context()
-	recommendations, err := h.services.Collection.GetAllRecommendation(ctx)
+	language := c.Query("language")
+	recommendations, err := h.services.Collection.GetAllRecommendation(ctx, language)
 	if err != nil {
 		return err
 	}

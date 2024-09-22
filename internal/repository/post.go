@@ -11,7 +11,7 @@ type Post interface {
 	CreateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
 	GetAll(ctx context.Context) ([]model.Post, error)
 	UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
-	GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string) ([]model.Post, error)
+	GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string) ([]model.Post, error)
 	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 	DeleteAllNotInUuid(ctx context.Context, uuids []string) error
 	GetAllGroupedByPostId(ctx context.Context, id uint) ([]model.Post, error)
@@ -59,7 +59,7 @@ func (r *PostDb) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Po
 	}
 	return posts, nil
 }
-func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string) (posts []model.Post, err error) {
+func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 
 	query := db.Model(&model.Post{})
@@ -78,6 +78,9 @@ func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collec
 	if len(search) > 0 {
 		search = fmt.Sprintf("%%%s%%", search)
 		query = query.Where("public.post.title ILIKE ? OR public.post.company ILIKE ?", search, search)
+	}
+	if len(language) > 0 {
+		query = query.Where("public.post.language = ?", language)
 	}
 	query = query.
 		Where("public.post.status = ?", model.PRODUCT_STATUS_PUBLISH).
@@ -113,7 +116,7 @@ func (r *PostDb) GetAllByIds(ctx context.Context, ids []uint) (posts []model.Pos
 func (r *PostDb) DeleteAllNotInUuid(ctx context.Context, uuids []string) error {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.Post{}).
-		Where("uuid not in (?)", uuids).
+		Where("code not in (?)", uuids).
 		Delete(&model.Post{}).
 		Error
 	if err != nil {
@@ -125,18 +128,18 @@ func (r *PostDb) DeleteAllNotInUuid(ctx context.Context, uuids []string) error {
 
 func (r *PostDb) GetAllGroupedByPostId(ctx context.Context, id uint) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
-	var code string
+	var uuid string
 
 	err = db.Model(&model.Post{}).
-		Select("code").
+		Select("uuid").
 		Where("post_id = ?", id).
-		Scan(&code).
+		Scan(&uuid).
 		Error
 	if err != nil {
 		return []model.Post{}, err
 	}
 
-	err = db.Where("code IN (?)", code).
+	err = db.Where("uuid IN (?)", uuid).
 		Find(&posts).
 		Error
 	if err != nil {

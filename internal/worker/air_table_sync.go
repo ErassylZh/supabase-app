@@ -54,30 +54,30 @@ func NewAirTableSync(
 
 func (h *AirTableSync) Run() (err error) {
 	ctx := context.Background()
-	if err := h.syncHashtags(ctx); err != nil {
-		log.Println("error while syncing hashtags:", err)
-		return err
-	}
+	//if err := h.syncHashtags(ctx); err != nil {
+	//	log.Println("error while syncing hashtags:", err)
+	//	return err
+	//}
+	//
+	//if err := h.syncCollections(ctx); err != nil {
+	//	log.Println("error while syncing collection:", err)
+	//	return err
+	//}
 
-	if err := h.syncCollections(ctx); err != nil {
-		log.Println("error while syncing collection:", err)
-		return err
-	}
-
-	if err := h.syncProducts(ctx); err != nil {
-		log.Println("error while syncing products:", err)
-		return err
-	}
+	//if err := h.syncProducts(ctx); err != nil {
+	//	log.Println("error while syncing products:", err)
+	//	return err
+	//}
 
 	if err := h.syncPosts(ctx); err != nil {
 		log.Println("error while syncing posts:", err)
 		return err
 	}
 
-	if err := h.syncStories(ctx); err != nil {
-		log.Println("error while syncing stories:", err)
-		return err
-	}
+	//if err := h.syncStories(ctx); err != nil {
+	//	log.Println("error while syncing stories:", err)
+	//	return err
+	//}
 
 	log.Println("airtable sync completed successfully")
 	return nil
@@ -187,12 +187,12 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 		return err
 	}
 
-	postsAirtableByUuid := make(map[string]airtable.BaseObject[airtable.Post])
+	postsAirtableByCode := make(map[string]airtable.BaseObject[airtable.Post])
 	for _, post := range posts {
 		if post.Fields.Company == nil {
 			continue
 		}
-		postsAirtableByUuid[post.Fields.Uuid] = post
+		postsAirtableByCode[post.Fields.Code] = post
 	}
 
 	postsDb, err := h.post.GetAll(ctx)
@@ -200,15 +200,15 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 		return err
 	}
 
-	postsDbByUuid := make(map[string]model.Post)
+	postsDbByCode := make(map[string]model.Post)
 	for _, post := range postsDb {
-		postsDbByUuid[post.Uuid] = post
+		postsDbByCode[post.Code] = post
 	}
 
 	newPosts := make([]model.Post, 0)
 	updatePosts := make([]model.Post, 0)
-	for uuid := range postsAirtableByUuid {
-		if post, exists := postsDbByUuid[uuid]; exists {
+	for code := range postsAirtableByCode {
+		if post, exists := postsDbByCode[code]; exists {
 			var existsHashtags []string
 			for _, ht := range post.Hashtags {
 				existsHashtags = append(existsHashtags, ht.Name)
@@ -217,39 +217,39 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			for _, ht := range post.Collections {
 				existsCollections = append(existsCollections, ht.Name)
 			}
-			if post.Company != postsAirtableByUuid[uuid].Fields.Company ||
-				post.Language != postsAirtableByUuid[uuid].Fields.Language ||
-				strings.EqualFold(post.Title, postsAirtableByUuid[uuid].Fields.Title) ||
-				post.Description != postsAirtableByUuid[uuid].Fields.Description ||
-				post.Status != postsAirtableByUuid[uuid].Fields.Status ||
-				post.Body != postsAirtableByUuid[uuid].Fields.Body ||
-				post.ReadTime != postsAirtableByUuid[uuid].Fields.ReadTime ||
-				post.Point != postsAirtableByUuid[uuid].Fields.Point ||
-				post.QuizTime != postsAirtableByUuid[uuid].Fields.QuizTime ||
-				post.RatingStatus != postsAirtableByUuid[uuid].Fields.RatingStatus ||
-				post.Sapphire != postsAirtableByUuid[uuid].Fields.Sapphire ||
-				post.Code != postsAirtableByUuid[uuid].Fields.Code {
+			if post.Company != postsAirtableByCode[code].Fields.Company ||
+				post.Language != postsAirtableByCode[code].Fields.Language ||
+				strings.EqualFold(post.Title, postsAirtableByCode[code].Fields.Title) ||
+				post.Description != postsAirtableByCode[code].Fields.Description ||
+				post.Status != postsAirtableByCode[code].Fields.Status ||
+				post.Body != postsAirtableByCode[code].Fields.Body ||
+				post.ReadTime != postsAirtableByCode[code].Fields.ReadTime ||
+				post.Point != postsAirtableByCode[code].Fields.Point ||
+				post.QuizTime != postsAirtableByCode[code].Fields.QuizTime ||
+				post.RatingStatus != postsAirtableByCode[code].Fields.RatingStatus ||
+				post.Sapphire != postsAirtableByCode[code].Fields.Sapphire ||
+				post.Uuid != postsAirtableByCode[code].Fields.Uuid {
 
-				post.Company = postsAirtableByUuid[uuid].Fields.Company
-				post.Language = postsAirtableByUuid[uuid].Fields.Language
-				post.Title = postsAirtableByUuid[uuid].Fields.Title
-				post.Description = postsAirtableByUuid[uuid].Fields.Description
-				post.Status = postsAirtableByUuid[uuid].Fields.Status
-				post.Body = postsAirtableByUuid[uuid].Fields.Body
-				post.ReadTime = postsAirtableByUuid[uuid].Fields.ReadTime
-				post.Point = postsAirtableByUuid[uuid].Fields.Point
-				post.QuizTime = postsAirtableByUuid[uuid].Fields.QuizTime
-				post.RatingStatus = postsAirtableByUuid[uuid].Fields.RatingStatus
-				post.Sapphire = postsAirtableByUuid[uuid].Fields.Sapphire
-				post.Code = postsAirtableByUuid[uuid].Fields.Code
+				post.Company = postsAirtableByCode[code].Fields.Company
+				post.Language = postsAirtableByCode[code].Fields.Language
+				post.Title = postsAirtableByCode[code].Fields.Title
+				post.Description = postsAirtableByCode[code].Fields.Description
+				post.Status = postsAirtableByCode[code].Fields.Status
+				post.Body = postsAirtableByCode[code].Fields.Body
+				post.ReadTime = postsAirtableByCode[code].Fields.ReadTime
+				post.Point = postsAirtableByCode[code].Fields.Point
+				post.QuizTime = postsAirtableByCode[code].Fields.QuizTime
+				post.RatingStatus = postsAirtableByCode[code].Fields.RatingStatus
+				post.Sapphire = postsAirtableByCode[code].Fields.Sapphire
+				post.Uuid = postsAirtableByCode[code].Fields.Uuid
 				updatePosts = append(updatePosts, post)
 			}
-			if !h.compareHashtags(existsHashtags, postsAirtableByUuid[uuid].Fields.HashtagName) {
+			if !h.compareHashtags(existsHashtags, postsAirtableByCode[code].Fields.HashtagName) {
 				err = h.postHashtag.DeleteByPostId(ctx, post.PostID)
 				if err != nil {
 					return err
 				}
-				names := postsAirtableByUuid[uuid].Fields.HashtagName
+				names := postsAirtableByCode[code].Fields.HashtagName
 				var postHashtags []model.PostHashtag
 				for _, name := range names {
 					ht, err := h.hashtag.GetByName(ctx, name)
@@ -268,12 +268,12 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 					}
 				}
 			}
-			if !h.compareHashtags(existsCollections, postsAirtableByUuid[uuid].Fields.CollectionName) {
+			if !h.compareHashtags(existsCollections, postsAirtableByCode[code].Fields.CollectionName) {
 				err = h.postCollection.DeleteByPostId(ctx, post.PostID)
 				if err != nil {
 					return err
 				}
-				names := postsAirtableByUuid[uuid].Fields.CollectionName
+				names := postsAirtableByCode[code].Fields.CollectionName
 				var postCollections []model.PostCollection
 				for _, name := range names {
 					ht, err := h.collection.GetByName(ctx, name)
@@ -296,18 +296,19 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 		}
 
 		newPosts = append(newPosts, model.Post{
-			Company:      postsAirtableByUuid[uuid].Fields.Company,
-			Language:     postsAirtableByUuid[uuid].Fields.Language,
-			Title:        postsAirtableByUuid[uuid].Fields.Title,
-			Uuid:         postsAirtableByUuid[uuid].Fields.Uuid,
-			Description:  postsAirtableByUuid[uuid].Fields.Description,
-			Status:       postsAirtableByUuid[uuid].Fields.Status,
-			Body:         postsAirtableByUuid[uuid].Fields.Body,
-			ReadTime:     postsAirtableByUuid[uuid].Fields.ReadTime,
-			Point:        postsAirtableByUuid[uuid].Fields.Point,
-			QuizTime:     postsAirtableByUuid[uuid].Fields.QuizTime,
-			RatingStatus: postsAirtableByUuid[uuid].Fields.RatingStatus,
-			Sapphire:     postsAirtableByUuid[uuid].Fields.Sapphire,
+			Company:      postsAirtableByCode[code].Fields.Company,
+			Language:     postsAirtableByCode[code].Fields.Language,
+			Title:        postsAirtableByCode[code].Fields.Title,
+			Uuid:         postsAirtableByCode[code].Fields.Uuid,
+			Code:         postsAirtableByCode[code].Fields.Code,
+			Description:  postsAirtableByCode[code].Fields.Description,
+			Status:       postsAirtableByCode[code].Fields.Status,
+			Body:         postsAirtableByCode[code].Fields.Body,
+			ReadTime:     postsAirtableByCode[code].Fields.ReadTime,
+			Point:        postsAirtableByCode[code].Fields.Point,
+			QuizTime:     postsAirtableByCode[code].Fields.QuizTime,
+			RatingStatus: postsAirtableByCode[code].Fields.RatingStatus,
+			Sapphire:     postsAirtableByCode[code].Fields.Sapphire,
 		})
 	}
 
@@ -318,11 +319,11 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			return err
 		}
 
-		imagesProduct := make([]model.Image, 0)
+		imagesPost := make([]model.Image, 0)
 		postHashtags := make([]model.PostHashtag, 0)
 		for _, np := range newPosts {
 			postId := np.PostID
-			for _, hashtag := range postsAirtableByUuid[np.Uuid].Fields.HashtagName {
+			for _, hashtag := range postsAirtableByCode[np.Code].Fields.HashtagName {
 				hashtagObj, err := h.hashtag.GetByName(ctx, hashtag)
 				if err != nil {
 					return err
@@ -333,26 +334,26 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				})
 			}
 
-			for _, img := range postsAirtableByUuid[np.Uuid].Fields.Image {
+			for _, img := range postsAirtableByCode[np.Code].Fields.Image {
 				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_POST), img.FileName, img.Url)
 				if err != nil {
 					log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
 				}
 				log.Println(ctx, "image file for "+np.Title+" saved")
-				imagesProduct = append(imagesProduct, model.Image{
+				imagesPost = append(imagesPost, model.Image{
 					PostID:   &postId,
 					ImageUrl: file,
 					FileName: img.FileName,
 					Type:     string(model.POST_IMAGE_TYPE_IMAGE),
 				})
 			}
-			for _, img := range postsAirtableByUuid[np.Uuid].Fields.Logo {
+			for _, img := range postsAirtableByCode[np.Code].Fields.Logo {
 				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_POST), img.FileName, img.Url)
 				if err != nil {
 					log.Println(ctx, "some err while create image", "err", err, "pr name", np.Title)
 				}
 				log.Println(ctx, "logo file for "+np.Title+" saved")
-				imagesProduct = append(imagesProduct, model.Image{
+				imagesPost = append(imagesPost, model.Image{
 					PostID:   &postId,
 					ImageUrl: file,
 					FileName: img.FileName,
@@ -368,10 +369,12 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			}
 
 		}
-		_, err = h.image.CreateMany(ctx, imagesProduct)
-		if err != nil {
-			log.Println(ctx, "error while create images from airtable ", "err", err)
-			return err
+		if len(imagesPost) > 0 {
+			_, err = h.image.CreateMany(ctx, imagesPost)
+			if err != nil {
+				log.Println(ctx, "error while create images from airtable ", "err", err)
+				return err
+			}
 		}
 	}
 
@@ -383,9 +386,9 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 		}
 	}
 
-	if len(postsAirtableByUuid) > 0 {
+	if len(postsAirtableByCode) > 0 {
 		uuids := make([]string, 0)
-		for key := range postsAirtableByUuid {
+		for key := range postsAirtableByCode {
 			uuids = append(uuids, key)
 		}
 		err = h.post.DeleteAllNotInUuid(ctx, uuids)

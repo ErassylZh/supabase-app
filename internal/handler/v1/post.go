@@ -46,12 +46,14 @@ func (h *Handler) initPost(v1 *gin.RouterGroup) {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param hashtag_id query string false "hashtag_id"
 // @Param collection_id query string false "collection_id"
+// @Param language query string true "language"
 // @tags post
 // @Router /api/v1/post [get]
 func (h *Handler) GetListingPosts(c *gin.Context) error {
 	ctx := c.Request.Context()
 	var userId *string
 	token := c.GetHeader("Authorization")
+	language := c.Query("language")
 	hashtagIDsStr := c.Query("hashtag_id")
 	hashtagIds := make([]uint, 0)
 	for _, msi := range strings.Split(hashtagIDsStr, ",") {
@@ -79,7 +81,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListingWithGroup(ctx, userId, hashtagIds, collectionIds)
+	posts, err := h.usecases.Post.GetListingWithGroup(ctx, userId, hashtagIds, collectionIds, language)
 	if err != nil {
 		return err
 	}
@@ -95,7 +97,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.UserPost]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @Param data body model.UserPost true "post"
+// @Param data body model.ReadPost true "post"
 // @tags post
 // @Router /api/v1/post [post]
 func (h *Handler) ReadPost(c *gin.Context) error {
@@ -169,7 +171,8 @@ func (h *Handler) GetArchivePosts(c *gin.Context) error {
 		return err
 	}
 
-	posts, err := h.usecases.Post.GetArchive(ctx, userId)
+	language := c.Query("language")
+	posts, err := h.usecases.Post.GetArchive(ctx, userId, language)
 	if err != nil {
 		return err
 	}
@@ -219,6 +222,7 @@ func (h *Handler) CheckQuiz(c *gin.Context) error {
 // @Security BearerAuth
 // @Param hashtag_id query string false "hashtag_id"
 // @Param collection_id query string false "collection_id"
+// @Param language query string true "language"
 // @Param search query string false "search"
 // @Param post_type query string true "all, post, partner"
 // @tags post
@@ -227,6 +231,7 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 	ctx := c.Request.Context()
 	var userId *string
 	token := c.GetHeader("Authorization")
+	language := c.Query("language")
 	hashtagIDsStr := c.Query("hashtag_id")
 	hashtagIds := make([]uint, 0)
 	for _, msi := range strings.Split(hashtagIDsStr, ",") {
@@ -260,7 +265,7 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds, postType, search)
+	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds, postType, search, language)
 	if err != nil {
 		return err
 	}
