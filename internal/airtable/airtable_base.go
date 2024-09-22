@@ -34,24 +34,25 @@ type Image struct {
 }
 
 type Post struct {
-	Title          string   `json:"title"`
-	Company        *string  `json:"company"`
-	Code           string   `json:"code"`
-	Body           *string  `json:"body"`
-	Status         *string  `json:"status"`
-	RatingStatus   *string  `json:"rating_status"`
-	Description    *string  `json:"description"`
-	Image          []Image  `json:"image"`
-	QuizTime       *int     `json:"quiz_time"`
-	ReadTime       *int     `json:"read_time"`
-	Point          *int     `json:"point"`
-	Logo           []Image  `json:"logo"`
-	Language       *string  `json:"language"`
-	HashtagName    []string `json:"hashtag_name"`
-	Uuid           string   `json:"uuid"`
-	Hashtags       []string `json:"hashtags"`
-	CollectionName []string `json:"collection_name"`
-	Sapphire       int      `json:"sapphire"`
+	Title            string   `json:"title"`
+	Company          *string  `json:"company"`
+	Code             string   `json:"code"`
+	Body             *string  `json:"body"`
+	Status           *string  `json:"status"`
+	RatingStatus     *string  `json:"rating_status"`
+	Description      *string  `json:"description"`
+	Image            []Image  `json:"image"`
+	QuizTime         *int     `json:"quiz_time"`
+	ReadTime         *int     `json:"read_time"`
+	Point            *int     `json:"point"`
+	Logo             []Image  `json:"logo"`
+	Language         *string  `json:"language"`
+	HashtagName      []string `json:"hashtag_name"`
+	Uuid             string   `json:"uuid"`
+	Hashtags         []string `json:"hashtags"`
+	CollectionName   []string `json:"collection_name"`
+	Sapphire         int      `json:"sapphire"`
+	ShortDescription *string  `json:"short_description"`
 }
 
 type Stories struct {
@@ -75,6 +76,8 @@ type Hashtag struct {
 
 type Collection struct {
 	Name             string   `json:"name"`
+	NameRu           string   `json:"name_ru"`
+	NameKz           string   `json:"name_kz"`
 	Image            *[]Image `json:"image"`
 	ImageRu          *[]Image `json:"image_ru"`
 	ImageKz          *[]Image `json:"image_kz"`

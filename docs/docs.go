@@ -1003,6 +1003,12 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "name_kz": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                },
                 "posts": {
                     "type": "array",
                     "items": {
@@ -1142,6 +1148,9 @@ const docTemplate = `{
                 },
                 "sapphire": {
                     "type": "integer"
+                },
+                "short_description": {
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"
@@ -1428,6 +1437,9 @@ const docTemplate = `{
                 },
                 "sapphire": {
                     "type": "integer"
+                },
+                "short_description": {
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"

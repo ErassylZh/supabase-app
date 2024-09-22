@@ -28,6 +28,7 @@ type Deps struct {
 }
 
 func NewServices(deps Deps) *Services {
+	postService := NewPostService(deps.Repos.Post)
 	return &Services{
 		User:             NewUserService(deps.Repos.User, deps.Repos.Profile),
 		Auth:             NewAuthService(deps.Cgf.Security.Secret),
@@ -40,6 +41,6 @@ func NewServices(deps Deps) *Services {
 		Mark:             NewMarkService(deps.Repos.Mark, deps.Repos.Post),
 		Hashtag:          NewHashtagService(deps.Repos.Hashtag),
 		UserPost:         NewUserPostService(deps.Repos.UserPost, deps.Repos.Post),
-		Collection:       NewCollectionService(deps.Repos.Collection),
+		Collection:       NewCollectionService(deps.Repos.Collection, postService),
 	}
 }

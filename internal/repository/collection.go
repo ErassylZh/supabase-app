@@ -63,11 +63,11 @@ func (r *CollectionDB) GetAll(ctx context.Context) (collections []model.Collecti
 func (r *CollectionDB) GetAllCollection(ctx context.Context, language string) (collections []model.Collection, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Collection{})
-	err = q.Where("not is_recommendation").
-		Preload("Posts", "language = ?", language).
+	err = q.Preload("Posts", "language = ?", language).
 		Preload("Posts.Images").
 		Preload("Posts.Hashtags").
 		Preload("Posts.Collections").
+		Where("not is_recommendation").
 		Find(&collections).
 		Error
 	if err != nil {
@@ -79,11 +79,11 @@ func (r *CollectionDB) GetAllCollection(ctx context.Context, language string) (c
 func (r *CollectionDB) GetAllRecommendation(ctx context.Context, language string) (collections []model.Collection, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Collection{})
-	err = q.Where("is_recommendation").
-		Preload("Posts", "language = ?", language).
+	err = q.Preload("Posts", "language = ?", language).
 		Preload("Posts.Images").
 		Preload("Posts.Hashtags").
 		Preload("Posts.Collections").
+		Where("is_recommendation").
 		Find(&collections).
 		Error
 	if err != nil {

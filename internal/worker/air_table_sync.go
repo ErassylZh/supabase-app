@@ -54,30 +54,30 @@ func NewAirTableSync(
 
 func (h *AirTableSync) Run() (err error) {
 	ctx := context.Background()
-	//if err := h.syncHashtags(ctx); err != nil {
-	//	log.Println("error while syncing hashtags:", err)
-	//	return err
-	//}
-	//
-	//if err := h.syncCollections(ctx); err != nil {
-	//	log.Println("error while syncing collection:", err)
-	//	return err
-	//}
+	if err := h.syncHashtags(ctx); err != nil {
+		log.Println("error while syncing hashtags:", err)
+		return err
+	}
 
-	//if err := h.syncProducts(ctx); err != nil {
-	//	log.Println("error while syncing products:", err)
-	//	return err
-	//}
+	if err := h.syncCollections(ctx); err != nil {
+		log.Println("error while syncing collection:", err)
+		return err
+	}
+
+	if err := h.syncProducts(ctx); err != nil {
+		log.Println("error while syncing products:", err)
+		return err
+	}
 
 	if err := h.syncPosts(ctx); err != nil {
 		log.Println("error while syncing posts:", err)
 		return err
 	}
 
-	//if err := h.syncStories(ctx); err != nil {
-	//	log.Println("error while syncing stories:", err)
-	//	return err
-	//}
+	if err := h.syncStories(ctx); err != nil {
+		log.Println("error while syncing stories:", err)
+		return err
+	}
 
 	log.Println("airtable sync completed successfully")
 	return nil
@@ -228,7 +228,8 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				post.QuizTime != postsAirtableByCode[code].Fields.QuizTime ||
 				post.RatingStatus != postsAirtableByCode[code].Fields.RatingStatus ||
 				post.Sapphire != postsAirtableByCode[code].Fields.Sapphire ||
-				post.Uuid != postsAirtableByCode[code].Fields.Uuid {
+				post.Uuid != postsAirtableByCode[code].Fields.Uuid ||
+				post.ShortDescription != postsAirtableByCode[code].Fields.ShortDescription {
 
 				post.Company = postsAirtableByCode[code].Fields.Company
 				post.Language = postsAirtableByCode[code].Fields.Language
@@ -242,6 +243,7 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				post.RatingStatus = postsAirtableByCode[code].Fields.RatingStatus
 				post.Sapphire = postsAirtableByCode[code].Fields.Sapphire
 				post.Uuid = postsAirtableByCode[code].Fields.Uuid
+				post.ShortDescription = postsAirtableByCode[code].Fields.ShortDescription
 				updatePosts = append(updatePosts, post)
 			}
 			if !h.compareHashtags(existsHashtags, postsAirtableByCode[code].Fields.HashtagName) {

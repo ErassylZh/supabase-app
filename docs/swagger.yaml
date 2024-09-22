@@ -25,6 +25,10 @@ definitions:
         type: boolean
       name:
         type: string
+      name_kz:
+        type: string
+      name_ru:
+        type: string
       posts:
         items:
           $ref: '#/definitions/model.Post'
@@ -117,6 +121,8 @@ definitions:
         type: integer
       sapphire:
         type: integer
+      short_description:
+        type: string
       status:
         type: string
       title:
@@ -304,6 +310,8 @@ definitions:
         type: integer
       sapphire:
         type: integer
+      short_description:
+        type: string
       status:
         type: string
       title:
