@@ -99,7 +99,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 // @Security BearerAuth
 // @Param data body model.ReadPost true "post"
 // @tags post
-// @Router /api/v1/post [post]
+// @Router /api/v1/post/read [post]
 func (h *Handler) ReadPost(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")

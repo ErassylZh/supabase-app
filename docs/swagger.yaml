@@ -684,32 +684,6 @@ paths:
       summary: список группированных постов
       tags:
       - post
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: post
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/model.ReadPost'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schema.Response-model_UserPost'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/schema.Response-schema_Empty'
-      security:
-      - BearerAuth: []
-      summary: прочесть книгу
-      tags:
-      - post
   /api/v1/post/archive:
     get:
       consumes:
@@ -797,6 +771,33 @@ paths:
       security:
       - BearerAuth: []
       summary: список постов с фильтром
+      tags:
+      - post
+  /api/v1/post/read:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: post
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.ReadPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_UserPost'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: прочесть книгу
       tags:
       - post
   /api/v1/post/save-quiz:
