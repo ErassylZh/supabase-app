@@ -623,7 +623,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "story_page_id",
+                        "description": "referralCode",
                         "name": "referralCode",
                         "in": "query",
                         "required": true
@@ -659,7 +659,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "stories"
+                    "referral"
                 ],
                 "summary": "получить активность рефералки",
                 "responses": {

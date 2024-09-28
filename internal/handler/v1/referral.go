@@ -28,7 +28,7 @@ func (h *Handler) initReferral(v1 *gin.RouterGroup) {
 // @Produce json
 // @Success 200 {object} schema.Response[model.ReferralCode]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @Param referralCode query string true "story_page_id"
+// @Param referralCode query string true "referralCode"
 // @Security BearerAuth
 // @tags referral
 // @Router /api/v1/referral [post]
@@ -79,7 +79,7 @@ func (h *Handler) GetReferralCodeOfUser(c *gin.Context) error {
 // @Success 200 {object} schema.Response[schema.CheckAvailable]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags stories
+// @tags referral
 // @Router /api/v1/referral/available [get]
 func (h *Handler) GetAvailableReferralCodeOfUser(c *gin.Context) error {
 	ctx := c.Request.Context()

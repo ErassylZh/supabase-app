@@ -897,7 +897,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: story_page_id
+      - description: referralCode
         in: query
         name: referralCode
         required: true
@@ -937,7 +937,7 @@ paths:
       - BearerAuth: []
       summary: получить активность рефералки
       tags:
-      - stories
+      - referral
   /api/v1/stories:
     get:
       consumes:
