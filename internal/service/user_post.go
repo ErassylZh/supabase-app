@@ -26,6 +26,7 @@ func NewUserPostService(userPostRepo repository.UserPost, postRepo repository.Po
 }
 
 func (s *UserPostService) Create(ctx context.Context, post model.UserPost) (model.UserPost, error) {
+
 	return s.userPostRepo.Create(ctx, post)
 }
 

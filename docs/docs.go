@@ -170,7 +170,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Mark"
+                            "$ref": "#/definitions/schema.CreateMark"
                         }
                     }
                 ],
@@ -1366,6 +1366,14 @@ const docTemplate = `{
             "properties": {
                 "already_used_referral_code": {
                     "type": "boolean"
+                }
+            }
+        },
+        "schema.CreateMark": {
+            "type": "object",
+            "properties": {
+                "post_id": {
+                    "type": "integer"
                 }
             }
         },

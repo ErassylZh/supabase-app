@@ -15,6 +15,7 @@ type Post interface {
 	GetArchive(ctx context.Context, userId string, language string) ([]model.Post, error)
 	CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error)
 	GetListingWithGroup(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, language string) (schema.PostResponseByGroup, error)
+	ReadPost(ctx context.Context, post model.UserPost) (model.UserPost, error)
 }
 
 type PostUsecase struct {
@@ -31,6 +32,17 @@ func NewPostUsecase(services *service.Services) *PostUsecase {
 		userPostService: services.UserPost,
 		balanceService:  services.Balance,
 	}
+}
+
+func (u *PostUsecase) ReadPost(ctx context.Context, post model.UserPost) (model.UserPost, error) {
+	postAlreadyReaded, err := u.userPostService.GetByUserAndPost(ctx, post.UserId, post.PostId)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return u.userPostService.Create(ctx, post)
+	}
+	if err != nil {
+		return model.UserPost{}, err
+	}
+	return postAlreadyReaded, nil
 }
 
 func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string, search string, language string) ([]schema.PostResponse, error) {
@@ -120,9 +132,9 @@ func (u *PostUsecase) GetArchive(ctx context.Context, userId string, language st
 	if err != nil {
 		return nil, err
 	}
-	postIds := make([]uint, 0)
-	for _, up := range userPosts {
-		postIds = append(postIds, up.PostId)
+	postIds := make([]uint, len(userPosts))
+	for i, up := range userPosts {
+		postIds[i] = up.PostId
 	}
 	return u.postService.GetByIds(ctx, postIds)
 }

@@ -264,6 +264,11 @@ definitions:
       already_used_referral_code:
         type: boolean
     type: object
+  schema.CreateMark:
+    properties:
+      post_id:
+        type: integer
+    type: object
   schema.Empty:
     type: object
   schema.PostResponse:
@@ -603,7 +608,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/model.Mark'
+          $ref: '#/definitions/schema.CreateMark'
       produces:
       - application/json
       responses:

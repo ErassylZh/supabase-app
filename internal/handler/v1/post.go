@@ -113,7 +113,7 @@ func (h *Handler) ReadPost(c *gin.Context) error {
 	}
 	data.UserId = userId
 
-	posts, err := h.services.UserPost.Create(ctx, data)
+	posts, err := h.usecases.Post.ReadPost(ctx, data)
 	if err != nil {
 		return err
 	}

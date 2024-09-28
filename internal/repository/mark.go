@@ -59,10 +59,10 @@ func (r *MarkDb) DeleteMark(ctx context.Context, markID uint) error {
 	return nil
 }
 
-func (r *MarkDb) FindByUserAndPost(ctx context.Context, userId string, markId uint) (mark model.Mark, err error) {
+func (r *MarkDb) FindByUserAndPost(ctx context.Context, userId string, postId uint) (mark model.Mark, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Mark{})
-	err = q.Where("mark_id = ? and user_id = ?", markId, userId).
+	err = q.Where("post_id = ? and user_id = ?", postId, userId).
 		First(&mark).
 		Error
 	if err != nil {

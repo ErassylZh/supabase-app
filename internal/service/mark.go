@@ -4,12 +4,14 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
+	"time"
 	"work-project/internal/model"
 	"work-project/internal/repository"
+	"work-project/internal/schema"
 )
 
 type Mark interface {
-	CreateMark(ctx context.Context, mark model.Mark) error
+	CreateMark(ctx context.Context, mark schema.CreateMark) error
 	FindByUserID(ctx context.Context, userID string) ([]model.Mark, error)
 	DeleteMark(ctx context.Context, markID uint) error
 }
@@ -25,13 +27,19 @@ func NewMarkService(markRepo repository.Mark, postRepo repository.Post) *MarkSer
 		postRepo: postRepo,
 	}
 }
-func (s *MarkService) CreateMark(ctx context.Context, mark model.Mark) error {
-	if mark.UserID == "" || mark.PostID == 0 {
+func (s *MarkService) CreateMark(ctx context.Context, mark schema.CreateMark) error {
+	if mark.UserID == "" || mark.PostId == 0 {
 		return errors.New("invalid mark data: userID or postID is missing")
 	}
-	_, err := s.markRepo.FindByUserAndPost(ctx, mark.UserID, mark.MarkID)
+	markModel := model.Mark{
+		PostID:    mark.PostId,
+		UserID:    mark.UserID,
+		CreatedAt: time.Now(),
+	}
+
+	_, err := s.markRepo.FindByUserAndPost(ctx, markModel.UserID, markModel.PostID)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		if err := s.markRepo.Create(ctx, mark); err != nil {
+		if err := s.markRepo.Create(ctx, markModel); err != nil {
 			return errors.New("failed to create mark: " + err.Error())
 		}
 		return nil

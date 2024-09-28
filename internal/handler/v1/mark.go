@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"work-project/internal/middleware"
-	"work-project/internal/model"
 	"work-project/internal/schema"
 )
 
@@ -30,7 +29,7 @@ func (h *Handler) initMark(v1 *gin.RouterGroup) {
 // @Produce json
 // @Success 200 {object} schema.Response[model.Mark]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @Param data body model.Mark true "CreateMark"
+// @Param data body schema.CreateMark true "CreateMark"
 // @Security BearerAuth
 // @tags mark
 // @Router /api/v1/mark [post]
@@ -41,7 +40,7 @@ func (h *Handler) CreateMark(c *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	var mark model.Mark
+	var mark schema.CreateMark
 	if err := c.ShouldBindJSON(&mark); err != nil {
 		return err
 	}
