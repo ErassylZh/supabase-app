@@ -45,7 +45,8 @@ func (r *BalanceDB) GetByUserID(ctx context.Context, userId string) (balance mod
 func (r *BalanceDB) Update(ctx context.Context, balance model.Balance) error {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Balance{})
-	err := q.Save(&balance).
+	err := q.Where("balance_id = ?", balance.BalanceId).
+		Save(&balance).
 		Error
 	if err != nil {
 		return err

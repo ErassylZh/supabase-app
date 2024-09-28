@@ -53,6 +53,7 @@ func (h *Handler) GetBalanceOfUser(c *gin.Context) error {
 // @Router /api/v1/balance/history [get]
 func (h *Handler) GetHistoryOfTransactions(c *gin.Context) error {
 	ctx := c.Request.Context()
+
 	token := c.GetHeader("Authorization")
 	userId, err := h.services.Auth.VerifyToken(token)
 	if err != nil {

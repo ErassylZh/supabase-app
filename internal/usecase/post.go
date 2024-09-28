@@ -141,6 +141,9 @@ func (u *PostUsecase) GetArchive(ctx context.Context, userId string, language st
 
 func (u *PostUsecase) CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error) {
 	userPost, err := u.userPostService.GetByUserAndPost(ctx, userId, postId)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return true, nil
+	}
 	if err != nil {
 		return false, err
 	}

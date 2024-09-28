@@ -97,7 +97,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.UserPost]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @Param data body model.ReadPost true "post"
+// @Param data body schema.ReadPost true "post"
 // @tags post
 // @Router /api/v1/post/read [post]
 func (h *Handler) ReadPost(c *gin.Context) error {
@@ -129,7 +129,7 @@ func (h *Handler) ReadPost(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.UserPost]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @Param data body model.UserPost true "post"
+// @Param data body schema.PassQuizPost true "post"
 // @tags post
 // @Router /api/v1/post/save-quiz [post]
 func (h *Handler) SaveQuizPoints(c *gin.Context) error {
@@ -140,7 +140,7 @@ func (h *Handler) SaveQuizPoints(c *gin.Context) error {
 		return err
 	}
 	var data model.UserPost
-	if err = c.Bind(&data); err != nil {
+	if err := c.Bind(&data); err != nil {
 		return err
 	}
 	data.UserId = userId

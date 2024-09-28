@@ -471,7 +471,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ReadPost"
+                            "$ref": "#/definitions/schema.ReadPost"
                         }
                     }
                 ],
@@ -515,7 +515,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserPost"
+                            "$ref": "#/definitions/schema.PassQuizPost"
                         }
                     }
                 ],
@@ -1192,14 +1192,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ReadPost": {
-            "type": "object",
-            "properties": {
-                "post_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.ReferralCode": {
             "type": "object",
             "properties": {
@@ -1380,6 +1372,20 @@ const docTemplate = `{
         "schema.Empty": {
             "type": "object"
         },
+        "schema.PassQuizPost": {
+            "type": "object",
+            "properties": {
+                "post_id": {
+                    "type": "integer"
+                },
+                "quiz_points": {
+                    "type": "integer"
+                },
+                "quiz_sapphires": {
+                    "type": "integer"
+                }
+            }
+        },
         "schema.PostResponse": {
             "type": "object",
             "properties": {
@@ -1474,6 +1480,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/schema.PostResponse"
                     }
+                }
+            }
+        },
+        "schema.ReadPost": {
+            "type": "object",
+            "properties": {
+                "post_id": {
+                    "type": "integer"
                 }
             }
         },

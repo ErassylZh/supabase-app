@@ -14,3 +14,13 @@ type PostResponseByGroup struct {
 	Partners    []PostResponse `json:"partners"`
 	Other       []PostResponse `json:"-"`
 }
+
+type ReadPost struct {
+	PostId uint `json:"post_id"`
+}
+
+type PassQuizPost struct {
+	PostId        uint `json:"post_id"`
+	QuizPoints    *int `json:"quiz_points"`
+	QuizSapphires *int `json:"quiz_sapphires"`
+}

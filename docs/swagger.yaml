@@ -149,11 +149,6 @@ definitions:
       topic:
         type: string
     type: object
-  model.ReadPost:
-    properties:
-      post_id:
-        type: integer
-    type: object
   model.ReferralCode:
     properties:
       created_at:
@@ -271,6 +266,15 @@ definitions:
     type: object
   schema.Empty:
     type: object
+  schema.PassQuizPost:
+    properties:
+      post_id:
+        type: integer
+      quiz_points:
+        type: integer
+      quiz_sapphires:
+        type: integer
+    type: object
   schema.PostResponse:
     properties:
       body:
@@ -334,6 +338,11 @@ definitions:
         items:
           $ref: '#/definitions/schema.PostResponse'
         type: array
+    type: object
+  schema.ReadPost:
+    properties:
+      post_id:
+        type: integer
     type: object
   schema.Response-array_model_Collection:
     properties:
@@ -796,7 +805,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/model.ReadPost'
+          $ref: '#/definitions/schema.ReadPost'
       produces:
       - application/json
       responses:
@@ -823,7 +832,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/model.UserPost'
+          $ref: '#/definitions/schema.PassQuizPost'
       produces:
       - application/json
       responses:

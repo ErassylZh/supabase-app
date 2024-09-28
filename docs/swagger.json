@@ -465,7 +465,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ReadPost"
+                            "$ref": "#/definitions/schema.ReadPost"
                         }
                     }
                 ],
@@ -509,7 +509,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.UserPost"
+                            "$ref": "#/definitions/schema.PassQuizPost"
                         }
                     }
                 ],
@@ -1186,14 +1186,6 @@
                 }
             }
         },
-        "model.ReadPost": {
-            "type": "object",
-            "properties": {
-                "post_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.ReferralCode": {
             "type": "object",
             "properties": {
@@ -1374,6 +1366,20 @@
         "schema.Empty": {
             "type": "object"
         },
+        "schema.PassQuizPost": {
+            "type": "object",
+            "properties": {
+                "post_id": {
+                    "type": "integer"
+                },
+                "quiz_points": {
+                    "type": "integer"
+                },
+                "quiz_sapphires": {
+                    "type": "integer"
+                }
+            }
+        },
         "schema.PostResponse": {
             "type": "object",
             "properties": {
@@ -1468,6 +1474,14 @@
                     "items": {
                         "$ref": "#/definitions/schema.PostResponse"
                     }
+                }
+            }
+        },
+        "schema.ReadPost": {
+            "type": "object",
+            "properties": {
+                "post_id": {
+                    "type": "integer"
                 }
             }
         },
