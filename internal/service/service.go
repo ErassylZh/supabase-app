@@ -38,7 +38,7 @@ func NewServices(deps Deps) *Services {
 		Product:          NewProductService(deps.Repos.Product),
 		Post:             NewPostService(deps.Repos.Post),
 		Stories:          NewStoriesService(deps.Repos.Stories, deps.Repos.StoryPage, deps.Repos.StoryPageUser),
-		Mark:             NewMarkService(deps.Repos.Mark, deps.Repos.Post),
+		Mark:             NewMarkService(deps.Repos.Mark, deps.Repos.Post, deps.Repos.UserPost),
 		Hashtag:          NewHashtagService(deps.Repos.Hashtag),
 		UserPost:         NewUserPostService(deps.Repos.UserPost, deps.Repos.Post),
 		Collection:       NewCollectionService(deps.Repos.Collection, postService),

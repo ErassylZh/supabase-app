@@ -266,6 +266,17 @@ definitions:
     type: object
   schema.Empty:
     type: object
+  schema.MarkResponse:
+    properties:
+      mark_id:
+        type: integer
+      post:
+        $ref: '#/definitions/schema.PostResponse'
+      post_id:
+        type: integer
+      user_id:
+        type: string
+    type: object
   schema.PassQuizPost:
     properties:
       post_id:
@@ -417,6 +428,17 @@ definitions:
       result:
         items:
           $ref: '#/definitions/model.UserDeviceToken'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_schema_MarkResponse:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/schema.MarkResponse'
         type: array
       status:
         type: boolean
@@ -1103,7 +1125,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response-array_model_Mark'
+            $ref: '#/definitions/schema.Response-array_schema_MarkResponse'
         "400":
           description: Bad Request
           schema:

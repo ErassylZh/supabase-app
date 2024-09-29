@@ -58,7 +58,7 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds
 			return nil, err
 		}
 
-		postIdMark := make(map[uint]model.Mark)
+		postIdMark := make(map[uint]schema.MarkResponse)
 		for _, um := range userMarks {
 			postIdMark[um.PostID] = um
 		}
@@ -182,7 +182,7 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, h
 		return schema.PostResponseByGroup{}, err
 	}
 
-	postIdMark := make(map[uint]model.Mark)
+	postIdMark := make(map[uint]schema.MarkResponse)
 	for _, um := range userMarks {
 		postIdMark[um.PostID] = um
 	}
