@@ -69,7 +69,7 @@ func (h *Handler) FindMarksByUserID(c *gin.Context) error {
 		return err
 	}
 
-	marks, err := h.services.Mark.FindByUserID(ctx, userID)
+	marks, err := h.services.Mark.FindPostsByUserID(ctx, userID)
 	if err != nil {
 		return err
 	}
