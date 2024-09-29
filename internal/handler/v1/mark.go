@@ -56,7 +56,7 @@ func (h *Handler) CreateMark(c *gin.Context) error {
 // @Summary все избранное пользователя
 // @Accept json
 // @Produce json
-// @Success 200 {object} schema.Response[[]schema.MarkResponse]
+// @Success 200 {object} schema.Response[[]schema.PostResponse]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags mark

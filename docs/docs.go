@@ -951,7 +951,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-array_schema_MarkResponse"
+                            "$ref": "#/definitions/schema.Response-array_schema_PostResponse"
                         }
                     },
                     "400": {
@@ -1372,23 +1372,6 @@ const docTemplate = `{
         "schema.Empty": {
             "type": "object"
         },
-        "schema.MarkResponse": {
-            "type": "object",
-            "properties": {
-                "mark_id": {
-                    "type": "integer"
-                },
-                "post": {
-                    "$ref": "#/definitions/schema.PostResponse"
-                },
-                "post_id": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "schema.PassQuizPost": {
             "type": "object",
             "properties": {
@@ -1620,23 +1603,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.UserDeviceToken"
-                    }
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "schema.Response-array_schema_MarkResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "result": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/schema.MarkResponse"
                     }
                 },
                 "status": {

@@ -12,7 +12,7 @@ import (
 
 type Mark interface {
 	CreateMark(ctx context.Context, mark schema.CreateMark) error
-	FindByUserID(ctx context.Context, userID string) ([]schema.MarkResponse, error)
+	FindByUserID(ctx context.Context, userID string) ([]schema.PostResponse, error)
 	DeleteMark(ctx context.Context, markID uint) error
 }
 
@@ -52,27 +52,22 @@ func (s *MarkService) CreateMark(ctx context.Context, mark schema.CreateMark) er
 	return errors.New("this post already marked for current user")
 }
 
-func (s *MarkService) FindByUserID(ctx context.Context, userID string) ([]schema.MarkResponse, error) {
+func (s *MarkService) FindByUserID(ctx context.Context, userID string) ([]schema.PostResponse, error) {
 	marks, err := s.markRepo.FindByUserID(ctx, userID)
 	if err != nil {
 		return nil, errors.New("failed to find marks: " + err.Error())
 	}
-	result := make([]schema.MarkResponse, len(marks))
+	result := make([]schema.PostResponse, len(marks))
 	for i, mark := range marks {
 		_, err := s.userPostRepo.GetByUserAndPost(ctx, mark.UserID, mark.PostID)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
 		}
-		result[i] = schema.MarkResponse{
-			MarkID: mark.MarkID,
-			PostID: mark.PostID,
-			UserID: mark.UserID,
-			Post: schema.PostResponse{
-				Post:          mark.Post,
-				IsAlreadyRead: !errors.Is(err, gorm.ErrRecordNotFound),
-				MarkId:        &mark.MarkID,
-				IsMarked:      true,
-			},
+		result[i] = schema.PostResponse{
+			Post:          mark.Post,
+			IsAlreadyRead: !errors.Is(err, gorm.ErrRecordNotFound),
+			MarkId:        &mark.MarkID,
+			IsMarked:      true,
 		}
 	}
 
