@@ -209,6 +209,33 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 	updatePosts := make([]model.Post, 0)
 	for code := range postsAirtableByCode {
 		if post, exists := postsDbByCode[code]; exists {
+			imagesDb, err := h.image.GetAllByPostId(ctx, post.PostID)
+			if err != nil {
+				return err
+			}
+
+			airtableImages := postsAirtableByCode[code].Fields.Image
+			airtableLogos := postsAirtableByCode[code].Fields.Logo
+
+			imagesNeedUpdate := h.checkImageUpdates(imagesDb, airtableImages, airtableLogos)
+
+			if imagesNeedUpdate {
+				err = h.image.DeleteByPostId(ctx, post.PostID)
+				if err != nil {
+					return err
+				}
+
+				var updatedImages []model.Image
+				updatedImages = append(updatedImages, h.generatePostImages(ctx, post.PostID, airtableImages, airtableLogos)...)
+
+				if len(updatedImages) > 0 {
+					_, err = h.image.CreateMany(ctx, updatedImages)
+					if err != nil {
+						return err
+					}
+				}
+			}
+
 			var existsHashtags []string
 			for _, ht := range post.Hashtags {
 				existsHashtags = append(existsHashtags, ht.Name)
@@ -801,4 +828,57 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 	}
 
 	return nil
+}
+func (h *AirTableSync) generatePostImages(ctx context.Context, postID uint, airtableImages []airtable.Image, airtableLogos []airtable.Image) []model.Image {
+	var imagesPost []model.Image
+
+	for _, img := range airtableImages {
+		file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_POST), img.FileName, img.Url)
+		if err != nil {
+			log.Println(ctx, "Error creating image:", err)
+		}
+		imagesPost = append(imagesPost, model.Image{
+			PostID:   &postID,
+			ImageUrl: file,
+			FileName: img.FileName,
+			Type:     string(model.POST_IMAGE_TYPE_IMAGE),
+		})
+	}
+
+	for _, logo := range airtableLogos {
+		file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_POST), logo.FileName, logo.Url)
+		if err != nil {
+			log.Println(ctx, "Error creating logo:", err)
+		}
+		imagesPost = append(imagesPost, model.Image{
+			PostID:   &postID,
+			ImageUrl: file,
+			FileName: logo.FileName,
+			Type:     string(model.POST_IMAGE_TYPE_LOGO),
+		})
+	}
+
+	return imagesPost
+}
+
+func (h *AirTableSync) checkImageUpdates(imagesDb []model.Image, airtableImages []airtable.Image, airtableLogos []airtable.Image) bool {
+	if len(imagesDb) != len(airtableImages)+len(airtableLogos) {
+		return true
+	}
+
+	airtableFiles := make(map[string]bool)
+	for _, img := range airtableImages {
+		airtableFiles[img.FileName] = true
+	}
+	for _, logo := range airtableLogos {
+		airtableFiles[logo.FileName] = true
+	}
+
+	for _, imgDb := range imagesDb {
+		if !airtableFiles[imgDb.FileName] {
+			return true
+		}
+	}
+
+	return false
 }
