@@ -1137,6 +1137,9 @@ const docTemplate = `{
                 "post_id": {
                     "type": "integer"
                 },
+                "post_order": {
+                    "type": "integer"
+                },
                 "quiz_time": {
                     "type": "integer"
                 },
@@ -1438,6 +1441,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "post_id": {
+                    "type": "integer"
+                },
+                "post_order": {
                     "type": "integer"
                 },
                 "quiz_time": {

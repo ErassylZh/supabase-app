@@ -113,6 +113,8 @@ definitions:
         type: integer
       post_id:
         type: integer
+      post_order:
+        type: integer
       quiz_time:
         type: integer
       rating_status:
@@ -310,6 +312,8 @@ definitions:
       point:
         type: integer
       post_id:
+        type: integer
+      post_order:
         type: integer
       quiz_time:
         type: integer

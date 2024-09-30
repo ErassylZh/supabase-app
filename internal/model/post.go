@@ -51,6 +51,7 @@ type Post struct {
 	Sapphire         int       `gorm:"column:sapphire" json:"sapphire"`
 	Code             string    `gorm:"column:code" json:"code"`
 	ShortDescription *string   `gorm:"column:short_description" json:"short_description"`
+	Order            *int      `gorm:"column:post_order" json:"post_order"`
 
 	Images      []Image      `json:"images"`
 	Hashtags    []Hashtag    `gorm:"many2many:public.post_hashtag;foreignKey:PostID;joinForeignKey:PostID;References:HashtagID;joinReferences:HashtagID;constraint:OnDelete:CASCADE;" json:"hashtags"`

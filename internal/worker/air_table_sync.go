@@ -256,7 +256,8 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				post.RatingStatus != postsAirtableByCode[code].Fields.RatingStatus ||
 				post.Sapphire != postsAirtableByCode[code].Fields.Sapphire ||
 				post.Uuid != postsAirtableByCode[code].Fields.Uuid ||
-				post.ShortDescription != postsAirtableByCode[code].Fields.ShortDescription {
+				post.ShortDescription != postsAirtableByCode[code].Fields.ShortDescription ||
+				post.Order != postsAirtableByCode[code].Fields.PostOrder {
 
 				post.Company = postsAirtableByCode[code].Fields.Company
 				post.Language = postsAirtableByCode[code].Fields.Language
@@ -271,6 +272,7 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 				post.Sapphire = postsAirtableByCode[code].Fields.Sapphire
 				post.Uuid = postsAirtableByCode[code].Fields.Uuid
 				post.ShortDescription = postsAirtableByCode[code].Fields.ShortDescription
+				post.Order = postsAirtableByCode[code].Fields.PostOrder
 				updatePosts = append(updatePosts, post)
 			}
 			if !h.compareHashtags(existsHashtags, postsAirtableByCode[code].Fields.HashtagName) {
@@ -325,19 +327,21 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 		}
 
 		newPosts = append(newPosts, model.Post{
-			Company:      postsAirtableByCode[code].Fields.Company,
-			Language:     postsAirtableByCode[code].Fields.Language,
-			Title:        postsAirtableByCode[code].Fields.Title,
-			Uuid:         postsAirtableByCode[code].Fields.Uuid,
-			Code:         postsAirtableByCode[code].Fields.Code,
-			Description:  postsAirtableByCode[code].Fields.Description,
-			Status:       postsAirtableByCode[code].Fields.Status,
-			Body:         postsAirtableByCode[code].Fields.Body,
-			ReadTime:     postsAirtableByCode[code].Fields.ReadTime,
-			Point:        postsAirtableByCode[code].Fields.Point,
-			QuizTime:     postsAirtableByCode[code].Fields.QuizTime,
-			RatingStatus: postsAirtableByCode[code].Fields.RatingStatus,
-			Sapphire:     postsAirtableByCode[code].Fields.Sapphire,
+			Company:          postsAirtableByCode[code].Fields.Company,
+			Language:         postsAirtableByCode[code].Fields.Language,
+			Title:            postsAirtableByCode[code].Fields.Title,
+			Uuid:             postsAirtableByCode[code].Fields.Uuid,
+			Code:             postsAirtableByCode[code].Fields.Code,
+			Description:      postsAirtableByCode[code].Fields.Description,
+			Status:           postsAirtableByCode[code].Fields.Status,
+			Body:             postsAirtableByCode[code].Fields.Body,
+			ReadTime:         postsAirtableByCode[code].Fields.ReadTime,
+			Point:            postsAirtableByCode[code].Fields.Point,
+			QuizTime:         postsAirtableByCode[code].Fields.QuizTime,
+			RatingStatus:     postsAirtableByCode[code].Fields.RatingStatus,
+			Sapphire:         postsAirtableByCode[code].Fields.Sapphire,
+			ShortDescription: postsAirtableByCode[code].Fields.ShortDescription,
+			Order:            postsAirtableByCode[code].Fields.PostOrder,
 		})
 	}
 

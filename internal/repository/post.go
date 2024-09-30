@@ -87,7 +87,8 @@ func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collec
 		Preload("Images").
 		Preload("Hashtags").
 		Preload("Collections").
-		Group("public.post.post_id")
+		Group("public.post.post_id").
+		Order("post_order")
 
 	err = query.Find(&posts).Error
 	if err != nil {

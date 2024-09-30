@@ -53,6 +53,7 @@ type Post struct {
 	CollectionName   []string `json:"collection_name"`
 	Sapphire         int      `json:"sapphire"`
 	ShortDescription *string  `json:"short_description"`
+	PostOrder        *int     `json:"order"`
 }
 
 type Stories struct {
