@@ -53,48 +53,66 @@ func (s *MarkService) CreateMark(ctx context.Context, mark schema.CreateMark) er
 	return errors.New("this post already marked for current user")
 }
 
-func (s *MarkService) FindByUserID(ctx context.Context, userID string) (schema.PostResponseByGroup, error) {
+func (s *MarkService) FindByUserID(ctx context.Context, userID string) ([]schema.MarkResponse, error) {
 	marks, err := s.markRepo.FindByUserID(ctx, userID)
 	if err != nil {
-		return schema.PostResponseByGroup{}, errors.New("failed to find marks: " + err.Error())
+		return nil, errors.New("failed to find marks: " + err.Error())
 	}
-	result := schema.PostResponseByGroup{}
-	for _, mark := range marks {
-		postAlreadyAdded := false
-		for _, hashtag := range mark.Post.Hashtags {
-			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
-				postAlreadyAdded = true
-				result.Bestsellers = append(result.Bestsellers, schema.PostResponse{Post: mark.Post, MarkId: &mark.MarkID})
-			}
-			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
-				postAlreadyAdded = true
-				result.Partners = append(result.Partners, schema.PostResponse{Post: mark.Post, MarkId: &mark.MarkID})
-			}
+	result := make([]schema.MarkResponse, len(marks))
+	for i, mark := range marks {
+		_, err := s.userPostRepo.GetByUserAndPost(ctx, mark.UserID, mark.PostID)
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
 		}
-		if !postAlreadyAdded {
-			result.Other = append(result.Other, schema.PostResponse{Post: mark.Post, MarkId: &mark.MarkID})
+		result[i] = schema.MarkResponse{
+			MarkID: mark.MarkID,
+			PostID: mark.PostID,
+			UserID: mark.UserID,
+			Post: schema.PostResponse{
+				Post:          mark.Post,
+				IsAlreadyRead: !errors.Is(err, gorm.ErrRecordNotFound),
+				MarkId:        &mark.MarkID,
+				IsMarked:      true,
+			},
 		}
 	}
 
 	return result, nil
 }
 
-func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string) ([]schema.PostResponse, error) {
+func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string) (schema.PostResponseByGroup, error) {
 	marks, err := s.markRepo.FindByUserID(ctx, userID)
 	if err != nil {
-		return nil, errors.New("failed to find marks: " + err.Error())
+		return schema.PostResponseByGroup{}, errors.New("failed to find marks: " + err.Error())
 	}
-	result := make([]schema.PostResponse, len(marks))
-	for i, mark := range marks {
+	result := schema.PostResponseByGroup{}
+	for _, mark := range marks {
 		_, err := s.userPostRepo.GetByUserAndPost(ctx, mark.UserID, mark.PostID)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, err
+			return schema.PostResponseByGroup{}, err
 		}
-		result[i] = schema.PostResponse{
-			Post:          mark.Post,
-			IsAlreadyRead: !errors.Is(err, gorm.ErrRecordNotFound),
-			MarkId:        &mark.MarkID,
-			IsMarked:      true,
+		postAlreadyAdded := false
+		for _, hashtag := range mark.Post.Hashtags {
+			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
+				postAlreadyAdded = true
+				result.Bestsellers = append(result.Bestsellers, schema.PostResponse{
+					Post:   mark.Post,
+					MarkId: &mark.MarkID,
+				})
+			}
+			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
+				postAlreadyAdded = true
+				result.Partners = append(result.Partners, schema.PostResponse{
+					Post:   mark.Post,
+					MarkId: &mark.MarkID,
+				})
+			}
+		}
+		if !postAlreadyAdded {
+			result.Other = append(result.Other, schema.PostResponse{
+				Post:   mark.Post,
+				MarkId: &mark.MarkID,
+			})
 		}
 	}
 
