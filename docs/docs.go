@@ -947,6 +947,15 @@ const docTemplate = `{
                     "mark"
                 ],
                 "summary": "все избранное пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bestsellers, Partnerships",
+                        "name": "filter",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

@@ -59,6 +59,7 @@ func (h *Handler) CreateMark(c *gin.Context) error {
 // @Success 200 {object} schema.Response[[]schema.PostResponse]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
+// @Param filter query string true "Bestsellers, Partnerships"
 // @tags mark
 // @Router /api/v1/user/mark [get]
 func (h *Handler) FindMarksByUserID(c *gin.Context) error {
@@ -68,8 +69,9 @@ func (h *Handler) FindMarksByUserID(c *gin.Context) error {
 	if err != nil {
 		return err
 	}
+	filter := c.Query("filter")
 
-	marks, err := h.services.Mark.FindPostsByUserID(ctx, userID)
+	marks, err := h.services.Mark.FindPostsByUserID(ctx, userID, filter)
 	if err != nil {
 		return err
 	}

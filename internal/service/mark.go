@@ -13,7 +13,7 @@ import (
 type Mark interface {
 	CreateMark(ctx context.Context, mark schema.CreateMark) error
 	FindByUserID(ctx context.Context, userID string) ([]schema.MarkResponse, error)
-	FindPostsByUserID(ctx context.Context, userID string) (schema.PostResponseByGroup, error)
+	FindPostsByUserID(ctx context.Context, userID string, filter string) ([]schema.PostResponse, error)
 	DeleteMark(ctx context.Context, markID uint) error
 }
 
@@ -80,36 +80,36 @@ func (s *MarkService) FindByUserID(ctx context.Context, userID string) ([]schema
 	return result, nil
 }
 
-func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string) (schema.PostResponseByGroup, error) {
+func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string, filter string) ([]schema.PostResponse, error) {
 	marks, err := s.markRepo.FindByUserID(ctx, userID)
 	if err != nil {
-		return schema.PostResponseByGroup{}, errors.New("failed to find marks: " + err.Error())
+		return nil, errors.New("failed to find marks: " + err.Error())
 	}
-	result := schema.PostResponseByGroup{}
+	result := make([]schema.PostResponse, 0)
 	for _, mark := range marks {
 		_, err := s.userPostRepo.GetByUserAndPost(ctx, mark.UserID, mark.PostID)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-			return schema.PostResponseByGroup{}, err
+			return nil, err
 		}
 		postAlreadyAdded := false
 		for _, hashtag := range mark.Post.Hashtags {
-			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
+			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) && filter == string(model.HASHTAG_NAME_BESTSELLER) {
 				postAlreadyAdded = true
-				result.Bestsellers = append(result.Bestsellers, schema.PostResponse{
+				result = append(result, schema.PostResponse{
 					Post:   mark.Post,
 					MarkId: &mark.MarkID,
 				})
 			}
-			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
+			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) && filter == string(model.HASHTAG_NAME_PARTNER) {
 				postAlreadyAdded = true
-				result.Partners = append(result.Partners, schema.PostResponse{
+				result = append(result, schema.PostResponse{
 					Post:   mark.Post,
 					MarkId: &mark.MarkID,
 				})
 			}
 		}
 		if !postAlreadyAdded {
-			result.Other = append(result.Other, schema.PostResponse{
+			result = append(result, schema.PostResponse{
 				Post:   mark.Post,
 				MarkId: &mark.MarkID,
 			})

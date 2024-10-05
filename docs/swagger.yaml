@@ -1101,6 +1101,12 @@ paths:
     get:
       consumes:
       - application/json
+      parameters:
+      - description: Bestsellers, Partnerships
+        in: query
+        name: filter
+        required: true
+        type: string
       produces:
       - application/json
       responses:
