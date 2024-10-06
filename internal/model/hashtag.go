@@ -9,6 +9,7 @@ type HashtagName string
 const (
 	HASHTAG_NAME_BESTSELLER HashtagName = "Bestsellers"
 	HASHTAG_NAME_PARTNER    HashtagName = "Partnerships"
+	HASHTAG_NAME_HACO       HashtagName = "Articles from HACO"
 )
 
 type Hashtag struct {

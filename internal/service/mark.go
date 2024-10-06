@@ -87,25 +87,31 @@ func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string, filt
 	}
 	result := make([]schema.PostResponse, 0)
 	for _, mark := range marks {
+		if filter == "all" {
+			result = append(result, schema.PostResponse{
+				Post:   mark.Post,
+				MarkId: &mark.MarkID,
+			})
+			continue
+		}
+
 		_, err := s.userPostRepo.GetByUserAndPost(ctx, mark.UserID, mark.PostID)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
 		}
 		postAlreadyAdded := false
 		for _, hashtag := range mark.Post.Hashtags {
-			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) && filter == string(model.HASHTAG_NAME_BESTSELLER) {
+			if (hashtag.Name == string(model.HASHTAG_NAME_PARTNER) || hashtag.Name == string(model.HASHTAG_NAME_HACO)) && filter == "partner" {
 				postAlreadyAdded = true
 				result = append(result, schema.PostResponse{
 					Post:   mark.Post,
 					MarkId: &mark.MarkID,
 				})
+				break
 			}
-			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) && filter == string(model.HASHTAG_NAME_PARTNER) {
+			if (hashtag.Name == string(model.HASHTAG_NAME_PARTNER) || hashtag.Name == string(model.HASHTAG_NAME_HACO)) && filter == "post" {
 				postAlreadyAdded = true
-				result = append(result, schema.PostResponse{
-					Post:   mark.Post,
-					MarkId: &mark.MarkID,
-				})
+				break
 			}
 		}
 		if !postAlreadyAdded {

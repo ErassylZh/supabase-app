@@ -950,7 +950,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bestsellers, Partnerships",
+                        "description": "all, post, partner",
                         "name": "filter",
                         "in": "query",
                         "required": true

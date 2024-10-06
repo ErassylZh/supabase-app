@@ -59,7 +59,7 @@ func (h *Handler) CreateMark(c *gin.Context) error {
 // @Success 200 {object} schema.Response[[]schema.PostResponse]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @Param filter query string true "Bestsellers, Partnerships"
+// @Param filter query string true "all, post, partner"
 // @tags mark
 // @Router /api/v1/user/mark [get]
 func (h *Handler) FindMarksByUserID(c *gin.Context) error {

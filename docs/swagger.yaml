@@ -1102,7 +1102,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Bestsellers, Partnerships
+      - description: all, post, partner
         in: query
         name: filter
         required: true
