@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
 	"work-project/internal/model"
 	"work-project/internal/repository"
@@ -33,7 +32,10 @@ func (s *UserPostService) Create(ctx context.Context, post model.UserPost) (mode
 func (s *UserPostService) AddQuizPoints(ctx context.Context, createUserPost model.UserPost) (model.UserPost, error) {
 	up, err := s.userPostRepo.GetByUserAndPost(ctx, createUserPost.UserId, createUserPost.PostId)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return up, fmt.Errorf("user not readed this post")
+		up = model.UserPost{
+			PostId: createUserPost.PostId,
+			UserId: createUserPost.UserId,
+		}
 	} else if err != nil {
 		return model.UserPost{}, err
 	}
@@ -54,7 +56,7 @@ func (s *UserPostService) AddQuizPoints(ctx context.Context, createUserPost mode
 
 	up.QuizPoints = createUserPost.QuizPoints
 	up.QuizSapphires = createUserPost.QuizSapphires
-	return s.userPostRepo.Update(ctx, up)
+	return s.userPostRepo.Create(ctx, up)
 }
 
 func (s *UserPostService) GetByUserAndPost(ctx context.Context, userId string, postId uint) (model.UserPost, error) {
