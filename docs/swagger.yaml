@@ -315,6 +315,8 @@ definitions:
         type: integer
       post_order:
         type: integer
+      quiz_passed:
+        type: boolean
       quiz_time:
         type: integer
       rating_status:

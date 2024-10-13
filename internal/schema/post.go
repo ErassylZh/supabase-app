@@ -7,6 +7,7 @@ type PostResponse struct {
 	IsMarked      bool  `json:"is_marked"`
 	MarkId        *uint `json:"mark_id"`
 	IsAlreadyRead bool  `json:"is_already_read"`
+	QuizPassed    bool  `json:"quiz_passed"`
 }
 
 type PostResponseByGroup struct {

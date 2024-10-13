@@ -68,8 +68,10 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds
 			return nil, err
 		}
 		postIdRead := make(map[uint]bool)
+		postIdPassed := make(map[uint]bool)
 		for _, up := range userPosts {
 			postIdRead[up.PostId] = true
+			postIdPassed[up.PostId] = up.QuizPoints != nil || up.QuizSapphires != nil
 		}
 
 		for i := range posts {
@@ -79,6 +81,8 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds
 
 			_, exists = postIdRead[posts[i].PostID]
 			posts[i].IsAlreadyRead = exists
+			_, exists = postIdPassed[posts[i].PostID]
+			posts[i].QuizPassed = exists
 		}
 	}
 	if postType == "all" {
@@ -192,8 +196,10 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, h
 		return schema.PostResponseByGroup{}, err
 	}
 	postIdRead := make(map[uint]bool)
+	postIdPassed := make(map[uint]bool)
 	for _, up := range userPosts {
 		postIdRead[up.PostId] = true
+		postIdPassed[up.PostId] = up.QuizPoints != nil || up.QuizSapphires != nil
 	}
 
 	for i := range posts {
@@ -203,6 +209,8 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, h
 
 		_, exists = postIdRead[posts[i].PostID]
 		posts[i].IsAlreadyRead = exists
+		_, exists = postIdPassed[posts[i].PostID]
+		posts[i].QuizPassed = exists
 	}
 
 	result := schema.PostResponseByGroup{}

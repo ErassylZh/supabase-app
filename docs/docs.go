@@ -1455,6 +1455,9 @@ const docTemplate = `{
                 "post_order": {
                     "type": "integer"
                 },
+                "quiz_passed": {
+                    "type": "boolean"
+                },
                 "quiz_time": {
                     "type": "integer"
                 },
