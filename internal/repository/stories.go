@@ -53,6 +53,7 @@ func (r *StoriesDB) GetAllActive(ctx context.Context) (stories []model.Stories, 
 		return db.Order("page_order ASC")
 	}).
 		Where("start_time < ? and end_time > ?", time.Now(), time.Now()).
+		Order("start_time").
 		Find(&stories).
 		Error
 	if err != nil {
