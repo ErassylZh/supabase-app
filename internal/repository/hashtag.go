@@ -72,8 +72,14 @@ func (r *HashtagDB) CreateMany(ctx context.Context, hashtags []model.Hashtag) ([
 func (r *HashtagDB) UpdateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error) {
 	db := r.db.WithContext(ctx)
 
-	for _, post := range hashtags {
-		if err := db.Model(&model.Hashtag{}).Where("hashtag_id = ?", post.HashtagID).Updates(&post).Error; err != nil {
+	for _, hashtag := range hashtags {
+		if err := db.Model(&model.Hashtag{}).Where("hashtag_id = ?", hashtag.HashtagID).Updates(map[string]interface{}{
+			"name":       hashtag.Name,
+			"name_ru":    hashtag.NameRu,
+			"name_kz":    hashtag.NameKz,
+			"image_path": hashtag.ImagePath,
+			"is_visible": hashtag.IsVisible,
+		}).Error; err != nil {
 			return nil, err
 		}
 	}

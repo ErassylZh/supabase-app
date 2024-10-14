@@ -642,10 +642,12 @@ func (h *AirTableSync) syncHashtags(ctx context.Context) error {
 			}
 			if !strings.EqualFold(data.NameRu, hashtagsAirtableByName[key].Fields.NameRu) ||
 				!strings.EqualFold(data.NameKz, hashtagsAirtableByName[key].Fields.NameKz) ||
+				data.IsVisible != hashtagsAirtableByName[key].Fields.IsVisible ||
 				(data.ImagePath == nil && images != nil && len(images) > 0) ||
 				!(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
 				data.NameRu = hashtagsAirtableByName[key].Fields.NameRu
 				data.NameKz = hashtagsAirtableByName[key].Fields.NameKz
+				data.IsVisible = hashtagsAirtableByName[key].Fields.IsVisible
 				if (data.ImagePath == nil && images != nil && len(images) > 0) ||
 					(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
 					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_HASHTAG), images[0].FileName, images[0].Url)

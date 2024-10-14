@@ -69,10 +69,11 @@ type Stories struct {
 }
 
 type Hashtag struct {
-	Name   string   `json:"name"`
-	NameRu string   `json:"name_ru"`
-	NameKz string   `json:"name_kz"`
-	Image  *[]Image `json:"image"`
+	Name      string   `json:"name"`
+	NameRu    string   `json:"name_ru"`
+	NameKz    string   `json:"name_kz"`
+	IsVisible bool     `json:"is_visible"`
+	Image     *[]Image `json:"image"`
 }
 
 type Collection struct {
