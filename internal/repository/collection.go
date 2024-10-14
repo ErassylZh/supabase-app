@@ -107,7 +107,15 @@ func (r *CollectionDB) UpdateMany(ctx context.Context, collections []model.Colle
 	db := r.db.WithContext(ctx)
 
 	for _, post := range collections {
-		if err := db.Model(&model.Collection{}).Where("collection_id = ?", post.CollectionID).Updates(&post).Error; err != nil {
+		if err := db.Model(&model.Collection{}).Where("collection_id = ?", post.CollectionID).Updates(map[string]interface{}{
+			"name":              post.Name,
+			"name_ru":           post.NameRu,
+			"name_kz":           post.NameKz,
+			"image_path":        post.ImagePath,
+			"image_path_kz":     post.ImagePathKz,
+			"image_path_ru":     post.ImagePathRu,
+			"is_recommendation": post.IsRecommendation, // Явное указание поля
+		}).Error; err != nil {
 			return nil, err
 		}
 	}
