@@ -10,7 +10,7 @@ import (
 )
 
 type Post interface {
-	GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string, search string, language string) ([]schema.PostResponse, error)
+	GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string, search string, language string, postId *uint) ([]schema.PostResponse, error)
 	SaveQuizPoints(ctx context.Context, data model.UserPost) (model.UserPost, error)
 	GetArchive(ctx context.Context, userId string, language string) ([]model.Post, error)
 	CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error)
@@ -45,8 +45,8 @@ func (u *PostUsecase) ReadPost(ctx context.Context, post model.UserPost) (model.
 	return postAlreadyReaded, nil
 }
 
-func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string, search string, language string) ([]schema.PostResponse, error) {
-	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds, search, language)
+func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string, search string, language string, postId *uint) ([]schema.PostResponse, error) {
+	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds, search, language, postId)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +155,7 @@ func (u *PostUsecase) CheckQuiz(ctx context.Context, userId string, postId uint)
 }
 
 func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, language string) (schema.PostResponseByGroup, error) {
-	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds, "", language)
+	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds, "", language, nil)
 	if err != nil {
 		return schema.PostResponseByGroup{}, err
 	}

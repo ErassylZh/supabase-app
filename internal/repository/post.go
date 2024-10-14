@@ -11,7 +11,7 @@ type Post interface {
 	CreateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
 	GetAll(ctx context.Context) ([]model.Post, error)
 	UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
-	GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string) ([]model.Post, error)
+	GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, postId *uint) ([]model.Post, error)
 	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 	DeleteAllNotInUuid(ctx context.Context, uuids []string) error
 	GetAllGroupedByPostId(ctx context.Context, id uint) ([]model.Post, error)
@@ -59,7 +59,7 @@ func (r *PostDb) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Po
 	}
 	return posts, nil
 }
-func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string) (posts []model.Post, err error) {
+func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, postId *uint) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 
 	query := db.Model(&model.Post{})
@@ -81,6 +81,9 @@ func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collec
 	}
 	if len(language) > 0 {
 		query = query.Where("public.post.language = ?", language)
+	}
+	if postId != nil {
+		query = query.Where("public.post.post_id = ?", *postId)
 	}
 	query = query.
 		Where("public.post.status = ?", model.PRODUCT_STATUS_PUBLISH).

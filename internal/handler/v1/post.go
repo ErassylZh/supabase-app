@@ -224,14 +224,26 @@ func (h *Handler) CheckQuiz(c *gin.Context) error {
 // @Param collection_id query string false "collection_id"
 // @Param language query string true "language"
 // @Param search query string false "search"
+// @Param search post_id int false "post_id"
 // @Param post_type query string true "all, post, partner"
 // @tags post
 // @Router /api/v1/post/filter [get]
 func (h *Handler) GetFilterPosts(c *gin.Context) error {
 	ctx := c.Request.Context()
 	var userId *string
+	var postId *uint
 	token := c.GetHeader("Authorization")
 	language := c.Query("language")
+	postIdStr := c.Query("post_id")
+	if len(c.Query("post_id")) > 0 {
+		tempPostId, err := strconv.ParseUint(postIdStr, 10, 64)
+		if err != nil {
+			return err
+		}
+		tempPostIdUint := uint(tempPostId)
+		postId = &tempPostIdUint
+	}
+
 	hashtagIDsStr := c.Query("hashtag_id")
 	hashtagIds := make([]uint, 0)
 	for _, msi := range strings.Split(hashtagIDsStr, ",") {
@@ -265,7 +277,7 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds, postType, search, language)
+	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds, postType, search, language, postId)
 	if err != nil {
 		return err
 	}
