@@ -8,7 +8,7 @@ import (
 )
 
 type Post interface {
-	GetListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, id *uint) ([]schema.PostResponse, error)
+	GetListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, postIds []uint) ([]schema.PostResponse, error)
 	GetByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 }
 
@@ -20,8 +20,8 @@ func NewPostService(postRepo repository.Post) *PostService {
 	return &PostService{postRepo: postRepo}
 }
 
-func (s *PostService) GetListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, postId *uint) ([]schema.PostResponse, error) {
-	posts, err := s.postRepo.GetAllForListing(ctx, hashtagIds, collectionIds, search, language, postId)
+func (s *PostService) GetListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, postIds []uint) ([]schema.PostResponse, error) {
+	posts, err := s.postRepo.GetAllForListing(ctx, hashtagIds, collectionIds, search, language, postIds)
 	if err != nil {
 		return nil, err
 	}

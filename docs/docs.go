@@ -425,6 +425,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "post_id",
+                        "name": "post_ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "all, post, partner",
                         "name": "post_type",
                         "in": "query",
@@ -1034,6 +1040,9 @@ const docTemplate = `{
                 },
                 "image_path": {
                     "type": "string"
+                },
+                "is_visible": {
+                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"
