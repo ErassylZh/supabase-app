@@ -19,5 +19,5 @@ func NewHashtagService(hashtagRepo repository.Hashtag) *HashtagService {
 }
 
 func (s *HashtagService) GetAll(ctx context.Context) ([]model.Hashtag, error) {
-	return s.hashtagRepo.GetAll(ctx)
+	return s.hashtagRepo.GetVisible(ctx)
 }

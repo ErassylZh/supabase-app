@@ -13,6 +13,7 @@ type Hashtag interface {
 	CreateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error)
 	UpdateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error)
 	DeleteMany(ctx context.Context, hashtagIds []uint) error
+	GetVisible(ctx context.Context) ([]model.Hashtag, error)
 }
 
 type HashtagDB struct {
@@ -51,6 +52,18 @@ func (r *HashtagDB) GetAll(ctx context.Context) (hashtags []model.Hashtag, err e
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Hashtag{})
 	err = q.Find(&hashtags).
+		Error
+	if err != nil {
+		return hashtags, err
+	}
+	return hashtags, nil
+}
+
+func (r *HashtagDB) GetVisible(ctx context.Context) (hashtags []model.Hashtag, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Hashtag{})
+	err = q.Where("is_visible").
+		Find(&hashtags).
 		Error
 	if err != nil {
 		return hashtags, err
