@@ -108,12 +108,13 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 		if product, exists := productsDbBySku[sku]; exists {
 			if product.Point != productsAirtableBySku[sku].Fields.Point ||
 				product.Count != productsAirtableBySku[sku].Fields.Count ||
-				product.Description != productsAirtableBySku[sku].Fields.Description ||
-				product.Title != productsAirtableBySku[sku].Fields.Title ||
+				!strings.EqualFold(product.Description, productsAirtableBySku[sku].Fields.Description) ||
+				!strings.EqualFold(product.Title, productsAirtableBySku[sku].Fields.Title) ||
 				product.Sapphire != productsAirtableBySku[sku].Fields.Sapphire ||
-				product.SellType != productsAirtableBySku[sku].Fields.SellType ||
-				product.ProductType != productsAirtableBySku[sku].Fields.ProductType ||
-				product.Status != productsAirtableBySku[sku].Fields.Status {
+				!strings.EqualFold(product.SellType, productsAirtableBySku[sku].Fields.SellType) ||
+				!strings.EqualFold(product.ProductType, productsAirtableBySku[sku].Fields.ProductType) ||
+				!strings.EqualFold(product.Status, productsAirtableBySku[sku].Fields.Status) ||
+				!strings.EqualFold(product.Offer, productsAirtableBySku[sku].Fields.Offer) {
 
 				product.Point = productsAirtableBySku[sku].Fields.Point
 				product.Sapphire = productsAirtableBySku[sku].Fields.Sapphire
@@ -123,6 +124,7 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 				product.SellType = productsAirtableBySku[sku].Fields.SellType
 				product.ProductType = productsAirtableBySku[sku].Fields.ProductType
 				product.Status = productsAirtableBySku[sku].Fields.Status
+				product.Offer = productsAirtableBySku[sku].Fields.Offer
 				updateProducts = append(updateProducts, product)
 			}
 			continue
@@ -138,6 +140,7 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 			AirtableProductId: productsAirtableBySku[sku].Id,
 			SellType:          productsAirtableBySku[sku].Fields.SellType,
 			ProductType:       productsAirtableBySku[sku].Fields.ProductType,
+			Offer:             productsAirtableBySku[sku].Fields.Offer,
 		})
 	}
 	if len(newProducts) > 0 {

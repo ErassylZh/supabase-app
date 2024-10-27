@@ -40,6 +40,7 @@ type Product struct {
 	Sku               string    `gorm:"column:sku" json:"sku"`
 	ProductType       string    `gorm:"column:product_type" json:"product_type"`
 	SellType          string    `gorm:"column:sell_type" json:"sell_type"`
+	Offer             string    `gorm:"column:offer" json:"offer"`
 
 	Images []Image `json:"images"`
 }
