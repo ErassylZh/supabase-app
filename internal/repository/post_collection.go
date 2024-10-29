@@ -12,15 +12,15 @@ type PostCollection interface {
 	GetByPostId(ctx context.Context, postId uint) ([]model.PostCollection, error)
 }
 
-type PostCollectionDb struct {
+type PostCollectionDB struct {
 	db *gorm.DB
 }
 
-func NewPostCollectionDb(db *gorm.DB) *PostCollectionDb {
-	return &PostCollectionDb{db: db}
+func NewPostCollectionDB(db *gorm.DB) *PostCollectionDB {
+	return &PostCollectionDB{db: db}
 }
 
-func (r *PostCollectionDb) CreateMany(ctx context.Context, posts []model.PostCollection) ([]model.PostCollection, error) {
+func (r *PostCollectionDB) CreateMany(ctx context.Context, posts []model.PostCollection) ([]model.PostCollection, error) {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.PostCollection{}).
 		Create(&posts).
@@ -31,7 +31,7 @@ func (r *PostCollectionDb) CreateMany(ctx context.Context, posts []model.PostCol
 	return posts, nil
 }
 
-func (r *PostCollectionDb) DeleteByPostId(ctx context.Context, postId uint) error {
+func (r *PostCollectionDB) DeleteByPostId(ctx context.Context, postId uint) error {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.PostCollection{}).
 		Where("post_id = ?", postId).
@@ -43,7 +43,7 @@ func (r *PostCollectionDb) DeleteByPostId(ctx context.Context, postId uint) erro
 	return nil
 }
 
-func (r *PostCollectionDb) GetByPostId(ctx context.Context, postId uint) ([]model.PostCollection, error) {
+func (r *PostCollectionDB) GetByPostId(ctx context.Context, postId uint) ([]model.PostCollection, error) {
 	db := r.db.WithContext(ctx)
 	var data []model.PostCollection
 	err := db.Model(&model.PostCollection{}).

@@ -26,6 +26,8 @@ type Repositories struct {
 	UserPost         UserPost
 	Collection       Collection
 	PostCollection   PostCollection
+	Order            Order
+	OrderProduct     OrderProduct
 
 	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
@@ -46,18 +48,20 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		Balance:           NewBalanceDB(db),
 		Transaction:       NewTransactionDB(db),
 		UserDeviceToken:   NewUserDeviceTokenDB(db),
-		Product:           NewProductDb(db),
-		Image:             NewImageDb(db),
-		Post:              NewPostDb(db),
-		PostHashtag:       NewPostHashtagDb(db),
+		Product:           NewProductDB(db),
+		Image:             NewImageDB(db),
+		Post:              NewPostDB(db),
+		PostHashtag:       NewPostHashtagDB(db),
 		Hashtag:           NewHashtagDB(db),
 		Stories:           NewStoriesDB(db),
 		StoryPage:         NewStoryPageDB(db),
 		StoryPageUser:     NewStoryPageUserDB(db),
-		Mark:              NewMarkDb(db),
+		Mark:              NewMarkDB(db),
 		UserPost:          NewUserPostRepository(db),
 		Collection:        NewCollectionDB(db),
-		PostCollection:    NewPostCollectionDb(db),
+		PostCollection:    NewPostCollectionDB(db),
+		Order:             NewOrderDB(db),
+		OrderProduct:      NewOrderProductDB(db),
 		FirebaseMessaging: NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 		Airtable:          airtable,
 		StorageClient:     NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),

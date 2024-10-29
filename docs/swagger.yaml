@@ -134,6 +134,39 @@ definitions:
       uuid:
         type: string
     type: object
+  model.Product:
+    properties:
+      airtable_product_id:
+        type: string
+      count:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/model.Image'
+        type: array
+      offer:
+        type: string
+      point:
+        type: integer
+      product_id:
+        type: integer
+      product_type:
+        type: string
+      sapphire:
+        type: integer
+      sell_type:
+        type: string
+      sku:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
   model.PushNotification:
     properties:
       condition:
@@ -347,6 +380,11 @@ definitions:
           $ref: '#/definitions/schema.PostResponse'
         type: array
     type: object
+  schema.ProductBuyRequest:
+    properties:
+      product_id:
+        type: integer
+    type: object
   schema.ReadPost:
     properties:
       post_id:
@@ -381,6 +419,17 @@ definitions:
       result:
         items:
           $ref: '#/definitions/model.Mark'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_model_Product:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.Product'
         type: array
       status:
         type: boolean
@@ -861,6 +910,51 @@ paths:
       summary: сохраниь что квиз прочитан
       tags:
       - post
+  /api/v1/product:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: список товаров
+      tags:
+      - product
+  /api/v1/product/buy:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: post
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.ProductBuyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: покупка товара
+      tags:
+      - product
   /api/v1/recommendation:
     get:
       consumes:

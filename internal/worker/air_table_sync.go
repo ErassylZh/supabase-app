@@ -93,19 +93,19 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 		productsAirtableBySku[product.Fields.Sku] = product
 	}
 
-	productsDb, err := h.product.GetAll(ctx)
+	productsDB, err := h.product.GetAll(ctx)
 	if err != nil {
 		return err
 	}
-	productsDbBySku := make(map[string]model.Product)
-	for _, product := range productsDb {
-		productsDbBySku[product.Sku] = product
+	productsDBBySku := make(map[string]model.Product)
+	for _, product := range productsDB {
+		productsDBBySku[product.Sku] = product
 	}
 
 	newProducts := make([]model.Product, 0)
 	updateProducts := make([]model.Product, 0)
 	for sku := range productsAirtableBySku {
-		if product, exists := productsDbBySku[sku]; exists {
+		if product, exists := productsDBBySku[sku]; exists {
 			if product.Point != productsAirtableBySku[sku].Fields.Point ||
 				product.Count != productsAirtableBySku[sku].Fields.Count ||
 				!strings.EqualFold(product.Description, productsAirtableBySku[sku].Fields.Description) ||
@@ -198,21 +198,21 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 		postsAirtableByCode[post.Fields.Code] = post
 	}
 
-	postsDb, err := h.post.GetAll(ctx)
+	postsDB, err := h.post.GetAll(ctx)
 	if err != nil {
 		return err
 	}
 
-	postsDbByCode := make(map[string]model.Post)
-	for _, post := range postsDb {
-		postsDbByCode[post.Code] = post
+	postsDBByCode := make(map[string]model.Post)
+	for _, post := range postsDB {
+		postsDBByCode[post.Code] = post
 	}
 
 	newPosts := make([]model.Post, 0)
 	updatePosts := make([]model.Post, 0)
 	for code := range postsAirtableByCode {
-		if post, exists := postsDbByCode[code]; exists {
-			imagesDb, err := h.image.GetAllByPostId(ctx, post.PostID)
+		if post, exists := postsDBByCode[code]; exists {
+			imagesDB, err := h.image.GetAllByPostId(ctx, post.PostID)
 			if err != nil {
 				return err
 			}
@@ -220,7 +220,7 @@ func (h *AirTableSync) syncPosts(ctx context.Context) error {
 			airtableImages := postsAirtableByCode[code].Fields.Image
 			airtableLogos := postsAirtableByCode[code].Fields.Logo
 
-			imagesNeedUpdate := h.checkImageUpdates(imagesDb, airtableImages, airtableLogos)
+			imagesNeedUpdate := h.checkImageUpdates(imagesDB, airtableImages, airtableLogos)
 
 			if imagesNeedUpdate {
 				err = h.image.DeleteByPostId(ctx, post.PostID)
@@ -458,13 +458,13 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 		storiesAirtableByTitle[story.Fields.Title] = append(storiesAirtableByTitle[story.Fields.Title], story)
 	}
 
-	storiesDb, err := h.stories.GetAll(ctx)
-	storiesDbByTitle := make(map[string]model.Stories)
-	for _, story := range storiesDb {
-		storiesDbByTitle[story.Title] = story
+	storiesDB, err := h.stories.GetAll(ctx)
+	storiesDBByTitle := make(map[string]model.Stories)
+	for _, story := range storiesDB {
+		storiesDBByTitle[story.Title] = story
 	}
 	storyPagesByUuid := make(map[string]model.StoryPage)
-	for _, story := range storiesDb {
+	for _, story := range storiesDB {
 		for _, sp := range story.StoryPages {
 			storyPagesByUuid[sp.Uuid] = sp
 		}
@@ -474,7 +474,7 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 	updateStories := make([]model.Stories, 0)
 	updateStoryPages := make([]model.StoryPage, 0)
 	for key := range storiesAirtableByTitle {
-		if _, ok := storiesDbByTitle[key]; ok {
+		if _, ok := storiesDBByTitle[key]; ok {
 			for _, data := range storiesAirtableByTitle[key] {
 				if data.Fields.Text != storyPagesByUuid[data.Fields.Uuid].Text ||
 					data.Fields.Order != storyPagesByUuid[data.Fields.Uuid].PageOrder ||
@@ -490,14 +490,14 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 					})
 				}
 			}
-			if storiesDbByTitle[key].StartTime != storiesAirtableByTitle[key][0].Fields.StartTime ||
-				storiesDbByTitle[key].EndTime != storiesAirtableByTitle[key][0].Fields.EndTime ||
-				(storiesAirtableByTitle[key][0].Fields.Image != nil && !strings.Contains(storiesDbByTitle[key].IconPath, storiesAirtableByTitle[key][0].Fields.Image[0].FileName)) {
+			if storiesDBByTitle[key].StartTime != storiesAirtableByTitle[key][0].Fields.StartTime ||
+				storiesDBByTitle[key].EndTime != storiesAirtableByTitle[key][0].Fields.EndTime ||
+				(storiesAirtableByTitle[key][0].Fields.Image != nil && !strings.Contains(storiesDBByTitle[key].IconPath, storiesAirtableByTitle[key][0].Fields.Image[0].FileName)) {
 
-				temp := storiesDbByTitle[key]
+				temp := storiesDBByTitle[key]
 				temp.StartTime = storiesAirtableByTitle[key][0].Fields.StartTime
 				temp.EndTime = storiesAirtableByTitle[key][0].Fields.EndTime
-				if storiesAirtableByTitle[key][0].Fields.Icon != nil && !strings.Contains(storiesDbByTitle[key].IconPath, (*storiesAirtableByTitle[key][0].Fields.Icon)[0].FileName) {
+				if storiesAirtableByTitle[key][0].Fields.Icon != nil && !strings.Contains(storiesDBByTitle[key].IconPath, (*storiesAirtableByTitle[key][0].Fields.Icon)[0].FileName) {
 
 					images := *storiesAirtableByTitle[key][0].Fields.Icon
 					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), images[0].FileName, images[0].Url)
@@ -580,7 +580,7 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 	}
 
 	deleteStoryTitles := make([]string, 0)
-	for key := range storiesDbByTitle {
+	for key := range storiesDBByTitle {
 		if _, exists := storiesAirtableByTitle[key]; !exists {
 			deleteStoryTitles = append(deleteStoryTitles, key)
 		}
@@ -624,21 +624,21 @@ func (h *AirTableSync) syncHashtags(ctx context.Context) error {
 		hashtagsAirtableByName[post.Fields.Name] = post
 	}
 
-	hashtagsDb, err := h.hashtag.GetAll(ctx)
+	hashtagsDB, err := h.hashtag.GetAll(ctx)
 	if err != nil {
 		return err
 	}
 
-	hashtagsDbByName := make(map[string]model.Hashtag)
-	for _, hashtag := range hashtagsDb {
-		hashtagsDbByName[hashtag.Name] = hashtag
+	hashtagsDBByName := make(map[string]model.Hashtag)
+	for _, hashtag := range hashtagsDB {
+		hashtagsDBByName[hashtag.Name] = hashtag
 	}
 
 	createHashtags := make([]model.Hashtag, 0)
 	updateHashtags := make([]model.Hashtag, 0)
 	deleteHashtags := make([]model.Hashtag, 0)
 	for key := range hashtagsAirtableByName {
-		if data, ok := hashtagsDbByName[key]; ok {
+		if data, ok := hashtagsDBByName[key]; ok {
 			var images []airtable.Image
 			if hashtagsAirtableByName[key].Fields.Image != nil {
 				images = *hashtagsAirtableByName[key].Fields.Image
@@ -678,11 +678,11 @@ func (h *AirTableSync) syncHashtags(ctx context.Context) error {
 		}
 		createHashtags = append(createHashtags, hashtag)
 	}
-	for key := range hashtagsDbByName {
+	for key := range hashtagsDBByName {
 		if _, ok := hashtagsAirtableByName[key]; ok {
 			continue
 		}
-		deleteHashtags = append(deleteHashtags, hashtagsDbByName[key])
+		deleteHashtags = append(deleteHashtags, hashtagsDBByName[key])
 	}
 
 	if len(createHashtags) > 0 {
@@ -722,21 +722,21 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 		collectionsAirtableByName[post.Fields.Name] = post
 	}
 
-	collectionsDb, err := h.collection.GetAll(ctx)
+	collectionsDB, err := h.collection.GetAll(ctx)
 	if err != nil {
 		return err
 	}
 
-	collectionDbByName := make(map[string]model.Collection)
-	for _, hashtag := range collectionsDb {
-		collectionDbByName[hashtag.Name] = hashtag
+	collectionDBByName := make(map[string]model.Collection)
+	for _, hashtag := range collectionsDB {
+		collectionDBByName[hashtag.Name] = hashtag
 	}
 
 	createCollections := make([]model.Collection, 0)
 	updateCollections := make([]model.Collection, 0)
 	deleteCollections := make([]model.Collection, 0)
 	for key := range collectionsAirtableByName {
-		if data, ok := collectionDbByName[key]; ok {
+		if data, ok := collectionDBByName[key]; ok {
 			var images []airtable.Image
 			if collectionsAirtableByName[key].Fields.Image != nil {
 				images = *collectionsAirtableByName[key].Fields.Image
@@ -819,11 +819,11 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 		}
 		createCollections = append(createCollections, collection)
 	}
-	for key := range collectionDbByName {
+	for key := range collectionDBByName {
 		if _, ok := collectionsAirtableByName[key]; ok {
 			continue
 		}
-		deleteCollections = append(deleteCollections, collectionDbByName[key])
+		deleteCollections = append(deleteCollections, collectionDBByName[key])
 	}
 
 	if len(createCollections) > 0 {
@@ -883,8 +883,8 @@ func (h *AirTableSync) generatePostImages(ctx context.Context, postID uint, airt
 	return imagesPost
 }
 
-func (h *AirTableSync) checkImageUpdates(imagesDb []model.Image, airtableImages []airtable.Image, airtableLogos []airtable.Image) bool {
-	if len(imagesDb) != len(airtableImages)+len(airtableLogos) {
+func (h *AirTableSync) checkImageUpdates(imagesDB []model.Image, airtableImages []airtable.Image, airtableLogos []airtable.Image) bool {
+	if len(imagesDB) != len(airtableImages)+len(airtableLogos) {
 		return true
 	}
 
@@ -896,8 +896,8 @@ func (h *AirTableSync) checkImageUpdates(imagesDb []model.Image, airtableImages 
 		airtableFiles[logo.FileName] = true
 	}
 
-	for _, imgDb := range imagesDb {
-		if !airtableFiles[imgDb.FileName] {
+	for _, imgDB := range imagesDB {
+		if !airtableFiles[imgDB.FileName] {
 			return true
 		}
 	}

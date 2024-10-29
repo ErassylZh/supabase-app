@@ -14,6 +14,7 @@ type (
 		Database    *Database
 		Security    *Security
 		Integration *Integration
+		Email       *Email
 	}
 
 	Service struct {
@@ -34,6 +35,11 @@ type (
 		AirtableApiKey             string `envconfig:"AIRTABLE_API_KEY"`
 		PushNotificationReadPeriod int    `envconfig:"PUSH_NOTIFICATION_READ_PERIOD" default:"300"`
 		AirtableSyncPeriod         int    `envconfig:"AIRTABLE_SYNC_PERIOD" default:"300"`
+	}
+	Email struct {
+		Username string `envconfig:"EMAIL_USERNAME" required:"false"`
+		Password string `envconfig:"EMAIL_PASSWORD" required:"false"`
+		Addr     string `envconfig:"EMAIL_ADDR" default:"smtp.office365.com:587"`
 	}
 )
 

@@ -8,6 +8,7 @@ import (
 
 type Product interface {
 	GetListing(ctx context.Context) ([]model.Product, error)
+	GetProduct(ctx context.Context, id uint) (model.Product, error)
 }
 
 type ProductService struct {
@@ -20,4 +21,8 @@ func NewProductService(productRepo repository.Product) *ProductService {
 
 func (s *ProductService) GetListing(ctx context.Context) ([]model.Product, error) {
 	return s.productRepo.GetAllListing(ctx)
+}
+
+func (s *ProductService) GetProduct(ctx context.Context, id uint) (model.Product, error) {
+	return s.productRepo.GetById(ctx, id)
 }

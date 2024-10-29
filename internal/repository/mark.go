@@ -14,15 +14,15 @@ type Mark interface {
 	FindByUserAndPost(ctx context.Context, userId string, postId uint) (model.Mark, error)
 }
 
-type MarkDb struct {
+type MarkDB struct {
 	db *gorm.DB
 }
 
-func NewMarkDb(db *gorm.DB) *MarkDb {
-	return &MarkDb{db: db}
+func NewMarkDB(db *gorm.DB) *MarkDB {
+	return &MarkDB{db: db}
 }
 
-func (r *MarkDb) Create(ctx context.Context, marks model.Mark) error {
+func (r *MarkDB) Create(ctx context.Context, marks model.Mark) error {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.Mark{}).
 		Create(&marks).
@@ -33,7 +33,7 @@ func (r *MarkDb) Create(ctx context.Context, marks model.Mark) error {
 	return nil
 }
 
-func (r *MarkDb) FindByUserID(ctx context.Context, userID string) ([]model.Mark, error) {
+func (r *MarkDB) FindByUserID(ctx context.Context, userID string) ([]model.Mark, error) {
 	var marks []model.Mark
 	db := r.db.WithContext(ctx)
 	err := db.Where("user_id = ?", userID).
@@ -52,7 +52,7 @@ func (r *MarkDb) FindByUserID(ctx context.Context, userID string) ([]model.Mark,
 	return marks, nil
 }
 
-func (r *MarkDb) DeleteMark(ctx context.Context, markID uint) error {
+func (r *MarkDB) DeleteMark(ctx context.Context, markID uint) error {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Mark{})
 	err := q.Where("mark_id = ?", markID).Delete(&model.Mark{}).Error
@@ -62,7 +62,7 @@ func (r *MarkDb) DeleteMark(ctx context.Context, markID uint) error {
 	return nil
 }
 
-func (r *MarkDb) FindByUserAndPost(ctx context.Context, userId string, postId uint) (mark model.Mark, err error) {
+func (r *MarkDB) FindByUserAndPost(ctx context.Context, userId string, postId uint) (mark model.Mark, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Mark{})
 	err = q.Where("post_id = ? and user_id = ?", postId, userId).

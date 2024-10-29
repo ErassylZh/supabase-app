@@ -17,15 +17,15 @@ type Post interface {
 	GetAllGroupedByPostId(ctx context.Context, id uint) ([]model.Post, error)
 }
 
-type PostDb struct {
+type PostDB struct {
 	db *gorm.DB
 }
 
-func NewPostDb(db *gorm.DB) *PostDb {
-	return &PostDb{db: db}
+func NewPostDB(db *gorm.DB) *PostDB {
+	return &PostDB{db: db}
 }
 
-func (r *PostDb) CreateMany(ctx context.Context, posts []model.Post) ([]model.Post, error) {
+func (r *PostDB) CreateMany(ctx context.Context, posts []model.Post) ([]model.Post, error) {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.Post{}).
 		Create(&posts).
@@ -36,7 +36,7 @@ func (r *PostDb) CreateMany(ctx context.Context, posts []model.Post) ([]model.Po
 	return posts, nil
 }
 
-func (r *PostDb) GetAll(ctx context.Context) (posts []model.Post, err error) {
+func (r *PostDB) GetAll(ctx context.Context) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 	err = db.Model(&model.Post{}).
 		Preload("Hashtags").
@@ -49,7 +49,7 @@ func (r *PostDb) GetAll(ctx context.Context) (posts []model.Post, err error) {
 	return posts, nil
 }
 
-func (r *PostDb) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error) {
+func (r *PostDB) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error) {
 	db := r.db.WithContext(ctx)
 
 	for _, post := range posts {
@@ -59,7 +59,7 @@ func (r *PostDb) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Po
 	}
 	return posts, nil
 }
-func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, postIds []uint) (posts []model.Post, err error) {
+func (r *PostDB) GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, postIds []uint) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 
 	query := db.Model(&model.Post{})
@@ -101,7 +101,7 @@ func (r *PostDb) GetAllForListing(ctx context.Context, hashtagIds []uint, collec
 	return posts, nil
 }
 
-func (r *PostDb) GetAllByIds(ctx context.Context, ids []uint) (posts []model.Post, err error) {
+func (r *PostDB) GetAllByIds(ctx context.Context, ids []uint) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 	err = db.Model(&model.Post{}).
 		Where("status = ? and post_id in (?)", model.PRODUCT_STATUS_PUBLISH, ids).
@@ -117,7 +117,7 @@ func (r *PostDb) GetAllByIds(ctx context.Context, ids []uint) (posts []model.Pos
 	return posts, nil
 }
 
-func (r *PostDb) DeleteAllNotInUuid(ctx context.Context, uuids []string) error {
+func (r *PostDB) DeleteAllNotInUuid(ctx context.Context, uuids []string) error {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.Post{}).
 		Where("code not in (?)", uuids).
@@ -130,7 +130,7 @@ func (r *PostDb) DeleteAllNotInUuid(ctx context.Context, uuids []string) error {
 	return nil
 }
 
-func (r *PostDb) GetAllGroupedByPostId(ctx context.Context, id uint) (posts []model.Post, err error) {
+func (r *PostDB) GetAllGroupedByPostId(ctx context.Context, id uint) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 	var uuid string
 

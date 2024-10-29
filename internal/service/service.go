@@ -20,6 +20,8 @@ type Services struct {
 	Hashtag          Hashtag
 	Collection       Collection
 	UserPost         UserPost
+	Order            Order
+	EmailSender      EmailSender
 }
 
 type Deps struct {
@@ -42,5 +44,7 @@ func NewServices(deps Deps) *Services {
 		Hashtag:          NewHashtagService(deps.Repos.Hashtag),
 		UserPost:         NewUserPostService(deps.Repos.UserPost, deps.Repos.Post),
 		Collection:       NewCollectionService(deps.Repos.Collection, postService),
+		EmailSender:      NewEmailSenderService(deps.Cgf.Email.Username, deps.Cgf.Email.Password, deps.Cgf.Email.Addr),
+		Order:            NewOrderService(deps.Repos.Order, deps.Repos.OrderProduct),
 	}
 }

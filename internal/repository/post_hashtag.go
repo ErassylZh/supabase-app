@@ -12,15 +12,15 @@ type PostHashtag interface {
 	GetByPostId(ctx context.Context, postId uint) ([]model.PostHashtag, error)
 }
 
-type PostHashtagDb struct {
+type PostHashtagDB struct {
 	db *gorm.DB
 }
 
-func NewPostHashtagDb(db *gorm.DB) *PostHashtagDb {
-	return &PostHashtagDb{db: db}
+func NewPostHashtagDB(db *gorm.DB) *PostHashtagDB {
+	return &PostHashtagDB{db: db}
 }
 
-func (r *PostHashtagDb) CreateMany(ctx context.Context, posts []model.PostHashtag) ([]model.PostHashtag, error) {
+func (r *PostHashtagDB) CreateMany(ctx context.Context, posts []model.PostHashtag) ([]model.PostHashtag, error) {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.PostHashtag{}).
 		Create(&posts).
@@ -31,7 +31,7 @@ func (r *PostHashtagDb) CreateMany(ctx context.Context, posts []model.PostHashta
 	return posts, nil
 }
 
-func (r *PostHashtagDb) DeleteByPostId(ctx context.Context, postId uint) error {
+func (r *PostHashtagDB) DeleteByPostId(ctx context.Context, postId uint) error {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.PostHashtag{}).
 		Where("post_id = ?", postId).
@@ -43,7 +43,7 @@ func (r *PostHashtagDb) DeleteByPostId(ctx context.Context, postId uint) error {
 	return nil
 }
 
-func (r *PostHashtagDb) GetByPostId(ctx context.Context, postId uint) ([]model.PostHashtag, error) {
+func (r *PostHashtagDB) GetByPostId(ctx context.Context, postId uint) ([]model.PostHashtag, error) {
 	db := r.db.WithContext(ctx)
 	var data []model.PostHashtag
 	err := db.Model(&model.PostHashtag{}).
