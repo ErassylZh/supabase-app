@@ -48,19 +48,18 @@ func (h *Handler) GetListingProducts(c *gin.Context) error {
 // @Router /api/v1/product/buy [post]
 func (h *Handler) BuyProduct(c *gin.Context) error {
 	ctx := c.Request.Context()
-	//token := c.GetHeader("Authorization")
-	//userId, err := h.services.Auth.VerifyToken(token)
-	//if err != nil {
-	//	return err
-	//}
-	userId := "3ccfb0b3-745f-48c8-afae-02fa4344c9e4"
+	token := c.GetHeader("Authorization")
+	userId, err := h.services.Auth.VerifyToken(token)
+	if err != nil {
+		return err
+	}
 	var data schema.ProductBuyRequest
 	if err := c.Bind(&data); err != nil {
 		return err
 	}
 	data.UserId = userId
 
-	err := h.usecases.Product.Buy(ctx, data)
+	err = h.usecases.Product.Buy(ctx, data)
 	if err != nil {
 		return err
 	}
