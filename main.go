@@ -11,6 +11,10 @@ import (
 // @description     Это пример сервера с использованием Swagger в Gin.
 // @host            157.90.227.125:8000
 // @BasePath        /
+//
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 
 	cfg, err := config.GetConfig()

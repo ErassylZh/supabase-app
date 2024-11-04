@@ -1225,4 +1225,9 @@ paths:
       summary: все избранное пользователя
       tags:
       - mark
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
