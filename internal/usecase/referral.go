@@ -85,7 +85,7 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 
 	//todo потом возможно поменяем койны и сапфиры которые даем за реферал
 	_, err = u.balanceService.CreateTransaction(ctx, referralCode.UserID, model.Transaction{
-		Coins:             10,
+		Coins:             100,
 		Sapphires:         0,
 		UserId:            referralCode.UserID,
 		CreatedAt:         time.Now(),
