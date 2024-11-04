@@ -16,6 +16,8 @@ type OrderProduct struct {
 	OrderID        uint      `gorm:"column:order_id" json:"order_id"`
 	ProductID      uint      `gorm:"column:product_id" json:"product_id"`
 	ProductType    string    `gorm:"column:product_type" json:"product_type"`
+
+	Product Product `json:"product"`
 }
 
 func (p OrderProduct) TableName() string {

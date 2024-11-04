@@ -8,6 +8,7 @@ import (
 
 type Order interface {
 	CreateOrder(ctx context.Context, userId string, products []model.Product) (model.Order, error)
+	GetOrders(ctx context.Context, id string) ([]model.Order, error)
 }
 
 type OrderService struct {
@@ -44,4 +45,9 @@ func (s *OrderService) CreateOrder(ctx context.Context, userId string, products 
 	}
 	order.OrderProducts = orderProducts
 	return order, nil
+}
+
+func (s *OrderService) GetOrders(ctx context.Context, userId string) ([]model.Order, error) {
+	return s.orderRepo.GetByBuyerId(ctx, userId)
+
 }

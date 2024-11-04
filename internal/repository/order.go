@@ -8,6 +8,7 @@ import (
 
 type Order interface {
 	Create(ctx context.Context, order model.Order) (model.Order, error)
+	GetByBuyerId(ctx context.Context, userId string) ([]model.Order, error)
 }
 
 type OrderDB struct {
@@ -27,4 +28,18 @@ func (r *OrderDB) Create(ctx context.Context, order model.Order) (model.Order, e
 		return order, err
 	}
 	return order, nil
+}
+
+func (r *OrderDB) GetByBuyerId(ctx context.Context, userId string) (orders []model.Order, err error) {
+	db := r.db.WithContext(ctx)
+	err = db.Model(&model.Order{}).
+		Where("buyer_id = ?", userId).
+		Preload("OrderProducts").
+		Preload("OrderProducts.Product").
+		Find(&orders).
+		Error
+	if err != nil {
+		return orders, err
+	}
+	return orders, nil
 }

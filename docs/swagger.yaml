@@ -85,6 +85,46 @@ definitions:
       user_id:
         type: string
     type: object
+  model.Order:
+    properties:
+      buyer_id:
+        type: string
+      created_at:
+        type: string
+      order_id:
+        type: integer
+      order_products:
+        items:
+          $ref: '#/definitions/model.OrderProduct'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  model.OrderProduct:
+    properties:
+      coins:
+        type: integer
+      created_at:
+        type: string
+      order_id:
+        type: integer
+      order_product_id:
+        type: integer
+      product:
+        $ref: '#/definitions/model.Product'
+      product_id:
+        type: integer
+      product_type:
+        type: string
+      quantity:
+        type: integer
+      sapphires:
+        type: integer
+      sku:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.Post:
     properties:
       body:
@@ -423,6 +463,17 @@ definitions:
       status:
         type: boolean
     type: object
+  schema.Response-array_model_Order:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.Order'
+        type: array
+      status:
+        type: boolean
+    type: object
   schema.Response-array_model_Product:
     properties:
       message:
@@ -731,6 +782,24 @@ paths:
       summary: получить уведомления
       tags:
       - notification
+  /api/v1/orders:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Order'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: список моих заказов
+      tags:
+      - product
   /api/v1/post:
     get:
       consumes:

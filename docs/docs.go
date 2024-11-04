@@ -256,6 +256,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/orders": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product"
+                ],
+                "summary": "список моих заказов",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_Order"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/post": {
             "get": {
                 "consumes": [
@@ -1182,6 +1210,67 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Order": {
+            "type": "object",
+            "properties": {
+                "buyer_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "order_products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.OrderProduct"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.OrderProduct": {
+            "type": "object",
+            "properties": {
+                "coins": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "order_product_id": {
+                    "type": "integer"
+                },
+                "product": {
+                    "$ref": "#/definitions/model.Product"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "product_type": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "sapphires": {
+                    "type": "integer"
+                },
+                "sku": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Post": {
             "type": "object",
             "properties": {
@@ -1692,6 +1781,23 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.Mark"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-array_model_Order": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Order"
                     }
                 },
                 "status": {
