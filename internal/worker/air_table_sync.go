@@ -56,27 +56,27 @@ func (h *AirTableSync) Run() (err error) {
 	ctx := context.Background()
 	if err := h.syncHashtags(ctx); err != nil {
 		log.Println("error while syncing hashtags:", err)
-		return err
+		//return err
 	}
 
 	if err := h.syncCollections(ctx); err != nil {
 		log.Println("error while syncing collection:", err)
-		return err
+		//return err
 	}
 
 	if err := h.syncProducts(ctx); err != nil {
 		log.Println("error while syncing products:", err)
-		return err
+		//return err
 	}
 
 	if err := h.syncPosts(ctx); err != nil {
 		log.Println("error while syncing posts:", err)
-		return err
+		//return err
 	}
 
 	if err := h.syncStories(ctx); err != nil {
 		log.Println("error while syncing stories:", err)
-		return err
+		//return err
 	}
 
 	log.Println("airtable sync completed successfully")
