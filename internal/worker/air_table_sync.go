@@ -473,23 +473,43 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 	createStories := make([]model.Stories, 0)
 	updateStories := make([]model.Stories, 0)
 	updateStoryPages := make([]model.StoryPage, 0)
+	newStoryPages := make([]model.StoryPage, 0) // для добавления новых StoryPage
+
 	for key := range storiesAirtableByTitle {
 		if _, ok := storiesDBByTitle[key]; ok {
 			for _, data := range storiesAirtableByTitle[key] {
-				if data.Fields.Text != storyPagesByUuid[data.Fields.Uuid].Text ||
-					data.Fields.Order != storyPagesByUuid[data.Fields.Uuid].PageOrder ||
-					!strings.Contains(storyPagesByUuid[data.Fields.Uuid].ImagePath, data.Fields.Image[0].FileName) {
-					updateStoryPages = append(updateStoryPages, model.StoryPage{
-						StoryPageId: storyPagesByUuid[data.Fields.Uuid].StoryPageId,
-						StoriesId:   storyPagesByUuid[data.Fields.Uuid].StoriesId,
-						Text:        data.Fields.Text,
-						PageOrder:   data.Fields.Order,
-						CreatedAt:   time.Now(),
-						Uuid:        data.Fields.Uuid,
-						ImagePath:   storyPagesByUuid[data.Fields.Uuid].ImagePath,
+				// Проверка на существование StoryPage
+				if existingStoryPage, found := storyPagesByUuid[data.Fields.Uuid]; found {
+					// Проверка необходимости обновления
+					if data.Fields.Text != existingStoryPage.Text ||
+						data.Fields.Order != existingStoryPage.PageOrder ||
+						!strings.Contains(existingStoryPage.ImagePath, data.Fields.Image[0].FileName) {
+						updateStoryPages = append(updateStoryPages, model.StoryPage{
+							StoryPageId: existingStoryPage.StoryPageId,
+							StoriesId:   existingStoryPage.StoriesId,
+							Text:        data.Fields.Text,
+							PageOrder:   data.Fields.Order,
+							CreatedAt:   time.Now(),
+							Uuid:        data.Fields.Uuid,
+							ImagePath:   existingStoryPage.ImagePath,
+						})
+					}
+				} else {
+					// Добавление нового StoryPage, если его нет в базе
+					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), data.Fields.Image[0].FileName, data.Fields.Image[0].Url)
+					if err != nil {
+						log.Println(ctx, "error creating image for new story page", "err", err, "story title", key)
+					}
+					newStoryPages = append(newStoryPages, model.StoryPage{
+						StoriesId: storiesDBByTitle[key].StoriesId,
+						ImagePath: file,
+						Text:      data.Fields.Text,
+						PageOrder: data.Fields.Order,
+						Uuid:      data.Fields.Uuid,
 					})
 				}
 			}
+			// Обновление основных полей story
 			if storiesDBByTitle[key].StartTime != storiesAirtableByTitle[key][0].Fields.StartTime ||
 				storiesDBByTitle[key].EndTime != storiesAirtableByTitle[key][0].Fields.EndTime ||
 				(storiesAirtableByTitle[key][0].Fields.Image != nil && !strings.Contains(storiesDBByTitle[key].IconPath, storiesAirtableByTitle[key][0].Fields.Image[0].FileName)) {
@@ -502,7 +522,7 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 					images := *storiesAirtableByTitle[key][0].Fields.Icon
 					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), images[0].FileName, images[0].Url)
 					if err != nil {
-						log.Println(ctx, "some err while create image", "err", err, "story name", temp.Title)
+						log.Println(ctx, "error creating image", "err", err, "story name", temp.Title)
 					}
 					temp.IconPath = file
 				}
@@ -510,6 +530,7 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 			}
 			continue
 		}
+		// Добавление новой истории
 		story := model.Stories{
 			CreatedAt: time.Now(),
 			StartTime: storiesAirtableByTitle[key][0].Fields.StartTime,
@@ -520,14 +541,13 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 			images := *storiesAirtableByTitle[key][0].Fields.Icon
 			file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), images[0].FileName, images[0].Url)
 			if err != nil {
-				log.Println(ctx, "some err while create image", "err", err, "story name", story.Title)
+				log.Println(ctx, "error creating image for new story", "err", err, "story title", story.Title)
 			}
 			story.IconPath = file
 		}
 		createStories = append(createStories, story)
 	}
 
-	createStoryPages := make([]model.StoryPage, 0)
 	if len(createStories) > 0 {
 		createStories, err = h.stories.CreateMany(ctx, createStories)
 		if err != nil {
@@ -538,9 +558,9 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 			for _, data := range storiesAirtableByTitle[story.Title] {
 				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), data.Fields.Image[0].FileName, data.Fields.Image[0].Url)
 				if err != nil {
-					log.Println(ctx, "some err while create image", "err", err, "stories name", story.Title)
+					log.Println(ctx, "error creating image for story page", "err", err, "stories name", story.Title)
 				}
-				createStoryPages = append(createStoryPages, model.StoryPage{
+				newStoryPages = append(newStoryPages, model.StoryPage{
 					StoriesId: storyId,
 					ImagePath: file,
 					Text:      data.Fields.Text,
@@ -549,8 +569,10 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 				})
 			}
 		}
+	}
 
-		err = h.storyPage.CreateMany(ctx, createStoryPages)
+	if len(newStoryPages) > 0 {
+		err = h.storyPage.CreateMany(ctx, newStoryPages)
 		if err != nil {
 			return err
 		}
@@ -561,17 +583,32 @@ func (h *AirTableSync) syncStories(ctx context.Context) error {
 			if !strings.Contains(updateStoryPages[i].ImagePath, imagesByUuidAirtable[updateStoryPages[i].Uuid][0].FileName) {
 				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_STORIES), imagesByUuidAirtable[updateStoryPages[i].Uuid][0].FileName, imagesByUuidAirtable[updateStoryPages[i].Uuid][0].Url)
 				if err != nil {
-					log.Println(ctx, "some err while update image", "err", err, "story page uuid", updateStoryPages[i].Uuid)
+					log.Println(ctx, "error updating image", "err", err, "story page uuid", updateStoryPages[i].Uuid)
 				}
 				updateStoryPages[i].ImagePath = file
 			}
 		}
 		_, err = h.storyPage.UpdateMany(ctx, updateStoryPages)
 		if err != nil {
-			log.Println(ctx, "error while updating existing posts from airtable:", err)
+			log.Println(ctx, "error updating story pages:", err)
 			return err
 		}
 	}
+
+	// Удаление лишних StoryPage из базы данных
+	deleteUuids := make([]string, 0)
+	for uuid := range storyPagesByUuid {
+		if _, exists := imagesByUuidAirtable[uuid]; !exists {
+			deleteUuids = append(deleteUuids, uuid)
+		}
+	}
+	if len(deleteUuids) > 0 {
+		err = h.storyPage.DeleteManyByUuid(ctx, deleteUuids)
+		if err != nil {
+			return err
+		}
+	}
+
 	if len(updateStories) > 0 {
 		_, err = h.stories.UpdateMany(ctx, updateStories)
 		if err != nil {
