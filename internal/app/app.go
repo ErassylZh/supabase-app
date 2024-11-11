@@ -36,6 +36,11 @@ func Run(cfg *config.Config) {
 	if err != nil {
 		panic("Failed to connect to database")
 	}
+	sqlDB, _ := db.DB()
+	sqlDB.SetMaxOpenConns(10)                 // Maximum number of open connections
+	sqlDB.SetMaxIdleConns(5)                  // Maximum number of idle connections
+	sqlDB.SetConnMaxLifetime(time.Minute * 5) // Recycle connections periodically
+
 	//connection, err := db.DB()
 	//if err != nil {
 	//	panic(err)
