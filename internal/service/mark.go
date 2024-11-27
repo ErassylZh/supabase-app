@@ -86,11 +86,11 @@ func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string, filt
 		return nil, errors.New("failed to find marks: " + err.Error())
 	}
 	result := make([]schema.PostResponse, 0)
-	for _, mark := range marks {
+	for i, mark := range marks {
 		if filter == "all" {
 			result = append(result, schema.PostResponse{
 				Post:   mark.Post,
-				MarkId: &mark.MarkID,
+				MarkId: &marks[i].MarkID,
 			})
 			continue
 		}
@@ -105,7 +105,7 @@ func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string, filt
 				postAlreadyAdded = true
 				result = append(result, schema.PostResponse{
 					Post:   mark.Post,
-					MarkId: &mark.MarkID,
+					MarkId: &marks[i].MarkID,
 				})
 				break
 			}
@@ -117,7 +117,7 @@ func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string, filt
 		if !postAlreadyAdded {
 			result = append(result, schema.PostResponse{
 				Post:   mark.Post,
-				MarkId: &mark.MarkID,
+				MarkId: &marks[i].MarkID,
 			})
 		}
 	}

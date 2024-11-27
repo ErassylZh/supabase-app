@@ -23,8 +23,8 @@ func (c DeliveryTypeCode) Validate() error {
 }
 
 type DeliveryType struct {
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	CreatedAt        time.Time        `gorm:"column:created_at" json:"created_at"`
+	UpdatedAt        time.Time        `gorm:"column:updated_at" json:"updated_at"`
 	DeliveryTypeID   uint             `gorm:"primaryKey;column:delivery_type_id" json:"delivery_type_id"`
 	DeliveryTypeName string           `gorm:"column:delivery_type_name" json:"delivery_type_name"`
 	DeliveryTypeCode DeliveryTypeCode `gorm:"column:delivery_type_code" json:"delivery_type_code"`

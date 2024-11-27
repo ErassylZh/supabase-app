@@ -40,6 +40,7 @@ func Run(cfg *config.Config) {
 	sqlDB.SetMaxOpenConns(10)                 // Maximum number of open connections
 	sqlDB.SetMaxIdleConns(5)                  // Maximum number of idle connections
 	sqlDB.SetConnMaxLifetime(time.Minute * 5) // Recycle connections periodically
+	sqlDB.SetConnMaxIdleTime(time.Minute * 2) // Close idle connections after a certain time
 
 	//connection, err := db.DB()
 	//if err != nil {
