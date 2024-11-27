@@ -81,7 +81,11 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListingWithGroup(ctx, userId, hashtagIds, collectionIds, language)
+	posts, err := h.usecases.Post.GetListingWithGroup(ctx, userId, schema.GetListingFilter{
+		HashtagIds:    hashtagIds,
+		CollectionIds: collectionIds,
+		Language:      &language,
+	})
 	if err != nil {
 		return err
 	}
@@ -276,7 +280,13 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId, hashtagIds, collectionIds, postType, search, language, postIds)
+	posts, err := h.usecases.Post.GetListing(ctx, userId, postType, schema.GetListingFilter{
+		Search:        &search,
+		HashtagIds:    hashtagIds,
+		CollectionIds: collectionIds,
+		Language:      &language,
+		PostIds:       postIds,
+	})
 	if err != nil {
 		return err
 	}

@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"work-project/internal/model"
+	"work-project/internal/schema"
 )
 
 type Post interface {
 	CreateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
 	GetAll(ctx context.Context) ([]model.Post, error)
 	UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
-	GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, postIds []uint) ([]model.Post, error)
+	GetAllForListing(ctx context.Context, filter schema.GetListingFilter) ([]model.Post, error)
 	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 	DeleteAllNotInUuid(ctx context.Context, uuids []string) error
 	GetAllGroupedByPostId(ctx context.Context, id uint) ([]model.Post, error)
@@ -59,31 +60,31 @@ func (r *PostDB) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Po
 	}
 	return posts, nil
 }
-func (r *PostDB) GetAllForListing(ctx context.Context, hashtagIds []uint, collectionIds []uint, search string, language string, postIds []uint) (posts []model.Post, err error) {
+func (r *PostDB) GetAllForListing(ctx context.Context, filter schema.GetListingFilter) (posts []model.Post, err error) {
 	db := r.db.WithContext(ctx)
 
 	query := db.Model(&model.Post{})
 
 	// If hashtagIds are provided, apply the filter
-	if len(hashtagIds) > 0 {
+	if len(filter.HashtagIds) > 0 {
 		query = query.Joins("JOIN public.post_hashtag ON public.post_hashtag.post_id = public.post.post_id").
 			Joins("JOIN public.hashtag ON public.hashtag.hashtag_id = public.post_hashtag.hashtag_id").
-			Where("public.hashtag.hashtag_id IN (?)", hashtagIds)
+			Where("public.hashtag.hashtag_id IN (?)", filter.HashtagIds)
 	}
-	if len(collectionIds) > 0 {
+	if len(filter.CollectionIds) > 0 {
 		query = query.Joins("JOIN public.post_collection ON public.post_collection.post_id = public.post.post_id").
 			Joins("JOIN public.collection ON public.collection.collection_id = public.post_collection.collection_id").
-			Where("public.collection.collection_id IN (?)", collectionIds)
+			Where("public.collection.collection_id IN (?)", filter.CollectionIds)
 	}
-	if len(search) > 0 {
-		search = fmt.Sprintf("%%%s%%", search)
+	if filter.Search != nil {
+		search := fmt.Sprintf("%%%s%%", *filter.Search)
 		query = query.Where("public.post.title ILIKE ? OR public.post.company ILIKE ?", search, search)
 	}
-	if len(language) > 0 {
-		query = query.Where("public.post.language = ?", language)
+	if filter.Language != nil {
+		query = query.Where("public.post.language = ?", *filter.Language)
 	}
-	if len(postIds) > 0 {
-		query = query.Where("public.post.post_id in (?)", postIds)
+	if len(filter.PostIds) > 0 {
+		query = query.Where("public.post.post_id in (?)", filter.PostIds)
 	}
 	query = query.
 		Where("public.post.status = ?", model.PRODUCT_STATUS_PUBLISH).

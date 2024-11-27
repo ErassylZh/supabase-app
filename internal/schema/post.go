@@ -25,3 +25,11 @@ type PassQuizPost struct {
 	QuizPoints    *int `json:"quiz_points"`
 	QuizSapphires *int `json:"quiz_sapphires"`
 }
+
+type GetListingFilter struct {
+	HashtagIds    []uint
+	CollectionIds []uint
+	Search        *string
+	Language      *string
+	PostIds       []uint
+}

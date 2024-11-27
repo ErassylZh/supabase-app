@@ -10,11 +10,11 @@ import (
 )
 
 type Post interface {
-	GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string, search string, language string, postIds []uint) ([]schema.PostResponse, error)
+	GetListing(ctx context.Context, userId *string, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, error)
 	SaveQuizPoints(ctx context.Context, data model.UserPost) (model.UserPost, error)
 	GetArchive(ctx context.Context, userId string, language string) ([]model.Post, error)
 	CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error)
-	GetListingWithGroup(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, language string) (schema.PostResponseByGroup, error)
+	GetListingWithGroup(ctx context.Context, userId *string, filter schema.GetListingFilter) (schema.PostResponseByGroup, error)
 	ReadPost(ctx context.Context, post model.UserPost) (model.UserPost, error)
 }
 
@@ -45,8 +45,8 @@ func (u *PostUsecase) ReadPost(ctx context.Context, post model.UserPost) (model.
 	return postAlreadyReaded, nil
 }
 
-func (u *PostUsecase) GetListing(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, postType string, search string, language string, postIds []uint) ([]schema.PostResponse, error) {
-	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds, search, language, postIds)
+func (u *PostUsecase) GetListing(ctx context.Context, userId *string, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, error) {
+	posts, err := u.postService.GetListing(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -154,8 +154,8 @@ func (u *PostUsecase) CheckQuiz(ctx context.Context, userId string, postId uint)
 	return userPost.QuizSapphires == nil && userPost.QuizPoints == nil, nil
 }
 
-func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, hashtagIds []uint, collectionIds []uint, language string) (schema.PostResponseByGroup, error) {
-	posts, err := u.postService.GetListing(ctx, hashtagIds, collectionIds, "", language, nil)
+func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, filter schema.GetListingFilter) (schema.PostResponseByGroup, error) {
+	posts, err := u.postService.GetListing(ctx, filter)
 	if err != nil {
 		return schema.PostResponseByGroup{}, err
 	}
