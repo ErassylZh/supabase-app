@@ -79,13 +79,14 @@ func (s *MarkService) FindByUserID(ctx context.Context, userID string) ([]schema
 
 	return result, nil
 }
-
 func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string, filter string) ([]schema.PostResponse, error) {
 	marks, err := s.markRepo.FindByUserID(ctx, userID)
 	if err != nil {
 		return nil, errors.New("failed to find marks: " + err.Error())
 	}
+
 	result := make([]schema.PostResponse, 0)
+
 	for i, mark := range marks {
 		if filter == "all" {
 			result = append(result, schema.PostResponse{
@@ -95,26 +96,15 @@ func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string, filt
 			continue
 		}
 
-		_, err := s.userPostRepo.GetByUserAndPost(ctx, mark.UserID, mark.PostID)
-		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, err
-		}
-		postAlreadyAdded := false
+		hasPartnerHashtag := false
 		for _, hashtag := range mark.Post.Hashtags {
-			if (hashtag.Name == string(model.HASHTAG_NAME_PARTNER) || hashtag.Name == string(model.HASHTAG_NAME_HACO)) && filter == "partner" {
-				postAlreadyAdded = true
-				result = append(result, schema.PostResponse{
-					Post:   mark.Post,
-					MarkId: &marks[i].MarkID,
-				})
-				break
-			}
-			if (hashtag.Name == string(model.HASHTAG_NAME_PARTNER) || hashtag.Name == string(model.HASHTAG_NAME_HACO)) && filter == "post" {
-				postAlreadyAdded = true
+			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
+				hasPartnerHashtag = true
 				break
 			}
 		}
-		if !postAlreadyAdded {
+
+		if (hasPartnerHashtag && filter == "partner") || (!hasPartnerHashtag && filter == "post") {
 			result = append(result, schema.PostResponse{
 				Post:   mark.Post,
 				MarkId: &marks[i].MarkID,
