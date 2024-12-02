@@ -194,16 +194,9 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 		return schema.PostResponseByGroup{}, err
 	}
 	if userId == nil {
-		userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
-		if err != nil {
-			return schema.PostResponseByGroup{}, err
+		result := schema.PostResponseByGroup{
+			ContinueReading: []schema.PostResponse{},
 		}
-		userPostMap := make(map[uint]model.UserPost)
-		for _, up := range userPosts {
-			userPostMap[up.PostId] = up
-		}
-
-		result := schema.PostResponseByGroup{}
 		for _, post := range posts {
 			for _, hashtag := range post.Hashtags {
 				if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
@@ -213,13 +206,17 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 					result.Partners = append(result.Partners, post)
 				}
 			}
-
-			if up, exists := userPostMap[post.PostID]; exists && !up.ReadEnd {
-				result.ContinueReading = append(result.ContinueReading, post)
-			}
 		}
 
 		return result, nil
+	}
+	userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
+	if err != nil {
+		return schema.PostResponseByGroup{}, err
+	}
+	userPostMap := make(map[uint]model.UserPost)
+	for _, up := range userPosts {
+		userPostMap[up.PostId] = up
 	}
 
 	userMarks, err := u.markService.FindByUserID(ctx, *userId)
@@ -232,43 +229,31 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 		postIdMark[um.PostID] = um
 	}
 
-	userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
-	if err != nil {
-		return schema.PostResponseByGroup{}, err
-	}
-	postIdRead := make(map[uint]bool)
-	postIdPassed := make(map[uint]bool)
-	for _, up := range userPosts {
-		postIdRead[up.PostId] = true
-		postIdPassed[up.PostId] = up.QuizPoints != nil || up.QuizSapphires != nil
-	}
-
 	for i := range posts {
 		um, exists := postIdMark[posts[i].PostID]
 		posts[i].IsMarked = exists
 		posts[i].MarkId = &um.MarkID
 
-		_, exists = postIdRead[posts[i].PostID]
-		posts[i].IsAlreadyRead = exists
-		_, exists = postIdPassed[posts[i].PostID]
-		posts[i].QuizPassed = exists
+		if up, upExists := userPostMap[posts[i].PostID]; upExists {
+			posts[i].IsAlreadyRead = upExists
+			posts[i].QuizPassed = up.QuizPoints != nil || up.QuizSapphires != nil
+		}
+
 	}
 
-	result := schema.PostResponseByGroup{}
+	result := schema.PostResponseByGroup{ContinueReading: []schema.PostResponse{}}
 	for _, post := range posts {
-		postAlreadyAdded := false
 		for _, hashtag := range post.Hashtags {
 			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
-				postAlreadyAdded = true
 				result.Bestsellers = append(result.Bestsellers, post)
 			}
 			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
-				postAlreadyAdded = true
 				result.Partners = append(result.Partners, post)
 			}
 		}
-		if !postAlreadyAdded {
-			result.Other = append(result.Other, post)
+
+		if up, exists := userPostMap[post.PostID]; exists && !up.ReadEnd {
+			result.ContinueReading = append(result.ContinueReading, post)
 		}
 	}
 
