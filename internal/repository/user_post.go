@@ -59,6 +59,7 @@ func (r *UserPostRepository) GetByUserID(ctx context.Context, id string) (userPo
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.UserPost{})
 	err = q.Where("user_id = ? ", id).
+		Order("created_at").
 		Find(&userPosts).
 		Error
 	if err != nil {

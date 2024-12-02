@@ -12,6 +12,7 @@ type UserPost struct {
 	PostId        uint      `gorm:"column:post_id" json:"post_id"`
 	QuizPoints    *int      `gorm:"column:quiz_points" json:"quiz_points"`
 	QuizSapphires *int      `gorm:"column:quiz_sapphires" json:"quiz_sapphires"`
+	ReadEnd       bool      `gorm:"column:read_end" json:"read_end"`
 }
 
 func (u *UserPost) TableName() string {

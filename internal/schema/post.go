@@ -11,13 +11,15 @@ type PostResponse struct {
 }
 
 type PostResponseByGroup struct {
-	Bestsellers []PostResponse `json:"bestsellers"`
-	Partners    []PostResponse `json:"partners"`
-	Other       []PostResponse `json:"-"`
+	Bestsellers     []PostResponse `json:"bestsellers"`
+	Partners        []PostResponse `json:"partners"`
+	ContinueReading []PostResponse `json:"continue_reading"`
+	Other           []PostResponse `json:"-"`
 }
 
 type ReadPost struct {
 	PostId uint `json:"post_id"`
+	End    bool `json:"end"`
 }
 
 type PassQuizPost struct {
@@ -32,4 +34,17 @@ type GetListingFilter struct {
 	Search        *string
 	Language      *string
 	PostIds       []uint
+}
+
+type ArchivePost struct {
+	model.Post
+	EarnedCoins     *int `json:"earned_coins"`
+	EarnedSapphires *int `json:"earned_sapphires"`
+	QuizPassed      bool `json:"quiz_passed"`
+}
+
+type ReadPostRequest struct {
+	PostId     uint   `json:"post_id"`
+	EndReading bool   `json:"end_reading"`
+	UserId     string `json:"-"`
 }

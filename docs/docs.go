@@ -83,6 +83,11 @@ const docTemplate = `{
         },
         "/api/v1/collection": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -354,7 +359,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-array_schema_PostResponse"
+                            "$ref": "#/definitions/schema.Response-array_schema_ArchivePost"
                         }
                     },
                     "400": {
@@ -513,7 +518,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-model_UserPost"
+                            "$ref": "#/definitions/schema.Response-schema_ReadPostRequest"
                         }
                     },
                     "400": {
@@ -1577,11 +1582,97 @@ const docTemplate = `{
                 "quiz_sapphires": {
                     "type": "integer"
                 },
+                "read_end": {
+                    "type": "boolean"
+                },
                 "user_id": {
                     "type": "string"
                 },
                 "user_post_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "schema.ArchivePost": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "collections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Collection"
+                    }
+                },
+                "company": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "earned_coins": {
+                    "type": "integer"
+                },
+                "earned_sapphires": {
+                    "type": "integer"
+                },
+                "hashtags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Hashtag"
+                    }
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Image"
+                    }
+                },
+                "language": {
+                    "type": "string"
+                },
+                "point": {
+                    "type": "integer"
+                },
+                "post_id": {
+                    "type": "integer"
+                },
+                "post_order": {
+                    "type": "integer"
+                },
+                "quiz_passed": {
+                    "type": "boolean"
+                },
+                "quiz_time": {
+                    "type": "integer"
+                },
+                "rating_status": {
+                    "type": "string"
+                },
+                "read_time": {
+                    "type": "integer"
+                },
+                "sapphire": {
+                    "type": "integer"
+                },
+                "short_description": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
                 }
             }
         },
@@ -1732,6 +1823,20 @@ const docTemplate = `{
         "schema.ReadPost": {
             "type": "object",
             "properties": {
+                "end": {
+                    "type": "boolean"
+                },
+                "post_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schema.ReadPostRequest": {
+            "type": "object",
+            "properties": {
+                "end_reading": {
+                    "type": "boolean"
+                },
                 "post_id": {
                     "type": "integer"
                 }
@@ -1890,6 +1995,23 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.Response-array_schema_ArchivePost": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.ArchivePost"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.Response-array_schema_PostResponse": {
             "type": "object",
             "properties": {
@@ -2033,6 +2155,20 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.Response-schema_ReadPostRequest": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/schema.ReadPostRequest"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.UserDeviceTokenCreateRequest": {
             "type": "object",
             "properties": {
@@ -2054,7 +2190,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "157.90.227.125:8000",
+	Host:             "localhost:8000",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "swagger API",

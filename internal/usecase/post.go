@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
+	"sort"
 	"work-project/internal/model"
 	"work-project/internal/schema"
 	"work-project/internal/service"
@@ -12,10 +13,10 @@ import (
 type Post interface {
 	GetListing(ctx context.Context, userId *string, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, error)
 	SaveQuizPoints(ctx context.Context, data model.UserPost) (model.UserPost, error)
-	GetArchive(ctx context.Context, userId string, language string) ([]model.Post, error)
+	GetArchive(ctx context.Context, userId string, language string) ([]schema.ArchivePost, error)
 	CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error)
 	GetListingWithGroup(ctx context.Context, userId *string, filter schema.GetListingFilter) (schema.PostResponseByGroup, error)
-	ReadPost(ctx context.Context, post model.UserPost) (model.UserPost, error)
+	ReadPost(ctx context.Context, post schema.ReadPostRequest) (model.UserPost, error)
 }
 
 type PostUsecase struct {
@@ -34,13 +35,22 @@ func NewPostUsecase(services *service.Services) *PostUsecase {
 	}
 }
 
-func (u *PostUsecase) ReadPost(ctx context.Context, post model.UserPost) (model.UserPost, error) {
+func (u *PostUsecase) ReadPost(ctx context.Context, post schema.ReadPostRequest) (model.UserPost, error) {
 	postAlreadyReaded, err := u.userPostService.GetByUserAndPost(ctx, post.UserId, post.PostId)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return u.userPostService.Create(ctx, post)
+		return u.userPostService.Create(ctx, model.UserPost{
+			PostId:  post.PostId,
+			UserId:  post.UserId,
+			ReadEnd: post.EndReading,
+		})
 	}
 	if err != nil {
 		return model.UserPost{}, err
+	}
+
+	if post.EndReading {
+		postAlreadyReaded.ReadEnd = true
+		return u.userPostService.Update(ctx, postAlreadyReaded)
 	}
 	return postAlreadyReaded, nil
 }
@@ -131,7 +141,7 @@ func (u *PostUsecase) SaveQuizPoints(ctx context.Context, data model.UserPost) (
 	return up, nil
 }
 
-func (u *PostUsecase) GetArchive(ctx context.Context, userId string, language string) ([]model.Post, error) {
+func (u *PostUsecase) GetArchive(ctx context.Context, userId string, language string) ([]schema.ArchivePost, error) {
 	userPosts, err := u.userPostService.GetAllByUser(ctx, userId)
 	if err != nil {
 		return nil, err
@@ -140,7 +150,31 @@ func (u *PostUsecase) GetArchive(ctx context.Context, userId string, language st
 	for i, up := range userPosts {
 		postIds[i] = up.PostId
 	}
-	return u.postService.GetByIds(ctx, postIds)
+	posts, err := u.postService.GetByIds(ctx, postIds)
+	if err != nil {
+		return nil, err
+	}
+
+	userPostMap := make(map[uint]model.UserPost)
+	for _, up := range userPosts {
+		userPostMap[up.PostId] = up
+	}
+
+	sort.Slice(posts, func(i, j int) bool {
+		return userPostMap[posts[i].PostID].CreatedAt.Before(userPostMap[posts[j].PostID].CreatedAt)
+	})
+
+	result := make([]schema.ArchivePost, len(posts))
+	for i, post := range posts {
+		result[i] = schema.ArchivePost{
+			Post:            post,
+			EarnedCoins:     userPostMap[post.PostID].QuizPoints,
+			EarnedSapphires: userPostMap[post.PostID].QuizSapphires,
+			QuizPassed:      userPostMap[post.PostID].QuizSapphires != nil || userPostMap[post.PostID].QuizPoints != nil,
+		}
+	}
+
+	return result, nil
 }
 
 func (u *PostUsecase) CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error) {
@@ -160,21 +194,28 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 		return schema.PostResponseByGroup{}, err
 	}
 	if userId == nil {
+		userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
+		if err != nil {
+			return schema.PostResponseByGroup{}, err
+		}
+		userPostMap := make(map[uint]model.UserPost)
+		for _, up := range userPosts {
+			userPostMap[up.PostId] = up
+		}
+
 		result := schema.PostResponseByGroup{}
 		for _, post := range posts {
-			postAlreadyAdded := false
 			for _, hashtag := range post.Hashtags {
 				if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
-					postAlreadyAdded = true
 					result.Bestsellers = append(result.Bestsellers, post)
 				}
 				if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
-					postAlreadyAdded = true
 					result.Partners = append(result.Partners, post)
 				}
 			}
-			if !postAlreadyAdded {
-				result.Other = append(result.Other, post)
+
+			if up, exists := userPostMap[post.PostID]; exists && !up.ReadEnd {
+				result.ContinueReading = append(result.ContinueReading, post)
 			}
 		}
 

@@ -98,7 +98,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 // @Summary прочесть книгу
 // @Accept json
 // @Produce json
-// @Success 200 {object} schema.Response[model.UserPost]
+// @Success 200 {object} schema.Response[schema.ReadPostRequest]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @Param data body schema.ReadPost true "post"
@@ -111,7 +111,7 @@ func (h *Handler) ReadPost(c *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	var data model.UserPost
+	var data schema.ReadPostRequest
 	if err = c.Bind(&data); err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (h *Handler) SaveQuizPoints(c *gin.Context) error {
 // @Summary архивные посты
 // @Accept json
 // @Produce json
-// @Success 200 {object} schema.Response[[]schema.PostResponse]
+// @Success 200 {object} schema.Response[[]schema.ArchivePost]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags post

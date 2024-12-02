@@ -26,11 +26,22 @@ func (h *Handler) initCollection(v1 *gin.RouterGroup) {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param language query string true "language"
 // @tags collection
+// @Security BearerAuth
 // @Router /api/v1/collection [get]
 func (h *Handler) GetAllCollections(c *gin.Context) error {
 	ctx := c.Request.Context()
+	token := c.GetHeader("Authorization")
+	var userIdp *string
+	if len(token) > 0 {
+		userId, err := h.services.Auth.VerifyToken(token)
+		if err != nil {
+			return err
+		}
+		userIdp = &userId
+	}
+
 	language := c.Query("language")
-	collections, err := h.services.Collection.GetAllCollection(ctx, language)
+	collections, err := h.services.Collection.GetAllCollection(ctx, language, userIdp)
 	if err != nil {
 		return err
 	}

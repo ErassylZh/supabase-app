@@ -13,6 +13,7 @@ type UserPost interface {
 	AddQuizPoints(ctx context.Context, post model.UserPost) (model.UserPost, error)
 	GetByUserAndPost(ctx context.Context, userId string, postId uint) (model.UserPost, error)
 	GetAllByUser(ctx context.Context, id string) ([]model.UserPost, error)
+	Update(ctx context.Context, readed model.UserPost) (model.UserPost, error)
 }
 
 type UserPostService struct {
@@ -65,4 +66,8 @@ func (s *UserPostService) GetByUserAndPost(ctx context.Context, userId string, p
 
 func (s *UserPostService) GetAllByUser(ctx context.Context, id string) ([]model.UserPost, error) {
 	return s.userPostRepo.GetByUserID(ctx, id)
+}
+
+func (s *UserPostService) Update(ctx context.Context, readed model.UserPost) (model.UserPost, error) {
+	return s.userPostRepo.Update(ctx, readed)
 }

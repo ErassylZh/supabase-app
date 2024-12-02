@@ -41,6 +41,7 @@ func (r *MarkDB) FindByUserID(ctx context.Context, userID string) ([]model.Mark,
 		Preload("Post.Hashtags").
 		Preload("Post.Images").
 		Preload("Post.Collections").
+		Order("created_at").
 		Find(&marks).
 		Error
 	if err != nil {
