@@ -1804,6 +1804,12 @@ const docTemplate = `{
                         "$ref": "#/definitions/schema.PostResponse"
                     }
                 },
+                "continue_reading": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.PostResponse"
+                    }
+                },
                 "partners": {
                     "type": "array",
                     "items": {
@@ -2190,7 +2196,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8000",
+	Host:             "157.90.227.125:8000",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "swagger API",

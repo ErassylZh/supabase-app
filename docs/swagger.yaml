@@ -472,6 +472,10 @@ definitions:
         items:
           $ref: '#/definitions/schema.PostResponse'
         type: array
+      continue_reading:
+        items:
+          $ref: '#/definitions/schema.PostResponse'
+        type: array
       partners:
         items:
           $ref: '#/definitions/schema.PostResponse'
@@ -712,7 +716,7 @@ definitions:
       token:
         type: string
     type: object
-host: localhost:8000
+host: 157.90.227.125:8000
 info:
   contact: {}
   description: Это пример сервера с использованием Swagger в Gin.
