@@ -200,9 +200,11 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 		for _, post := range posts {
 			for _, hashtag := range post.Hashtags {
 				if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
+					post.PostType = string(model.HASHTAG_NAME_BESTSELLER)
 					result.Bestsellers = append(result.Bestsellers, post)
 				}
 				if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
+					post.PostType = string(model.HASHTAG_NAME_PARTNER)
 					result.Partners = append(result.Partners, post)
 				}
 			}
@@ -238,16 +240,17 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 			posts[i].IsAlreadyRead = upExists
 			posts[i].QuizPassed = up.QuizPoints != nil || up.QuizSapphires != nil
 		}
-
 	}
 
 	result := schema.PostResponseByGroup{ContinueReading: []schema.PostResponse{}}
 	for _, post := range posts {
 		for _, hashtag := range post.Hashtags {
 			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
+				post.PostType = string(model.HASHTAG_NAME_BESTSELLER)
 				result.Bestsellers = append(result.Bestsellers, post)
 			}
 			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
+				post.PostType = string(model.HASHTAG_NAME_PARTNER)
 				result.Partners = append(result.Partners, post)
 			}
 		}
