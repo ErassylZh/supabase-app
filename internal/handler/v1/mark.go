@@ -87,14 +87,19 @@ func (h *Handler) FindMarksByUserID(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags mark
-// @Router /api/v1/mark/:mark_id [delete]
+// @Router /api/v1/mark/:post_id [delete]
 func (h *Handler) DeleteMark(c *gin.Context) error {
 	ctx := c.Request.Context()
-	markID, err := strconv.ParseUint(c.Param("mark_id"), 10, 64)
+	token := c.GetHeader("Authorization")
+	userID, err := h.services.Auth.VerifyToken(token)
 	if err != nil {
 		return err
 	}
-	if err := h.services.Mark.DeleteMark(ctx, uint(markID)); err != nil {
+	postId, err := strconv.ParseUint(c.Param("post_id"), 10, 64)
+	if err != nil {
+		return err
+	}
+	if err := h.services.Mark.DeleteMark(ctx, uint(postId), userID); err != nil {
 		return err
 	}
 	return schema.Respond(schema.Empty{}, c)

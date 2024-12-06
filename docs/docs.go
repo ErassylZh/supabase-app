@@ -195,7 +195,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/mark/:mark_id": {
+        "/api/v1/mark/:post_id": {
             "delete": {
                 "security": [
                     {
@@ -1765,6 +1765,9 @@ const docTemplate = `{
                 },
                 "post_order": {
                     "type": "integer"
+                },
+                "post_type": {
+                    "type": "string"
                 },
                 "quiz_passed": {
                     "type": "boolean"

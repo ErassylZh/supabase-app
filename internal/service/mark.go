@@ -14,7 +14,7 @@ type Mark interface {
 	CreateMark(ctx context.Context, mark schema.CreateMark) error
 	FindByUserID(ctx context.Context, userID string) ([]schema.MarkResponse, error)
 	FindPostsByUserID(ctx context.Context, userID string, filter string) ([]schema.PostResponse, error)
-	DeleteMark(ctx context.Context, markID uint) error
+	DeleteMark(ctx context.Context, postID uint, userID string) error
 }
 
 type MarkService struct {
@@ -115,6 +115,10 @@ func (s *MarkService) FindPostsByUserID(ctx context.Context, userID string, filt
 	return result, nil
 }
 
-func (s *MarkService) DeleteMark(ctx context.Context, markID uint) error {
-	return s.markRepo.DeleteMark(ctx, markID)
+func (s *MarkService) DeleteMark(ctx context.Context, postID uint, userID string) error {
+	mark, err := s.markRepo.FindByUserAndPost(ctx, userID, postID)
+	if err != nil {
+		return err
+	}
+	return s.markRepo.DeleteMark(ctx, mark.MarkID)
 }
