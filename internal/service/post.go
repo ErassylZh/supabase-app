@@ -28,6 +28,16 @@ func (s *PostService) GetListing(ctx context.Context, filter schema.GetListingFi
 	result := make([]schema.PostResponse, len(posts))
 	for i, post := range posts {
 		data := schema.PostResponse{Post: post}
+		for _, hashtag := range post.Hashtags {
+			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
+				data.PostType = "partner"
+				break
+			}
+			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
+				data.PostType = "post"
+				break
+			}
+		}
 		result[i] = data
 	}
 

@@ -95,6 +95,7 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string, postType s
 			posts[i].QuizPassed = exists
 		}
 	}
+
 	if postType == "all" {
 		return posts, nil
 	}
