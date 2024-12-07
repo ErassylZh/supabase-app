@@ -17,7 +17,7 @@ func (h *Handler) initMark(v1 *gin.RouterGroup) {
 		middleware.GinErrorHandle(h.FindMarksByUserID),
 	)
 	v1.DELETE(
-		"/mark/:mark_id",
+		"/mark/:post_id",
 		middleware.GinErrorHandle(h.DeleteMark),
 	)
 }
@@ -95,7 +95,9 @@ func (h *Handler) DeleteMark(c *gin.Context) error {
 	if err != nil {
 		return err
 	}
-	postId, err := strconv.ParseUint(c.Param("post_id"), 10, 64)
+	postIdsStr := c.Param("post_id")
+
+	postId, err := strconv.ParseUint(postIdsStr, 10, 64)
 	if err != nil {
 		return err
 	}
