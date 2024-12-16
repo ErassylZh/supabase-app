@@ -57,6 +57,7 @@ func (s *UserPostService) AddQuizPoints(ctx context.Context, createUserPost mode
 
 	up.QuizPoints = createUserPost.QuizPoints
 	up.QuizSapphires = createUserPost.QuizSapphires
+	up.ReadEnd = true
 	return s.userPostRepo.Create(ctx, up)
 }
 
