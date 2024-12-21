@@ -718,7 +718,7 @@ definitions:
       token:
         type: string
     type: object
-host: 157.90.227.125:8000
+host: localhost:8000
 info:
   contact: {}
   description: Это пример сервера с использованием Swagger в Gin.

@@ -34,7 +34,7 @@ func NewServices(deps Deps) *Services {
 	markService := NewMarkService(deps.Repos.Mark, deps.Repos.Post, deps.Repos.UserPost)
 	return &Services{
 		User:             NewUserService(deps.Repos.User, deps.Repos.Profile),
-		Auth:             NewAuthService(deps.Cgf.Security.Secret),
+		Auth:             NewAuthService(deps.Repos.User, deps.Cgf.Security.Secret),
 		PushNotification: NewPushNotificationService(deps.Repos.PushNotification, deps.Repos.FirebaseMessaging),
 		Balance:          NewBalanceService(deps.Repos.Balance, deps.Repos.Transaction),
 		UserDeviceToken:  NewUserDeviceTokenService(deps.Repos.UserDeviceToken),

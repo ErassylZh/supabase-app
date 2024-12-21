@@ -5,6 +5,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
+	"work-project/internal/aggregator"
 	"work-project/internal/config"
 	v1 "work-project/internal/handler/v1"
 	"work-project/internal/middleware"
@@ -14,26 +15,29 @@ import (
 )
 
 type Handler struct {
-	usecases       *usecase.Usecases
-	services       *service.Services
-	baseUrl        string
-	authMiddleware middleware.AuthMiddleware
-	healthcheckFn  func() error
+	usecases          *usecase.Usecases
+	services          *service.Services
+	serviceAggregator *aggregator.ServiceAggregatorService
+	baseUrl           string
+	authMiddleware    middleware.AuthMiddleware
+	healthcheckFn     func() error
 }
 
 func NewHandlerDelivery(
 	usecases *usecase.Usecases,
 	services *service.Services,
+	serviceAggregator *aggregator.ServiceAggregatorService,
 	baseUrl string,
 	auth middleware.AuthMiddleware,
 	healthcheckFn func() error,
 ) *Handler {
 	return &Handler{
-		usecases:       usecases,
-		services:       services,
-		baseUrl:        baseUrl,
-		authMiddleware: auth,
-		healthcheckFn:  healthcheckFn,
+		usecases:          usecases,
+		services:          services,
+		serviceAggregator: serviceAggregator,
+		baseUrl:           baseUrl,
+		authMiddleware:    auth,
+		healthcheckFn:     healthcheckFn,
 	}
 }
 
@@ -74,9 +78,13 @@ func (h *Handler) Init(cfg *config.Config) (*gin.Engine, error) {
 func (h *Handler) initAPI(router *gin.Engine) {
 	baseUrl := router.Group(h.baseUrl)
 
-	handlerV1 := v1.NewHandler(h.services, h.usecases, &h.authMiddleware)
+	handlerV1 := v1.NewHandler(h.services, h.serviceAggregator, h.usecases, &h.authMiddleware)
 	api := baseUrl.Group("/api")
 	{
 		handlerV1.Init(api)
+	}
+	ws := baseUrl.Group("/ws")
+	{
+		handlerV1.InitWs(ws)
 	}
 }

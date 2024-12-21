@@ -12,6 +12,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"work-project/internal/aggregator"
 	"work-project/internal/config"
 	"work-project/internal/handler"
 	"work-project/internal/middleware"
@@ -63,6 +64,8 @@ func Run(cfg *config.Config) {
 		Repositories: repositories,
 	})
 
+	serviceAggregator := aggregator.NewServiceAggregatorService(*services)
+
 	healthCheckFn := func() error {
 		//if err := connection.Ping(); err != nil {
 		//	return fmt.Errorf("database is not responding: %w", err)
@@ -73,11 +76,13 @@ func Run(cfg *config.Config) {
 	//handlers := v1.NewHandler(services)
 
 	authMiddleware := middleware.NewAuthMiddleware(middleware.GinRecoveryFn)
-	handlerDelivery := handler.NewHandlerDelivery(usecases, services, "", *authMiddleware, healthCheckFn)
+	handlerDelivery := handler.NewHandlerDelivery(usecases, services, serviceAggregator, "", *authMiddleware, healthCheckFn)
 	if err != nil {
 		fmt.Println("Failed to create handlers:", err)
 		panic(err)
 	}
+
+	service.NewHub()
 
 	srv, err := server.NewServer(cfg, handlerDelivery)
 	if err != nil {
