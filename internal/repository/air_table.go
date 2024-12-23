@@ -18,6 +18,7 @@ type AirTable interface {
 	GetStories(ctx context.Context) ([]airtable.BaseObject[airtable.Stories], error)
 	GetHashtags(ctx context.Context) ([]airtable.BaseObject[airtable.Hashtag], error)
 	GetCollections(ctx context.Context) ([]airtable.BaseObject[airtable.Collection], error)
+	GetProductTags(ctx context.Context) ([]airtable.BaseObject[airtable.ProductTag], error)
 }
 
 type AirTableClient struct {
@@ -269,6 +270,55 @@ func (r *AirTableClient) GetCollections(ctx context.Context) ([]airtable.BaseObj
 		}
 
 		var response airtable.BaseResponse[airtable.Collection]
+		if err := json.Unmarshal(rawResponse, &response); err != nil {
+			return nil, err
+		}
+
+		allRecords = append(allRecords, response.Records...)
+
+		if response.Offset == nil {
+			break
+		}
+
+		offset = response.Offset
+	}
+
+	return allRecords, nil
+}
+
+func (r *AirTableClient) GetProductTags(ctx context.Context) ([]airtable.BaseObject[airtable.ProductTag], error) {
+	var allRecords []airtable.BaseObject[airtable.ProductTag]
+	var offset *string
+
+	for {
+		requestURL := r.baseURL.JoinPath("/StoreTag")
+		if offset != nil {
+			query := requestURL.Query()
+			query.Set("offset", *offset)
+			requestURL.RawQuery = query.Encode()
+		}
+
+		req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := r.client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("error while getting Airtable hashtag. Response code: %d", resp.StatusCode)
+		}
+
+		rawResponse, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var response airtable.BaseResponse[airtable.ProductTag]
 		if err := json.Unmarshal(rawResponse, &response); err != nil {
 			return nil, err
 		}

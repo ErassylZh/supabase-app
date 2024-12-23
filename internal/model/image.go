@@ -8,11 +8,12 @@ import (
 type BucketName string
 
 const (
-	BUCKET_NAME_PRODUCT    BucketName = "product"
-	BUCKET_NAME_POST       BucketName = "post"
-	BUCKET_NAME_STORIES    BucketName = "stories"
-	BUCKET_NAME_HASHTAG    BucketName = "hashtags"
-	BUCKET_NAME_COLLECTION BucketName = "collection"
+	BUCKET_NAME_PRODUCT     BucketName = "product"
+	BUCKET_NAME_POST        BucketName = "post"
+	BUCKET_NAME_STORIES     BucketName = "stories"
+	BUCKET_NAME_HASHTAG     BucketName = "hashtags"
+	BUCKET_NAME_COLLECTION  BucketName = "collection"
+	BUCKET_NAME_PRODUCT_TAG BucketName = "product_tag"
 )
 
 type Image struct {

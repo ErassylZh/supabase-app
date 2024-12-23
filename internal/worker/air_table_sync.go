@@ -11,17 +11,19 @@ import (
 )
 
 type AirTableSync struct {
-	airTable       repository.AirTable
-	product        repository.Product
-	post           repository.Post
-	storage        repository.StorageClient
-	image          repository.Image
-	hashtag        repository.Hashtag
-	postHashtag    repository.PostHashtag
-	collection     repository.Collection
-	postCollection repository.PostCollection
-	stories        repository.Stories
-	storyPage      repository.StoryPage
+	airTable          repository.AirTable
+	product           repository.Product
+	post              repository.Post
+	storage           repository.StorageClient
+	image             repository.Image
+	hashtag           repository.Hashtag
+	postHashtag       repository.PostHashtag
+	collection        repository.Collection
+	postCollection    repository.PostCollection
+	stories           repository.Stories
+	storyPage         repository.StoryPage
+	productTag        repository.ProductTag
+	productProductTag repository.ProductProductTag
 }
 
 func NewAirTableSync(
@@ -36,19 +38,23 @@ func NewAirTableSync(
 	postCollection repository.PostCollection,
 	stories repository.Stories,
 	storyPage repository.StoryPage,
+	productTag repository.ProductTag,
+	productProductTag repository.ProductProductTag,
 ) *AirTableSync {
 	return &AirTableSync{
-		airTable:       airTable,
-		product:        product,
-		post:           post,
-		storage:        storage,
-		image:          image,
-		hashtag:        hashtag,
-		postHashtag:    postHashtag,
-		collection:     collection,
-		postCollection: postCollection,
-		stories:        stories,
-		storyPage:      storyPage,
+		airTable:          airTable,
+		product:           product,
+		post:              post,
+		storage:           storage,
+		image:             image,
+		hashtag:           hashtag,
+		postHashtag:       postHashtag,
+		collection:        collection,
+		postCollection:    postCollection,
+		stories:           stories,
+		storyPage:         storyPage,
+		productTag:        productTag,
+		productProductTag: productProductTag,
 	}
 }
 
@@ -106,6 +112,36 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 	updateProducts := make([]model.Product, 0)
 	for sku := range productsAirtableBySku {
 		if product, exists := productsDBBySku[sku]; exists {
+			imagesDB, err := h.image.GetAllByProductId(ctx, product.ProductID)
+			if err != nil {
+				return err
+			}
+
+			airtableImages := productsAirtableBySku[sku].Fields.Image
+
+			imagesNeedUpdate := h.checkImageUpdates(imagesDB, airtableImages, nil)
+
+			if imagesNeedUpdate {
+				err = h.image.DeleteByProductId(ctx, product.ProductID)
+				if err != nil {
+					return err
+				}
+
+				var updatedImages []model.Image
+				updatedImages = append(updatedImages, h.generateProductImages(ctx, product.ProductID, airtableImages)...)
+
+				if len(updatedImages) > 0 {
+					_, err = h.image.CreateMany(ctx, updatedImages)
+					if err != nil {
+						return err
+					}
+				}
+			}
+
+			var existsHashtags []string
+			for _, ht := range product.ProductTags {
+				existsHashtags = append(existsHashtags, ht.Name)
+			}
 			if product.Point != productsAirtableBySku[sku].Fields.Point ||
 				product.Count != productsAirtableBySku[sku].Fields.Count ||
 				!strings.EqualFold(product.Description, productsAirtableBySku[sku].Fields.Description) ||
@@ -126,6 +162,30 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 				product.Status = productsAirtableBySku[sku].Fields.Status
 				product.Offer = productsAirtableBySku[sku].Fields.Offer
 				updateProducts = append(updateProducts, product)
+			}
+			if !h.compareHashtags(existsHashtags, productsAirtableBySku[sku].Fields.Tags) {
+				err = h.productProductTag.DeleteByProductId(ctx, product.ProductID)
+				if err != nil {
+					return err
+				}
+				names := productsAirtableBySku[sku].Fields.Tags
+				var postHashtags []model.ProductProductTag
+				for _, name := range names {
+					ht, err := h.productTag.GetByName(ctx, name)
+					if err != nil {
+						return err
+					}
+					postHashtags = append(postHashtags, model.ProductProductTag{
+						ProductId:    product.ProductID,
+						ProductTagId: ht.ProductTagID,
+					})
+				}
+				if len(postHashtags) > 0 {
+					_, err = h.productProductTag.CreateMany(ctx, postHashtags)
+					if err != nil {
+						return err
+					}
+				}
 			}
 			continue
 		}
@@ -151,8 +211,20 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 		}
 
 		imagesProduct := make([]model.Image, 0)
+		productHashtags := make([]model.ProductProductTag, 0)
 		for _, np := range newProducts {
 			productId := np.ProductID
+			for _, hashtag := range productsAirtableBySku[np.Sku].Fields.Tags {
+				hashtagObj, err := h.productTag.GetByName(ctx, hashtag)
+				if err != nil {
+					return err
+				}
+				productHashtags = append(productHashtags, model.ProductProductTag{
+					ProductId:    productId,
+					ProductTagId: hashtagObj.ProductTagID,
+				})
+			}
+
 			for _, img := range productsAirtableBySku[np.Sku].Fields.Image {
 				file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT), img.FileName, img.Url)
 				if err != nil {
@@ -171,6 +243,15 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 		if err != nil {
 			log.Println(ctx, "error while create images from airtable ", "err", err)
 			return err
+		}
+
+		if len(productHashtags) > 0 {
+			_, err = h.productProductTag.CreateMany(ctx, productHashtags)
+			if err != nil {
+				log.Println(ctx, "error while create post hashtags from airtable ", "err", err)
+				return err
+			}
+
 		}
 	}
 
@@ -888,6 +969,121 @@ func (h *AirTableSync) syncCollections(ctx context.Context) error {
 
 	return nil
 }
+
+func (h *AirTableSync) compareTags(dbHashtags, airtableHashtags []string) bool {
+	if len(dbHashtags) != len(airtableHashtags) {
+		return false
+	}
+
+	hashtagSet := make(map[string]bool)
+	for _, hashtag := range dbHashtags {
+		hashtagSet[hashtag] = true
+	}
+
+	for _, hashtag := range airtableHashtags {
+		if !hashtagSet[hashtag] {
+			return false
+		}
+	}
+	return true
+}
+
+func (h *AirTableSync) syncProductTags(ctx context.Context) error {
+	tags, err := h.airTable.GetProductTags(ctx)
+	if err != nil {
+		return err
+	}
+
+	hashtagsAirtableByName := make(map[string]airtable.BaseObject[airtable.ProductTag])
+	for _, post := range tags {
+		hashtagsAirtableByName[post.Fields.Name] = post
+	}
+
+	hashtagsDB, err := h.productTag.GetAll(ctx)
+	if err != nil {
+		return err
+	}
+
+	hashtagsDBByName := make(map[string]model.ProductTag)
+	for _, hashtag := range hashtagsDB {
+		hashtagsDBByName[hashtag.Name] = hashtag
+	}
+
+	createHashtags := make([]model.ProductTag, 0)
+	updateHashtags := make([]model.ProductTag, 0)
+	deleteHashtags := make([]model.ProductTag, 0)
+	for key := range hashtagsAirtableByName {
+		if data, ok := hashtagsDBByName[key]; ok {
+			var images []airtable.Image
+			if hashtagsAirtableByName[key].Fields.Image != nil {
+				images = *hashtagsAirtableByName[key].Fields.Image
+			}
+			if !strings.EqualFold(data.NameRu, hashtagsAirtableByName[key].Fields.NameRu) ||
+				!strings.EqualFold(data.NameKz, hashtagsAirtableByName[key].Fields.NameKz) ||
+				(data.ImagePath == nil && images != nil && len(images) > 0) ||
+				!(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
+				data.NameRu = hashtagsAirtableByName[key].Fields.NameRu
+				data.NameKz = hashtagsAirtableByName[key].Fields.NameKz
+				if (data.ImagePath == nil && images != nil && len(images) > 0) ||
+					(data.ImagePath != nil && images != nil && len(images) > 0 && strings.Contains(*data.ImagePath, images[0].FileName)) {
+					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_HASHTAG), images[0].FileName, images[0].Url)
+					if err != nil {
+						log.Println(ctx, "some err while create image", "err", err, "product tag name", data.Name)
+					}
+					data.ImagePath = &file
+				}
+				updateHashtags = append(updateHashtags, data)
+			}
+			continue
+		}
+		hashtag := model.ProductTag{
+			NameKz: hashtagsAirtableByName[key].Fields.NameKz,
+			NameRu: hashtagsAirtableByName[key].Fields.NameRu,
+			Name:   hashtagsAirtableByName[key].Fields.Name,
+		}
+		if hashtagsAirtableByName[key].Fields.Image != nil && len(*hashtagsAirtableByName[key].Fields.Image) > 0 {
+			images := *hashtagsAirtableByName[key].Fields.Image
+			file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_PRODUCT_TAG), images[0].FileName, images[0].Url)
+			if err != nil {
+				log.Println(ctx, "some err while create image", "err", err, "hashtag name", hashtag.Name)
+			}
+			hashtag.ImagePath = &file
+		}
+		createHashtags = append(createHashtags, hashtag)
+	}
+	for key := range hashtagsDBByName {
+		if _, ok := hashtagsAirtableByName[key]; ok {
+			continue
+		}
+		deleteHashtags = append(deleteHashtags, hashtagsDBByName[key])
+	}
+
+	if len(createHashtags) > 0 {
+		_, err = h.productTag.CreateMany(ctx, createHashtags)
+		if err != nil {
+			return err
+		}
+	}
+	if len(updateHashtags) > 0 {
+		_, err = h.productTag.UpdateMany(ctx, updateHashtags)
+		if err != nil {
+			return err
+		}
+	}
+	if len(deleteHashtags) > 0 {
+		deleteHashtagIds := make([]uint, len(deleteHashtags))
+		for i, pr := range deleteHashtags {
+			deleteHashtagIds[i] = pr.ProductTagID
+		}
+		err = h.productTag.DeleteMany(ctx, deleteHashtagIds)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (h *AirTableSync) generatePostImages(ctx context.Context, postID uint, airtableImages []airtable.Image, airtableLogos []airtable.Image) []model.Image {
 	var imagesPost []model.Image
 
@@ -914,6 +1110,25 @@ func (h *AirTableSync) generatePostImages(ctx context.Context, postID uint, airt
 			ImageUrl: file,
 			FileName: logo.FileName,
 			Type:     string(model.POST_IMAGE_TYPE_LOGO),
+		})
+	}
+
+	return imagesPost
+}
+
+func (h *AirTableSync) generateProductImages(ctx context.Context, postID uint, airtableImages []airtable.Image) []model.Image {
+	var imagesPost []model.Image
+
+	for _, img := range airtableImages {
+		file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_POST), img.FileName, img.Url)
+		if err != nil {
+			log.Println(ctx, "Error creating image:", err)
+		}
+		imagesPost = append(imagesPost, model.Image{
+			ProductID: &postID,
+			ImageUrl:  file,
+			FileName:  img.FileName,
+			Type:      string(model.POST_IMAGE_TYPE_IMAGE),
 		})
 	}
 

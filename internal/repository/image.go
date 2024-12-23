@@ -11,6 +11,7 @@ type Image interface {
 	GetAllByProductId(ctx context.Context, productId uint) ([]model.Image, error)
 	GetAllByPostId(ctx context.Context, postId uint) ([]model.Image, error)
 	DeleteByPostId(ctx context.Context, postId uint) error
+	DeleteByProductId(ctx context.Context, productId uint) error
 }
 
 type ImageDB struct {
@@ -60,6 +61,18 @@ func (r *ImageDB) DeleteByPostId(ctx context.Context, postId uint) error {
 	db := r.db.WithContext(ctx)
 	err := db.Model(&model.Image{}).
 		Where("post_id = ?", postId).
+		Delete(&model.Image{}).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *ImageDB) DeleteByProductId(ctx context.Context, productId uint) error {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Image{}).
+		Where("product_id = ?", productId).
 		Delete(&model.Image{}).
 		Error
 	if err != nil {

@@ -14,17 +14,18 @@ type BaseObject[T any] struct {
 }
 
 type ProductListResponse struct {
-	Count       int     `json:"count"`
-	Point       int     `json:"point"`
-	Sapphire    int     `json:"sapphire"`
-	Description string  `json:"description"`
-	Title       string  `json:"title"`
-	Image       []Image `json:"image"`
-	Sku         string  `json:"sku"`
-	ProductType string  `json:"product_type"`
-	SellType    string  `json:"sell_type"`
-	Status      string  `json:"status"`
-	Offer       string  `json:"offer"`
+	Count       int      `json:"count"`
+	Point       int      `json:"point"`
+	Sapphire    int      `json:"sapphire"`
+	Description string   `json:"description"`
+	Title       string   `json:"title"`
+	Image       []Image  `json:"image"`
+	Sku         string   `json:"sku"`
+	ProductType string   `json:"product_type"`
+	SellType    string   `json:"sell_type"`
+	Status      string   `json:"status"`
+	Offer       string   `json:"offer"`
+	Tags        []string `json:"tags"`
 }
 
 type Image struct {
@@ -75,6 +76,13 @@ type Hashtag struct {
 	NameKz    string   `json:"name_kz"`
 	IsVisible bool     `json:"is_visible"`
 	Image     *[]Image `json:"image"`
+}
+
+type ProductTag struct {
+	Name   string   `json:"name"`
+	NameRu string   `json:"name_ru"`
+	NameKz string   `json:"name_kz"`
+	Image  *[]Image `json:"image"`
 }
 
 type Collection struct {

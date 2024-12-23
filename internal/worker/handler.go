@@ -47,6 +47,8 @@ func (h *Handler) Init() {
 		h.repositories.PostCollection,
 		h.repositories.Stories,
 		h.repositories.StoryPage,
+		h.repositories.ProductTag,
+		h.repositories.ProductProductTag,
 	)
 	if err = s.Every(uint64(h.cfg.Integration.PushNotificationReadPeriod)).Seconds().Do(pushNotificationReader.Run); err != nil {
 		log.Println("worker failed", "err", err.Error())
