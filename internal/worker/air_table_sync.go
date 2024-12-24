@@ -176,8 +176,8 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 						return err
 					}
 					postHashtags = append(postHashtags, model.ProductProductTag{
-						ProductId:    product.ProductID,
-						ProductTagId: ht.ProductTagID,
+						ProductID:    product.ProductID,
+						ProductTagID: ht.ProductTagID,
 					})
 				}
 				if len(postHashtags) > 0 {
@@ -220,8 +220,8 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 					return err
 				}
 				productHashtags = append(productHashtags, model.ProductProductTag{
-					ProductId:    productId,
-					ProductTagId: hashtagObj.ProductTagID,
+					ProductID:    productId,
+					ProductTagID: hashtagObj.ProductTagID,
 				})
 			}
 

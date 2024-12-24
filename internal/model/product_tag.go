@@ -5,7 +5,7 @@ import (
 )
 
 type ProductTag struct {
-	ProductTagID uint    `gorm:"primaryKey;column:hashtag_id" json:"hashtag_id"`
+	ProductTagID uint    `gorm:"primaryKey;column:product_tag_id" json:"product_tag_id"`
 	Name         string  `gorm:"column:name" json:"name"`
 	NameRu       string  `gorm:"column:name_ru" json:"name_ru"`
 	NameKz       string  `gorm:"column:name_kz" json:"name_kz"`

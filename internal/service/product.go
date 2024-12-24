@@ -7,7 +7,7 @@ import (
 )
 
 type Product interface {
-	GetListing(ctx context.Context) ([]model.Product, error)
+	GetListing(ctx context.Context, productTagIds []uint) ([]model.Product, error)
 	GetProduct(ctx context.Context, id uint) (model.Product, error)
 }
 
@@ -19,8 +19,8 @@ func NewProductService(productRepo repository.Product) *ProductService {
 	return &ProductService{productRepo: productRepo}
 }
 
-func (s *ProductService) GetListing(ctx context.Context) ([]model.Product, error) {
-	return s.productRepo.GetAllListing(ctx)
+func (s *ProductService) GetListing(ctx context.Context, productTagIds []uint) ([]model.Product, error) {
+	return s.productRepo.GetAllListing(ctx, productTagIds)
 }
 
 func (s *ProductService) GetProduct(ctx context.Context, id uint) (model.Product, error) {

@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "157.90.227.125:8000",
+    "host": "localhost:8000",
     "basePath": "/",
     "paths": {
         "/api/v1/balance": {
@@ -580,6 +580,14 @@
                     "product"
                 ],
                 "summary": "список товаров",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "product_tag_id",
+                        "name": "product_tag_id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -845,6 +853,34 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tags": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product"
+                ],
+                "summary": "список моих заказов",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_ProductTag"
                         }
                     },
                     "400": {
@@ -1374,6 +1410,12 @@
                 "product_id": {
                     "type": "integer"
                 },
+                "product_tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ProductTag"
+                    }
+                },
                 "product_type": {
                     "type": "string"
                 },
@@ -1391,6 +1433,26 @@
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "model.ProductTag": {
+            "type": "object",
+            "properties": {
+                "image_path": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_kz": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                },
+                "product_tag_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -1923,6 +1985,23 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.Product"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-array_model_ProductTag": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ProductTag"
                     }
                 },
                 "status": {
