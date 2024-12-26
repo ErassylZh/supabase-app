@@ -102,7 +102,7 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 	}
 
 	_, err = u.balanceService.CreateTransaction(ctx, userID, model.Transaction{
-		Coins:             10,
+		Coins:             100,
 		Sapphires:         0,
 		UserId:            userID,
 		CreatedAt:         time.Now(),
