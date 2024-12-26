@@ -34,12 +34,11 @@ func (h *Handler) initReferral(v1 *gin.RouterGroup) {
 func (h *Handler) AddReferralCode(c *gin.Context) error {
 	ctx := c.Request.Context()
 	referralCode := c.Query("referralCode")
-	//token := c.GetHeader("Authorization")
-	//userId, err := h.services.Auth.VerifyToken(token)
-	//if err != nil {
-	//	return err
-	//}
-	userId := "d5d9355b-d961-4cd0-b8de-8ee3fc856f04"
+	token := c.GetHeader("Authorization")
+	userId, err := h.services.Auth.VerifyToken(token)
+	if err != nil {
+		return err
+	}
 	referral, err := h.usecases.Referral.AcceptReferralCode(ctx, userId, referralCode)
 	if err != nil {
 		return err
