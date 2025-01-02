@@ -58,7 +58,10 @@ func (s *UserPostService) AddQuizPoints(ctx context.Context, createUserPost mode
 	up.QuizPoints = createUserPost.QuizPoints
 	up.QuizSapphires = createUserPost.QuizSapphires
 	up.ReadEnd = true
-	return s.userPostRepo.Create(ctx, up)
+	if up.UserPostId == 0 {
+		return s.userPostRepo.Create(ctx, up)
+	}
+	return s.userPostRepo.Update(ctx, up)
 }
 
 func (s *UserPostService) GetByUserAndPost(ctx context.Context, userId string, postId uint) (model.UserPost, error) {
