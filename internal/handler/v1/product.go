@@ -2,6 +2,8 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"strconv"
+	"strings"
 	"work-project/internal/middleware"
 	"work-project/internal/schema"
 )
@@ -19,6 +21,10 @@ func (h *Handler) initProduct(v1 *gin.RouterGroup) {
 		"/orders",
 		middleware.GinErrorHandle(h.GetMyOrders),
 	)
+	v1.GET(
+		"/tags",
+		middleware.GinErrorHandle(h.GetMyOrders),
+	)
 }
 
 // GetListingProducts
@@ -28,11 +34,22 @@ func (h *Handler) initProduct(v1 *gin.RouterGroup) {
 // @Produce json
 // @Success 200 {object} schema.Response[[]model.Product]
 // @Failure 400 {object} schema.Response[schema.Empty]
+// @Param product_tag_id query string false "product_tag_id"
 // @tags product
 // @Router /api/v1/product [get]
 func (h *Handler) GetListingProducts(c *gin.Context) error {
 	ctx := c.Request.Context()
-	products, err := h.services.Product.GetListing(ctx)
+	productTagIDsStr := c.Query("product_tag_id")
+	productTagIds := make([]uint, 0)
+	for _, msi := range strings.Split(productTagIDsStr, ",") {
+		if msi == "" {
+			continue
+		}
+		id, _ := strconv.ParseUint(msi, 10, 64)
+		productTagIds = append(productTagIds, uint(id))
+	}
+
+	products, err := h.services.Product.GetListing(ctx, productTagIds)
 	if err != nil {
 		return err
 	}
@@ -94,4 +111,23 @@ func (h *Handler) GetMyOrders(c *gin.Context) error {
 	}
 
 	return schema.Respond(order, c)
+}
+
+// Tags
+// WhoAmi godoc
+// @Summary список моих заказов
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.ProductTag]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @tags product
+// @Router /api/v1/tags [get]
+func (h *Handler) Tags(c *gin.Context) error {
+	ctx := c.Request.Context()
+	data, err := h.services.ProductTag.GetAll(ctx)
+	if err != nil {
+		return err
+	}
+
+	return schema.Respond(data, c)
 }

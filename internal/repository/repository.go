@@ -6,28 +6,30 @@ import (
 )
 
 type Repositories struct {
-	User             User
-	Profile          Profile
-	ReferralCode     ReferralCode
-	Referral         Referral
-	PushNotification PushNotification
-	Transaction      Transaction
-	Balance          Balance
-	UserDeviceToken  UserDeviceToken
-	Product          Product
-	Post             Post
-	Image            Image
-	Hashtag          Hashtag
-	PostHashtag      PostHashtag
-	Stories          Stories
-	StoryPage        StoryPage
-	StoryPageUser    StoryPageUser
-	Mark             Mark
-	UserPost         UserPost
-	Collection       Collection
-	PostCollection   PostCollection
-	Order            Order
-	OrderProduct     OrderProduct
+	User              User
+	Profile           Profile
+	ReferralCode      ReferralCode
+	Referral          Referral
+	PushNotification  PushNotification
+	Transaction       Transaction
+	Balance           Balance
+	UserDeviceToken   UserDeviceToken
+	Product           Product
+	Post              Post
+	Image             Image
+	Hashtag           Hashtag
+	PostHashtag       PostHashtag
+	Stories           Stories
+	StoryPage         StoryPage
+	StoryPageUser     StoryPageUser
+	Mark              Mark
+	UserPost          UserPost
+	Collection        Collection
+	PostCollection    PostCollection
+	Order             Order
+	OrderProduct      OrderProduct
+	ProductTag        ProductTag
+	ProductProductTag ProductProductTag
 
 	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
@@ -65,5 +67,7 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		FirebaseMessaging: NewFirebaseClient(cfg.Integration.PathToFirebaseConfig),
 		Airtable:          airtable,
 		StorageClient:     NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),
+		ProductTag:        NewProductTagDB(db),
+		ProductProductTag: NewProductProductTagDB(db),
 	}, nil
 }

@@ -42,7 +42,8 @@ type Product struct {
 	SellType          string    `gorm:"column:sell_type" json:"sell_type"`
 	Offer             string    `gorm:"column:offer" json:"offer"`
 
-	Images []Image `json:"images"`
+	Images      []Image      `json:"images"`
+	ProductTags []ProductTag `gorm:"many2many:public.product_product_tag;foreignKey:ProductID;joinForeignKey:ProductID;References:ProductTagID;joinReferences:ProductTagID;constraint:OnDelete:CASCADE;" json:"product_tags"`
 }
 
 func (u Product) TableName() string {

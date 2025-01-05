@@ -194,6 +194,10 @@ definitions:
         type: integer
       product_id:
         type: integer
+      product_tags:
+        items:
+          $ref: '#/definitions/model.ProductTag'
+        type: array
       product_type:
         type: string
       sapphire:
@@ -206,6 +210,19 @@ definitions:
         type: string
       title:
         type: string
+    type: object
+  model.ProductTag:
+    properties:
+      image_path:
+        type: string
+      name:
+        type: string
+      name_kz:
+        type: string
+      name_ru:
+        type: string
+      product_tag_id:
+        type: integer
     type: object
   model.PushNotification:
     properties:
@@ -553,6 +570,17 @@ definitions:
       result:
         items:
           $ref: '#/definitions/model.Product'
+        type: array
+      status:
+        type: boolean
+    type: object
+  schema.Response-array_model_ProductTag:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.ProductTag'
         type: array
       status:
         type: boolean
@@ -1077,6 +1105,11 @@ paths:
     get:
       consumes:
       - application/json
+      parameters:
+      - description: product_tag_id
+        in: query
+        name: product_tag_id
+        type: string
       produces:
       - application/json
       responses:
@@ -1252,6 +1285,24 @@ paths:
       summary: пометить сторис прочитанным
       tags:
       - stories
+  /api/v1/tags:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_ProductTag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: список моих заказов
+      tags:
+      - product
   /api/v1/user-device-token:
     delete:
       consumes:

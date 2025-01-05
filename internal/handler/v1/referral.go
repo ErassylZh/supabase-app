@@ -29,7 +29,6 @@ func (h *Handler) initReferral(v1 *gin.RouterGroup) {
 // @Success 200 {object} schema.Response[model.ReferralCode]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param referralCode query string true "referralCode"
-// @Security BearerAuth
 // @tags referral
 // @Router /api/v1/referral [post]
 func (h *Handler) AddReferralCode(c *gin.Context) error {

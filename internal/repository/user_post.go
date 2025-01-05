@@ -24,7 +24,7 @@ func NewUserPostRepository(db *gorm.DB) *UserPostRepository {
 func (r *UserPostRepository) Create(ctx context.Context, userPost model.UserPost) (model.UserPost, error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.UserPost{})
-	err := q.Create(&userPost).
+	err := q.Save(&userPost).
 		Error
 	if err != nil {
 		return model.UserPost{}, err
