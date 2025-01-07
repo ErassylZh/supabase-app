@@ -11,6 +11,7 @@ type ContestBook struct {
 	ContestBookID uint      `gorm:"primaryKey;column:contest_book_id" json:"contest_book_id"`
 	ContestID     uint      `gorm:"column:contest_id" json:"contest_id"`
 	PostID        uint      `gorm:"column:post_id" json:"post_id"`
+	DayNumber     int       `gorm:"column:day_number" json:"day_number"`
 }
 
 func (h *ContestBook) TableName() string {
