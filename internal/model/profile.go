@@ -12,6 +12,7 @@ type Profile struct {
 	AvatarUrl *string   `json:"avatar_url"`
 	Phone     *string   `json:"phone"`
 	Email     *string   `json:"email"`
+	Nickname  *string   `json:"user_name"`
 }
 
 func (u Profile) TableName() string {

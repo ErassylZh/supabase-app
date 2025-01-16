@@ -12,6 +12,8 @@ type User struct {
 	EmailConfirmedAt   *time.Time `json:"email_confirmed_at" gorm:"column:email_confirmed_at"`
 	ConfirmationToken  *string    `json:"confirmation_token" gorm:"column:confirmation_token"`
 	ConfirmationSendAt *time.Time `json:"confirmation_send_at" gorm:"column:confirmation_send_at"`
+
+	Profile Profile `json:"profile" gorm:"foreignKey:ProfileID;references:UserID"`
 }
 
 func (u User) TableName() string {
