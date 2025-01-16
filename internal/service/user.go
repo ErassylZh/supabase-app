@@ -4,11 +4,13 @@ import (
 	"context"
 	"work-project/internal/model"
 	"work-project/internal/repository"
+	"work-project/internal/schema"
 )
 
 type User interface {
 	DeleteByID(ctx context.Context, userID string) error
 	GetById(ctx context.Context, userID string) (model.User, error)
+	Update(ctx context.Context, data schema.UserUpdate) error
 }
 
 type UserService struct {
@@ -33,4 +35,14 @@ func (s *UserService) DeleteByID(ctx context.Context, userID string) error {
 
 func (s *UserService) GetById(ctx context.Context, userID string) (model.User, error) {
 	return s.userRepo.GetByID(ctx, userID)
+}
+
+func (s *UserService) Update(ctx context.Context, data schema.UserUpdate) error {
+	profile, err := s.profileRepo.GetByID(ctx, data.UserID)
+	if err != nil {
+		return err
+	}
+	profile.Nickname = &data.Nickname
+
+	return s.profileRepo.Update(ctx, profile)
 }

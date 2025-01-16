@@ -724,11 +724,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -898,6 +893,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "обновить пользователя",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user-device-token": {
             "get": {
                 "security": [
@@ -1015,11 +1043,6 @@ const docTemplate = `{
         },
         "/api/v1/user/:user_id": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1462,6 +1485,32 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Profile": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_name": {
+                    "type": "string"
+                }
+            }
+        },
         "model.PushNotification": {
             "type": "object",
             "properties": {
@@ -1612,6 +1661,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "profile": {
+                    "$ref": "#/definitions/model.Profile"
                 }
             }
         },

@@ -224,6 +224,23 @@ definitions:
       product_tag_id:
         type: integer
     type: object
+  model.Profile:
+    properties:
+      avatar_url:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+      user_name:
+        type: string
+    type: object
   model.PushNotification:
     properties:
       condition:
@@ -323,6 +340,8 @@ definitions:
         type: string
       id:
         type: string
+      profile:
+        $ref: '#/definitions/model.Profile'
     type: object
   model.UserDeviceToken:
     properties:
@@ -1215,8 +1234,6 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      security:
-      - BearerAuth: []
       summary: пометить прочитанным сторис
       tags:
       - referral
@@ -1303,6 +1320,26 @@ paths:
       summary: список моих заказов
       tags:
       - product
+  /api/v1/user:
+    put:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: обновить пользователя
+      tags:
+      - user
   /api/v1/user-device-token:
     delete:
       consumes:
@@ -1408,8 +1445,6 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      security:
-      - BearerAuth: []
       summary: получить пользователя
       tags:
       - user

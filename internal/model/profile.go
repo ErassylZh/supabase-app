@@ -6,7 +6,7 @@ import (
 )
 
 type Profile struct {
-	ProfileID string    `json:"id"`
+	ID        string    `json:"id"`
 	UpdatedAt time.Time `json:"updated_at"`
 	FullName  *string   `json:"full_name"`
 	AvatarUrl *string   `json:"avatar_url"`

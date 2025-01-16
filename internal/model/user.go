@@ -13,7 +13,7 @@ type User struct {
 	ConfirmationToken  *string    `json:"confirmation_token" gorm:"column:confirmation_token"`
 	ConfirmationSendAt *time.Time `json:"confirmation_send_at" gorm:"column:confirmation_send_at"`
 
-	Profile Profile `json:"profile" gorm:"foreignKey:ProfileID;references:UserID"`
+	Profile Profile `json:"profile" gorm:"foreignKey:ID;references:UserID"`
 }
 
 func (u User) TableName() string {

@@ -48,7 +48,6 @@ func (h *Handler) DeleteUserById(c *gin.Context) error {
 // @Produce json
 // @Success 200 {object} schema.Response[model.User]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @Security BearerAuth
 // @tags user
 // @Router /api/v1/user/:user_id [get]
 func (h *Handler) GetUserByID(c *gin.Context) error {
@@ -73,8 +72,19 @@ func (h *Handler) GetUserByID(c *gin.Context) error {
 // @Router /api/v1/user [put]
 func (h *Handler) UpdateUser(c *gin.Context) error {
 	ctx := c.Request.Context()
-	userId := c.Param("user_id")
-	err := h.services.User.DeleteByID(ctx, userId)
+	token := c.GetHeader("Authorization")
+	userID, err := h.services.Auth.VerifyToken(token)
+	if err != nil {
+		return err
+	}
+
+	var data schema.UserUpdate
+	if err := c.ShouldBindJSON(&data); err != nil {
+		return err
+	}
+	data.UserID = userID
+
+	err = h.services.User.Update(ctx, data)
 	if err != nil {
 		return err
 	}
