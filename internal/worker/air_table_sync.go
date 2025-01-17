@@ -70,6 +70,10 @@ func (h *AirTableSync) Run() (err error) {
 		//return err
 	}
 
+	if err := h.syncProductTags(ctx); err != nil {
+		log.Println("error while syncing product tags:", err)
+	}
+
 	if err := h.syncProducts(ctx); err != nil {
 		log.Println("error while syncing products:", err)
 		//return err
@@ -163,12 +167,12 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 				product.Offer = productsAirtableBySku[sku].Fields.Offer
 				updateProducts = append(updateProducts, product)
 			}
-			if !h.compareHashtags(existsHashtags, productsAirtableBySku[sku].Fields.Tags) {
+			if !h.compareHashtags(existsHashtags, productsAirtableBySku[sku].Fields.TagName) {
 				err = h.productProductTag.DeleteByProductId(ctx, product.ProductID)
 				if err != nil {
 					return err
 				}
-				names := productsAirtableBySku[sku].Fields.Tags
+				names := productsAirtableBySku[sku].Fields.TagName
 				var postHashtags []model.ProductProductTag
 				for _, name := range names {
 					ht, err := h.productTag.GetByName(ctx, name)
@@ -214,7 +218,7 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 		productHashtags := make([]model.ProductProductTag, 0)
 		for _, np := range newProducts {
 			productId := np.ProductID
-			for _, hashtag := range productsAirtableBySku[np.Sku].Fields.Tags {
+			for _, hashtag := range productsAirtableBySku[np.Sku].Fields.TagName {
 				hashtagObj, err := h.productTag.GetByName(ctx, hashtag)
 				if err != nil {
 					return err

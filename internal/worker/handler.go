@@ -53,10 +53,10 @@ func (h *Handler) Init() {
 	if err = s.Every(uint64(h.cfg.Integration.PushNotificationReadPeriod)).Seconds().Do(pushNotificationReader.Run); err != nil {
 		log.Println("worker failed", "err", err.Error())
 	}
-	if err = s.Every(300).Seconds().Do(airTableSync.Run); err != nil {
-		log.Println("worker failed", "err", err.Error())
-	}
-	//airTableSync.Run()
+	//if err = s.Every(300).Seconds().Do(airTableSync.Run); err != nil {
+	//	log.Println("worker failed", "err", err.Error())
+	//}
+	airTableSync.Run()
 	<-s.Start()
 	return
 }

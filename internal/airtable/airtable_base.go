@@ -25,7 +25,7 @@ type ProductListResponse struct {
 	SellType    string   `json:"sell_type"`
 	Status      string   `json:"status"`
 	Offer       string   `json:"offer"`
-	Tags        []string `json:"tags"`
+	TagName     []string `json:"tag_name"`
 }
 
 type Image struct {
