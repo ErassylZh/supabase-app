@@ -82,6 +82,10 @@ func (h *Handler) UpdateUser(c *gin.Context) error {
 	if err := c.ShouldBindJSON(&data); err != nil {
 		return err
 	}
+	if err := data.Validate(); err != nil {
+		return err
+	}
+
 	data.UserID = userID
 
 	err = h.services.User.Update(ctx, data)
