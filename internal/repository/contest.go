@@ -8,7 +8,8 @@ import (
 )
 
 type Contest interface {
-	GetActive(ctx context.Context) (model.Contest, error)
+	GetActive(ctx context.Context) ([]model.Contest, error)
+	GetById(ctx context.Context, contestId uint) (model.Contest, error)
 	Create(ctx context.Context, contest model.Contest) (model.Contest, error)
 	Update(ctx context.Context, contest model.Contest) (model.Contest, error)
 }
@@ -21,10 +22,25 @@ func NewContestDB(db *gorm.DB) *ContestDB {
 	return &ContestDB{db: db}
 }
 
-func (r *ContestDB) GetActive(ctx context.Context) (contest model.Contest, err error) {
+func (r *ContestDB) GetActive(ctx context.Context) (contests []model.Contest, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Contest{})
 	err = q.Where("is_active and start_time > ? and end_time < ?", time.Now()).
+		Preload("ContestParticipants").
+		Find(&contests).
+		Error
+	if err != nil {
+		return contests, err
+	}
+	return contests, nil
+}
+
+func (r *ContestDB) GetById(ctx context.Context, contestId uint) (contest model.Contest, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Contest{})
+	err = q.Where("contest_id ?", contestId).
+		Preload("ContestParticipants").
+		Preload("ContestBooks").
 		First(&contest).
 		Error
 	if err != nil {

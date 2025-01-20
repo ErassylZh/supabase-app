@@ -23,6 +23,7 @@ type Services struct {
 	Order            Order
 	EmailSender      EmailSender
 	ProductTag       ProductTag
+	Contest          Contest
 }
 
 type Deps struct {
@@ -49,5 +50,6 @@ func NewServices(deps Deps) *Services {
 		EmailSender:      NewEmailSenderService(deps.Cgf.Email.Username, deps.Cgf.Email.Password, deps.Cgf.Email.Addr),
 		Order:            NewOrderService(deps.Repos.Order, deps.Repos.OrderProduct),
 		ProductTag:       NewProductTagService(deps.Repos.ProductTag),
+		Contest:          NewContestService(deps.Repos.Contest, deps.Repos.ContestParticipant, deps.Repos.ContestBook),
 	}
 }

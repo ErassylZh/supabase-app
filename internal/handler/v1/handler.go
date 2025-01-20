@@ -40,6 +40,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initMark(v1)
 		h.initHashtag(v1)
 		h.initCollection(v1)
+		h.initContest(v1)
 	}
 }
 

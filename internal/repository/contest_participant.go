@@ -7,7 +7,7 @@ import (
 )
 
 type ContestParticipant interface {
-	GetByContestID(ctx context.Context, contestId uint) (model.ContestParticipant, error)
+	GetByContestID(ctx context.Context, contestId uint) ([]model.ContestParticipant, error)
 	Create(ctx context.Context, contestParticipant model.ContestParticipant) (model.ContestParticipant, error)
 	Update(ctx context.Context, contestParticipant model.ContestParticipant) (model.ContestParticipant, error)
 }
