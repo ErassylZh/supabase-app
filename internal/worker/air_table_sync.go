@@ -154,7 +154,9 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 				!strings.EqualFold(product.SellType, productsAirtableBySku[sku].Fields.SellType) ||
 				!strings.EqualFold(product.ProductType, productsAirtableBySku[sku].Fields.ProductType) ||
 				!strings.EqualFold(product.Status, productsAirtableBySku[sku].Fields.Status) ||
-				!strings.EqualFold(product.Offer, productsAirtableBySku[sku].Fields.Offer) {
+				!strings.EqualFold(product.Offer, productsAirtableBySku[sku].Fields.Offer) ||
+				!strings.EqualFold(product.Discount, productsAirtableBySku[sku].Fields.Discount) ||
+				!strings.EqualFold(product.Contacts, productsAirtableBySku[sku].Fields.Contacts) {
 
 				product.Point = productsAirtableBySku[sku].Fields.Point
 				product.Sapphire = productsAirtableBySku[sku].Fields.Sapphire
@@ -165,6 +167,8 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 				product.ProductType = productsAirtableBySku[sku].Fields.ProductType
 				product.Status = productsAirtableBySku[sku].Fields.Status
 				product.Offer = productsAirtableBySku[sku].Fields.Offer
+				product.Contacts = productsAirtableBySku[sku].Fields.Contacts
+				product.Discount = productsAirtableBySku[sku].Fields.Discount
 				updateProducts = append(updateProducts, product)
 			}
 			if !h.compareHashtags(existsHashtags, productsAirtableBySku[sku].Fields.TagName) {
@@ -205,6 +209,8 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 			SellType:          productsAirtableBySku[sku].Fields.SellType,
 			ProductType:       productsAirtableBySku[sku].Fields.ProductType,
 			Offer:             productsAirtableBySku[sku].Fields.Offer,
+			Contacts:          productsAirtableBySku[sku].Fields.Contacts,
+			Discount:          productsAirtableBySku[sku].Fields.Discount,
 		})
 	}
 	if len(newProducts) > 0 {
