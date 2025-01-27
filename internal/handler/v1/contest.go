@@ -8,13 +8,57 @@ import (
 
 func (h *Handler) initContest(v1 *gin.RouterGroup) {
 	v1.GET(
+		"/contest/active",
+		middleware.GinErrorHandle(h.GetActiveContest),
+	)
+	v1.GET(
 		"/contest",
-		middleware.GinErrorHandle(h.GetAllHashtags),
+		middleware.GinErrorHandle(h.GetActiveContest),
 	)
 	v1.POST(
 		"/join",
 		middleware.GinErrorHandle(h.JoinContest),
 	)
+	v1.POST(
+		"/read",
+		middleware.GinErrorHandle(h.JoinContest),
+	)
+	v1.GET(
+		"/prize",
+		middleware.GinErrorHandle(h.JoinContest),
+	)
+}
+
+// GetContestData
+// WhoAmi godoc
+// @Summary получить активные контесты
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]schema.ContestData]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags contest
+// @Router /api/v1/contest [get]
+func (h *Handler) GetContestData(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var data schema.ContestGetRequest
+	if err := c.BindQuery(&data); err != nil {
+		return err
+	}
+
+	token := c.GetHeader("Authorization")
+	userID, err := h.services.Auth.VerifyToken(token)
+	if err != nil {
+		return err
+	}
+	data.UserId = userID
+
+	contest, err := h.services.Contest.Get(ctx, data)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(contest, c)
 }
 
 // GetActiveContest

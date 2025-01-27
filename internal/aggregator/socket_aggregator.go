@@ -110,14 +110,14 @@ func (s *ServiceAggregatorService) handleClientMessage(ctx context.Context, clie
 func (s *ServiceAggregatorService) getActiveMessages(ctx context.Context, client *service.SocketClient) (interface{}, error) {
 	result := make([]interface{}, 0)
 
-	result = append(result, "test")
-	result = append(result, struct {
-		ParamOne string
-		ParamTwo int
-	}{
-		ParamOne: "test param",
-		ParamTwo: 2,
-	})
+	contestData, err := s.services.Contest.GetDataForSocket(ctx, client.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, contest := range contestData {
+		result = append(result, contest)
+	}
 
 	//sort.Slice(result, func(i, j int) bool {
 	//	t1 := result[i].(schema.SocketResponse).Data.(schema.HasCreatedAt).GetCreatedAt()

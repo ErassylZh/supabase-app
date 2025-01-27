@@ -37,7 +37,7 @@ func (h *Handler) SocketAggregator(c *gin.Context) {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
-	var warehouseCodeUt string
+	//var warehouseCodeUt string
 	tokenChan := make(chan string)
 	go func() {
 		var msg struct {
@@ -78,8 +78,8 @@ func (h *Handler) SocketAggregator(c *gin.Context) {
 		Token:    token,
 	}
 	service.GetHub().Connect(client)
-	log.Println("socket connected", "client", conn.RemoteAddr().String(), "count_of_connects", service.GetHub().GetCountOfClientsByGroup(warehouseCodeUt))
+	log.Println("socket connected", "client", conn.RemoteAddr().String(), "count_of_connects", service.GetHub().GetCountOfClientsByGroup("warehouseCodeUt"))
 
-	h.serviceAggregator.SocketAggregate(context.Background(), conn, client, warehouseCodeUt)
+	h.serviceAggregator.SocketAggregate(context.Background(), conn, client, "")
 
 }

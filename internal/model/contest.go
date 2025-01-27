@@ -13,8 +13,8 @@ type Contest struct {
 	EndTime   time.Time `gorm:"column:end_time" json:"end_time"`
 	IsActive  bool      `gorm:"column:is_active" json:"is_active"`
 
-	ContestParticipants []ContestParticipant `json:"contest_participants"`
-	ContestBooks        []ContestBook        `json:"contest_books"`
+	ContestParticipants []ContestParticipant `gorm:"foreignKey:ContestID;references:ContestID" json:"contest_participants"`
+	ContestBooks        ContestBooks         `gorm:"foreignKey:ContestID;references:ContestID" json:"contest_books"`
 }
 
 func (c *Contest) TableName() string {

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"sort"
 	"work-project/internal/model"
 	"work-project/internal/repository"
 	"work-project/internal/schema"
@@ -10,7 +11,9 @@ import (
 
 type Contest interface {
 	GetActive(ctx context.Context, userId string) ([]schema.ContestData, error)
+	Get(ctx context.Context, request schema.ContestGetRequest) (schema.ContestFullData, error)
 	Join(ctx context.Context, data schema.JoinContestRequest) error
+	GetDataForSocket(ctx context.Context, userId string) ([]schema.ContestSocketResponse, error)
 }
 
 type ContestService struct {
@@ -36,8 +39,29 @@ func (s *ContestService) GetActive(ctx context.Context, userId string) ([]schema
 			StartDate:        contest.StartTime,
 			EndTime:          contest.EndTime,
 			CurrentDayNumber: contest.CurrentDayNumber(),
+			TotalUsersCount:  len(contest.ContestParticipants),
 		})
 	}
+	return result, nil
+}
+
+func (s *ContestService) Get(ctx context.Context, request schema.ContestGetRequest) (schema.ContestFullData, error) {
+	contest, err := s.contestRepo.GetById(ctx, request.ContestID)
+	if err != nil {
+		return schema.ContestFullData{}, err
+	}
+	result := schema.ContestFullData{
+		ContestData: schema.ContestData{
+			ContestID:        contest.ContestID,
+			AlreadyJoined:    contest.UserJoined(request.UserId),
+			StartDate:        contest.StartTime,
+			EndTime:          contest.EndTime,
+			CurrentDayNumber: contest.CurrentDayNumber(),
+			TotalUsersCount:  len(contest.ContestParticipants),
+		},
+		Books: contest.ContestBooks.GetContestBookSchema(request.UserId),
+	}
+
 	return result, nil
 }
 
@@ -57,4 +81,54 @@ func (s *ContestService) Join(ctx context.Context, data schema.JoinContestReques
 		Points:    0,
 	})
 	return err
+}
+
+func (s *ContestService) GetDataForSocket(ctx context.Context, userId string) ([]schema.ContestSocketResponse, error) {
+	contests, err := s.contestRepo.GetActiveJoinedByUser(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []schema.ContestSocketResponse
+	for _, contest := range contests {
+		participants := contest.ContestParticipants
+
+		sort.Slice(participants, func(i, j int) bool {
+			if participants[i].Points == participants[j].Points {
+				return participants[i].ReadTime < participants[j].ReadTime
+			}
+			return participants[i].Points > participants[j].Points
+		})
+
+		var topUsers []schema.ContestUserSocketData
+		var currentUserData schema.ContestUserSocketData
+
+		for index, participant := range participants {
+			userData := schema.ContestUserSocketData{
+				UserId:        participant.UserID,
+				Nickname:      participant.User.Profile.UserName,
+				Number:        index + 1,
+				Points:        participant.Points,
+				TotalReadTime: participant.ReadTime,
+			}
+
+			if index < 5 {
+				topUsers = append(topUsers, userData)
+			}
+
+			if participant.UserID == userId {
+				currentUserData = userData
+			}
+		}
+
+		result = append(result, schema.ContestSocketResponse{
+			ContestId:   contest.ContestID,
+			EndTime:     contest.EndTime,
+			StartTime:   contest.StartTime,
+			TopUsers:    topUsers,
+			CurrentUser: currentUserData,
+		})
+	}
+
+	return result, nil
 }

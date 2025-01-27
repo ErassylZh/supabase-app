@@ -12,6 +12,7 @@ type Contest interface {
 	GetById(ctx context.Context, contestId uint) (model.Contest, error)
 	Create(ctx context.Context, contest model.Contest) (model.Contest, error)
 	Update(ctx context.Context, contest model.Contest) (model.Contest, error)
+	GetActiveJoinedByUser(ctx context.Context, id string) ([]model.Contest, error)
 }
 
 type ContestDB struct {
@@ -25,7 +26,7 @@ func NewContestDB(db *gorm.DB) *ContestDB {
 func (r *ContestDB) GetActive(ctx context.Context) (contests []model.Contest, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Contest{})
-	err = q.Where("is_active and start_time > ? and end_time < ?", time.Now()).
+	err = q.Where("is_active and end_time > ?", time.Now()).
 		Preload("ContestParticipants").
 		Find(&contests).
 		Error
@@ -40,7 +41,7 @@ func (r *ContestDB) GetById(ctx context.Context, contestId uint) (contest model.
 	q := db.Model(&model.Contest{})
 	err = q.Where("contest_id ?", contestId).
 		Preload("ContestParticipants").
-		Preload("ContestBooks").
+		Preload("ContestBooks.ContestHistory").
 		First(&contest).
 		Error
 	if err != nil {
@@ -70,4 +71,20 @@ func (r *ContestDB) Update(ctx context.Context, contest model.Contest) (model.Co
 		return contest, err
 	}
 	return contest, nil
+}
+
+func (r *ContestDB) GetActiveJoinedByUser(ctx context.Context, userId string) (contests []model.Contest, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Contest{})
+	err = q.Joins("inner join public.contest_participant on public.contest.contest_id =public.contest_participant.contest_id ").
+		Where("public.contest_participant.user_id = ?", userId).
+		Where("public.contest.is_active and public.contest.end_time > ? ", time.Now()).
+		Preload("ContestParticipants").
+		Preload("ContestParticipants.User.Profile").
+		Find(&contests).
+		Error
+	if err != nil {
+		return contests, err
+	}
+	return contests, nil
 }

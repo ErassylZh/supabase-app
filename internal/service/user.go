@@ -42,7 +42,7 @@ func (s *UserService) Update(ctx context.Context, data schema.UserUpdate) error 
 	if err != nil {
 		return err
 	}
-	profile.Nickname = &data.Nickname
+	profile.UserName = data.Nickname
 
 	return s.profileRepo.Update(ctx, profile)
 }

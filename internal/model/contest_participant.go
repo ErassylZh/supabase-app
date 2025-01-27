@@ -13,6 +13,8 @@ type ContestParticipant struct {
 	UserID               string    `gorm:"column:user_id" json:"user_id"`
 	Points               int       `gorm:"column:points" json:"points"`
 	ReadTime             int       `gorm:"column:read_time" json:"read_time"`
+
+	User User `json:"user"`
 }
 
 func (h *ContestParticipant) TableName() string {
