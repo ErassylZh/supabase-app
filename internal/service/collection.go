@@ -33,7 +33,7 @@ func (s *CollectionService) GetAllCollection(ctx context.Context, language strin
 
 	postIdMark := make(map[uint]model.Mark)
 	userPostMap := make(map[uint]model.UserPost)
-	if userId != nil {
+	if userId != nil && !withoutPosts {
 		userMarks, err := s.markRepo.FindByUserID(ctx, *userId)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
