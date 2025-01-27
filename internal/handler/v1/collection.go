@@ -41,7 +41,7 @@ func (h *Handler) GetAllCollections(c *gin.Context) error {
 	}
 
 	language := c.Query("language")
-	collections, err := h.services.Collection.GetAllCollection(ctx, language, userIdp)
+	collections, err := h.services.Collection.GetAllCollection(ctx, language, userIdp, true)
 	if err != nil {
 		return err
 	}

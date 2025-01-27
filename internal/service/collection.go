@@ -10,7 +10,7 @@ import (
 )
 
 type Collection interface {
-	GetAllCollection(ctx context.Context, language string, userId *string) ([]schema.CollectionListResponse, error)
+	GetAllCollection(ctx context.Context, language string, userId *string, withoutPosts bool) ([]schema.CollectionListResponse, error)
 	GetAllRecommendation(ctx context.Context, language string) ([]schema.CollectionListResponse, error)
 }
 
@@ -25,8 +25,8 @@ func NewCollectionService(collectionRepo repository.Collection, userPostRepo rep
 	return &CollectionService{collectionRepo: collectionRepo, postService: postService, markRepo: markRepo, userPostRepo: userPostRepo}
 }
 
-func (s *CollectionService) GetAllCollection(ctx context.Context, language string, userId *string) ([]schema.CollectionListResponse, error) {
-	collections, err := s.collectionRepo.GetAllCollection(ctx, language)
+func (s *CollectionService) GetAllCollection(ctx context.Context, language string, userId *string, withoutPosts bool) ([]schema.CollectionListResponse, error) {
+	collections, err := s.collectionRepo.GetAllCollection(ctx, language, withoutPosts)
 	if err != nil {
 		return nil, err
 	}

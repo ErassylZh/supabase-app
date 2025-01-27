@@ -724,11 +724,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1392,6 +1387,9 @@ const docTemplate = `{
                 "airtable_product_id": {
                     "type": "string"
                 },
+                "contacts": {
+                    "type": "string"
+                },
                 "count": {
                     "type": "integer"
                 },
@@ -1399,6 +1397,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "discount": {
                     "type": "string"
                 },
                 "images": {

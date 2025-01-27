@@ -178,11 +178,15 @@ definitions:
     properties:
       airtable_product_id:
         type: string
+      contacts:
+        type: string
       count:
         type: integer
       created_at:
         type: string
       description:
+        type: string
+      discount:
         type: string
       images:
         items:
@@ -1215,8 +1219,6 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      security:
-      - BearerAuth: []
       summary: пометить прочитанным сторис
       tags:
       - referral

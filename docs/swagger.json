@@ -718,11 +718,6 @@
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1386,6 +1381,9 @@
                 "airtable_product_id": {
                     "type": "string"
                 },
+                "contacts": {
+                    "type": "string"
+                },
                 "count": {
                     "type": "integer"
                 },
@@ -1393,6 +1391,9 @@
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "discount": {
                     "type": "string"
                 },
                 "images": {
