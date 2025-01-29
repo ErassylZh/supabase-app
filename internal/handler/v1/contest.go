@@ -13,7 +13,7 @@ func (h *Handler) initContest(v1 *gin.RouterGroup) {
 	)
 	v1.GET(
 		"/contest",
-		middleware.GinErrorHandle(h.GetActiveContest),
+		middleware.GinErrorHandle(h.GetContestData),
 	)
 	v1.POST(
 		"/join",
@@ -36,6 +36,7 @@ func (h *Handler) initContest(v1 *gin.RouterGroup) {
 // @Produce json
 // @Success 200 {object} schema.Response[[]schema.ContestData]
 // @Failure 400 {object} schema.Response[schema.Empty]
+// @Param contest_id query int true "contest_id"
 // @Security BearerAuth
 // @tags contest
 // @Router /api/v1/contest [get]
