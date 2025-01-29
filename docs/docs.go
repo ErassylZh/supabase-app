@@ -83,11 +83,6 @@ const docTemplate = `{
         },
         "/api/v1/collection": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -563,6 +558,34 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-model_UserPost"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/privacy-terms": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "privacy-terms"
+                ],
+                "summary": "получить все коллекций",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_PrivacyTerms"
                         }
                     },
                     "400": {
@@ -1381,6 +1404,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PrivacyTerms": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "privacy_terms_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Product": {
             "type": "object",
             "properties": {
@@ -1982,6 +2022,23 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.Response-array_model_PrivacyTerms": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PrivacyTerms"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.Response-array_model_Product": {
             "type": "object",
             "properties": {
@@ -2279,7 +2336,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "157.90.227.125:8000",
+	Host:             "localhost:8000",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "swagger API",

@@ -174,6 +174,17 @@ definitions:
       uuid:
         type: string
     type: object
+  model.PrivacyTerms:
+    properties:
+      content:
+        type: string
+      privacy_terms_id:
+        type: integer
+      status:
+        type: string
+      type:
+        type: string
+    type: object
   model.Product:
     properties:
       airtable_product_id:
@@ -567,6 +578,17 @@ definitions:
       status:
         type: boolean
     type: object
+  schema.Response-array_model_PrivacyTerms:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.PrivacyTerms'
+        type: array
+      status:
+        type: boolean
+    type: object
   schema.Response-array_model_Product:
     properties:
       message:
@@ -750,7 +772,7 @@ definitions:
       token:
         type: string
     type: object
-host: 157.90.227.125:8000
+host: localhost:8000
 info:
   contact: {}
   description: Это пример сервера с использованием Swagger в Gin.
@@ -818,8 +840,6 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      security:
-      - BearerAuth: []
       summary: получить все коллекций
       tags:
       - collection
@@ -1105,6 +1125,24 @@ paths:
       summary: сохраниь что квиз прочитан
       tags:
       - post
+  /api/v1/privacy-terms:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_PrivacyTerms'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: получить все коллекций
+      tags:
+      - privacy-terms
   /api/v1/product:
     get:
       consumes:

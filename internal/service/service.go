@@ -23,6 +23,7 @@ type Services struct {
 	Order            Order
 	EmailSender      EmailSender
 	ProductTag       ProductTag
+	PrivacyTerms     PrivacyTerms
 }
 
 type Deps struct {
@@ -49,5 +50,6 @@ func NewServices(deps Deps) *Services {
 		EmailSender:      NewEmailSenderService(deps.Cgf.Email.Username, deps.Cgf.Email.Password, deps.Cgf.Email.Addr),
 		Order:            NewOrderService(deps.Repos.Order, deps.Repos.OrderProduct),
 		ProductTag:       NewProductTagService(deps.Repos.ProductTag),
+		PrivacyTerms:     NewPrivacyTermsService(deps.Repos.PrivacyTerms),
 	}
 }

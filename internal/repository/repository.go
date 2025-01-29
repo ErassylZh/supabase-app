@@ -30,6 +30,7 @@ type Repositories struct {
 	OrderProduct      OrderProduct
 	ProductTag        ProductTag
 	ProductProductTag ProductProductTag
+	PrivacyTerms      PrivacyTerms
 
 	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
@@ -69,5 +70,6 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		StorageClient:     NewStorageClient(cfg.Database.SupabaseUrl, cfg.Database.SupabaseApiKey),
 		ProductTag:        NewProductTagDB(db),
 		ProductProductTag: NewProductProductTagDB(db),
+		PrivacyTerms:      NewPrivacyTermsDB(db),
 	}, nil
 }

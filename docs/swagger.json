@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "157.90.227.125:8000",
+    "host": "localhost:8000",
     "basePath": "/",
     "paths": {
         "/api/v1/balance": {
@@ -77,11 +77,6 @@
         },
         "/api/v1/collection": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -557,6 +552,34 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-model_UserPost"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/privacy-terms": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "privacy-terms"
+                ],
+                "summary": "получить все коллекций",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_PrivacyTerms"
                         }
                     },
                     "400": {
@@ -1375,6 +1398,23 @@
                 }
             }
         },
+        "model.PrivacyTerms": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "privacy_terms_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Product": {
             "type": "object",
             "properties": {
@@ -1969,6 +2009,23 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.Order"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-array_model_PrivacyTerms": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PrivacyTerms"
                     }
                 },
                 "status": {

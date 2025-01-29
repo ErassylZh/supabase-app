@@ -26,7 +26,6 @@ func (h *Handler) initCollection(v1 *gin.RouterGroup) {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param language query string true "language"
 // @tags collection
-// @Security BearerAuth
 // @Router /api/v1/collection [get]
 func (h *Handler) GetAllCollections(c *gin.Context) error {
 	ctx := c.Request.Context()
