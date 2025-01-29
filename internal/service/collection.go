@@ -99,7 +99,7 @@ func (s *CollectionService) GetAllRecommendation(ctx context.Context, language s
 
 	result := make([]schema.CollectionListResponse, len(collections))
 	for i, collection := range collections {
-		posts, err := s.postService.GetListing(ctx, schema.GetListingFilter{
+		posts, _, err := s.postService.GetListing(ctx, schema.GetListingFilter{
 			CollectionIds: []uint{collection.CollectionID},
 			Language:      &language,
 		})

@@ -35,6 +35,7 @@ type GetListingFilter struct {
 	Search        *string
 	Language      *string
 	PostIds       []uint
+	Pagination
 }
 
 type ArchivePost struct {
@@ -48,4 +49,11 @@ type ReadPostRequest struct {
 	PostId     uint   `json:"post_id"`
 	EndReading bool   `json:"end_reading"`
 	UserId     string `json:"-"`
+}
+
+type PostGetRequest struct {
+	HashtagId    uint   `form:"hashtag_id"`
+	CollectionId uint   `form:"collection_id"`
+	Language     string `form:"language"`
+	Pagination
 }

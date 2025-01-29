@@ -37,4 +37,9 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initCollection(v1)
 		h.initPrivacyTerms(v1)
 	}
+
+	v2 := api.Group("/v2")
+	{
+		h.initPostV2(v2)
+	}
 }

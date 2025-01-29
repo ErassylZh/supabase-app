@@ -11,11 +11,11 @@ import (
 )
 
 type Post interface {
-	GetListing(ctx context.Context, userId *string, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, error)
+	GetListing(ctx context.Context, userId *string, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error)
 	SaveQuizPoints(ctx context.Context, data model.UserPost) (model.UserPost, error)
 	GetArchive(ctx context.Context, userId string, language string) ([]schema.ArchivePost, error)
 	CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error)
-	GetListingWithGroup(ctx context.Context, userId *string, filter schema.GetListingFilter) (schema.PostResponseByGroup, error)
+	GetListingWithGroup(ctx context.Context, userId *string, filter schema.GetListingFilter) (schema.PostResponseByGroup, int64, error)
 	ReadPost(ctx context.Context, post schema.ReadPostRequest) (model.UserPost, error)
 }
 
@@ -55,17 +55,17 @@ func (u *PostUsecase) ReadPost(ctx context.Context, post schema.ReadPostRequest)
 	return postAlreadyReaded, nil
 }
 
-func (u *PostUsecase) GetListing(ctx context.Context, userId *string, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, error) {
-	posts, err := u.postService.GetListing(ctx, filter)
+func (u *PostUsecase) GetListing(ctx context.Context, userId *string, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error) {
+	posts, total, err := u.postService.GetListing(ctx, filter)
 	if err != nil {
-		return nil, err
+		return nil, total, err
 	}
 
 	if userId != nil {
 
 		userMarks, err := u.markService.FindByUserID(ctx, *userId)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, err
+			return nil, total, err
 		}
 
 		postIdMark := make(map[uint]schema.MarkResponse)
@@ -75,7 +75,7 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string, postType s
 
 		userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
 		if err != nil {
-			return nil, err
+			return nil, total, err
 		}
 		postIdRead := make(map[uint]bool)
 		postIdPassed := make(map[uint]bool)
@@ -97,7 +97,7 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string, postType s
 	}
 
 	if postType == "all" {
-		return posts, nil
+		return posts, total, nil
 	}
 
 	result := make([]schema.PostResponse, 0)
@@ -115,7 +115,7 @@ func (u *PostUsecase) GetListing(ctx context.Context, userId *string, postType s
 		}
 	}
 
-	return result, nil
+	return result, total, nil
 }
 
 func (u *PostUsecase) SaveQuizPoints(ctx context.Context, data model.UserPost) (model.UserPost, error) {
@@ -189,10 +189,10 @@ func (u *PostUsecase) CheckQuiz(ctx context.Context, userId string, postId uint)
 	return userPost.QuizSapphires == nil && userPost.QuizPoints == nil, nil
 }
 
-func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, filter schema.GetListingFilter) (schema.PostResponseByGroup, error) {
-	posts, err := u.postService.GetListing(ctx, filter)
+func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, filter schema.GetListingFilter) (schema.PostResponseByGroup, int64, error) {
+	posts, total, err := u.postService.GetListing(ctx, filter)
 	if err != nil {
-		return schema.PostResponseByGroup{}, err
+		return schema.PostResponseByGroup{}, 0, err
 	}
 	if userId == nil {
 		result := schema.PostResponseByGroup{
@@ -211,11 +211,11 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 			}
 		}
 
-		return result, nil
+		return result, total, nil
 	}
 	userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
 	if err != nil {
-		return schema.PostResponseByGroup{}, err
+		return schema.PostResponseByGroup{}, total, err
 	}
 	userPostMap := make(map[uint]model.UserPost)
 	for _, up := range userPosts {
@@ -224,7 +224,7 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 
 	userMarks, err := u.markService.FindByUserID(ctx, *userId)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return schema.PostResponseByGroup{}, err
+		return schema.PostResponseByGroup{}, total, err
 	}
 
 	postIdMark := make(map[uint]schema.MarkResponse)
@@ -261,5 +261,5 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 		}
 	}
 
-	return result, nil
+	return result, total, nil
 }

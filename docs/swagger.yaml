@@ -1479,6 +1479,103 @@ paths:
       summary: все избранное пользователя
       tags:
       - mark
+  /api/v2/post:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: hashtag_id
+        in: query
+        name: hashtag_id
+        type: integer
+      - description: collection_id
+        in: query
+        name: collection_id
+        type: integer
+      - description: language
+        in: query
+        name: language
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: size
+        in: query
+        name: size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_PostResponseByGroup'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: список группированных постов
+      tags:
+      - post
+  /api/v2/post/filter:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: hashtag_id
+        in: query
+        name: hashtag_id
+        type: string
+      - description: collection_id
+        in: query
+        name: collection_id
+        type: string
+      - description: language
+        in: query
+        name: language
+        required: true
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: post_ids
+        in: query
+        name: post_ids
+        type: string
+      - description: all, post, partner
+        in: query
+        name: post_type
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: size
+        in: query
+        name: size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_schema_PostResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: список постов с фильтром
+      tags:
+      - post
 securityDefinitions:
   BearerAuth:
     in: header

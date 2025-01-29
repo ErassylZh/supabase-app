@@ -81,7 +81,7 @@ func (h *Handler) GetListingPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListingWithGroup(ctx, userId, schema.GetListingFilter{
+	posts, _, err := h.usecases.Post.GetListingWithGroup(ctx, userId, schema.GetListingFilter{
 		HashtagIds:    hashtagIds,
 		CollectionIds: collectionIds,
 		Language:      &language,
@@ -280,7 +280,7 @@ func (h *Handler) GetFilterPosts(c *gin.Context) error {
 		userId = &userIdStr
 	}
 
-	posts, err := h.usecases.Post.GetListing(ctx, userId, postType, schema.GetListingFilter{
+	posts, _, err := h.usecases.Post.GetListing(ctx, userId, postType, schema.GetListingFilter{
 		Search:        &search,
 		HashtagIds:    hashtagIds,
 		CollectionIds: collectionIds,
