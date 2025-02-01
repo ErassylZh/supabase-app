@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 	"time"
-	"work-project/internal/schema"
 )
 
 type ContestBook struct {
@@ -28,10 +27,15 @@ func (c *ContestBook) TableName() string {
 
 type ContestBooks []ContestBook
 
-func (c ContestBooks) GetContestBookSchema(userId string) []schema.ContestBookData {
-	result := make([]schema.ContestBookData, 0)
+type ContestBookData struct {
+	ContestBook
+	Readed bool `json:"readed"`
+}
+
+func (c ContestBooks) GetContestBookSchema(userId string) []ContestBookData {
+	result := make([]ContestBookData, 0)
 	for _, cb := range c {
-		data := schema.ContestBookData{
+		data := ContestBookData{
 			ContestBook: cb,
 		}
 		for _, ch := range cb.ContestHistory {

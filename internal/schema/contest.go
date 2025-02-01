@@ -21,17 +21,20 @@ type ContestGetRequest struct {
 
 type ContestFullData struct {
 	ContestData
-	Books []ContestBookData `json:"books"`
-}
-
-type ContestBookData struct {
-	model.ContestBook
-	Readed bool
+	Books []model.ContestBookData `json:"books"`
 }
 
 type JoinContestRequest struct {
 	ContestId uint   `json:"contest_id"`
 	UserID    string `json:"-"`
+}
+
+type ReadContestRequest struct {
+	ContestBookId uint   `json:"contest_book_id"`
+	Coins         int    `json:"coins"`
+	ContestPoints int    `json:"contest_points"`
+	ReadTime      int    `json:"read_time"`
+	UserID        string `json:"-"`
 }
 
 type ContestSocketResponse struct {

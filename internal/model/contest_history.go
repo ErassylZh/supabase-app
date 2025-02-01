@@ -8,7 +8,7 @@ import (
 type ContestHistory struct {
 	CreatedAt        time.Time `gorm:"column:created_at" json:"created_at"`
 	UpdatedAt        time.Time `gorm:"column:updated_at" json:"updated_at"`
-	ContestHistoryID uint      `gorm:"primaryKey;column:contest_history_id" json:"contest_History_id"`
+	ContestHistoryID uint      `gorm:"primaryKey;column:contest_history_id" json:"contest_history_id"`
 	ContestID        uint      `gorm:"column:contest_id" json:"contest_id"`
 	UserID           string    `gorm:"column:user_id" json:"user_id"`
 	Points           int       `gorm:"column:points" json:"points"`

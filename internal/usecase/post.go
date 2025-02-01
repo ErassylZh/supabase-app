@@ -127,6 +127,7 @@ func (u *PostUsecase) SaveQuizPoints(ctx context.Context, data model.UserPost) (
 		UserId:            data.UserId,
 		TransactionType:   string(model.TRANSACTION_TYPE_INCOME),
 		TransactionReason: string(model.TRANSACTION_REASON_POST),
+		OuterId:           data.PostId,
 	}
 	if up.QuizPoints != nil {
 		tr.Coins = *up.QuizPoints

@@ -8,6 +8,7 @@ import (
 
 type ContestBook interface {
 	GetByContestID(ctx context.Context, contestId uint) ([]model.ContestBook, error)
+	GetByID(ctx context.Context, contestBookId uint) (model.ContestBook, error)
 	CreateMany(ctx context.Context, contestBooks []model.ContestBook) ([]model.ContestBook, error)
 	UpdateMany(ctx context.Context, contestBooks []model.ContestBook) ([]model.ContestBook, error)
 }
@@ -18,6 +19,18 @@ type ContestBookDB struct {
 
 func NewContestBookDB(db *gorm.DB) *ContestBookDB {
 	return &ContestBookDB{db: db}
+}
+
+func (r *ContestBookDB) GetByID(ctx context.Context, contestBookId uint) (contestBook model.ContestBook, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.ContestBook{})
+	err = q.Where("contest_book_id = ?", contestBookId).
+		First(&contestBook).
+		Error
+	if err != nil {
+		return contestBook, err
+	}
+	return contestBook, nil
 }
 
 func (r *ContestBookDB) GetByContestID(ctx context.Context, contestId uint) (contestBooks []model.ContestBook, err error) {

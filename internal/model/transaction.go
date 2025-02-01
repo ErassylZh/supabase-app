@@ -25,6 +25,7 @@ const (
 	TRANSACTION_REASON_REFERRAL TransactionReason = "referral"
 	TRANSACTION_REASON_STORE    TransactionReason = "store"
 	TRANSACTION_REASON_POST     TransactionReason = "post"
+	TRANSACTION_REASON_CONTEST  TransactionReason = "contest"
 )
 
 type Transaction struct {
@@ -35,6 +36,7 @@ type Transaction struct {
 	Coins             int       `gorm:"column:coins" json:"coins"`
 	Sapphires         int       `gorm:"column:sapphires" json:"sapphires"`
 	TransactionReason string    `gorm:"column:reason" json:"reason"`
+	OuterId           uint      `gorm:"column:outer_id" json:"outer_id"`
 }
 
 func (u Transaction) TableName() string {

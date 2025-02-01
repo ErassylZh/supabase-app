@@ -8,6 +8,7 @@ import (
 
 type ContestParticipant interface {
 	GetByContestID(ctx context.Context, contestId uint) ([]model.ContestParticipant, error)
+	GetByContestAndUserID(ctx context.Context, contestId uint, userId string) (model.ContestParticipant, error)
 	Create(ctx context.Context, contestParticipant model.ContestParticipant) (model.ContestParticipant, error)
 	Update(ctx context.Context, contestParticipant model.ContestParticipant) (model.ContestParticipant, error)
 }
@@ -18,6 +19,19 @@ type ContestParticipantDB struct {
 
 func NewContestParticipantDB(db *gorm.DB) *ContestParticipantDB {
 	return &ContestParticipantDB{db: db}
+}
+
+func (r *ContestParticipantDB) GetByContestAndUserID(ctx context.Context, contestId uint, userId string) (contestParticipant model.ContestParticipant, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.ContestParticipant{})
+	err = q.Where("contest_id = ?", contestId).
+		Where("user_id = ?", userId).
+		First(&contestParticipant).
+		Error
+	if err != nil {
+		return contestParticipant, err
+	}
+	return contestParticipant, nil
 }
 
 func (r *ContestParticipantDB) GetByContestID(ctx context.Context, contestId uint) (contestParticipants []model.ContestParticipant, err error) {

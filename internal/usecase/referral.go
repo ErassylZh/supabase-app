@@ -78,7 +78,7 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 		ReferralCode:  code,
 		CreatedAt:     time.Now(),
 	}
-	err = u.referralRepository.Create(ctx, referral)
+	referral, err = u.referralRepository.Create(ctx, referral)
 	if err != nil {
 		return model.ReferralCode{}, err
 	}
@@ -91,6 +91,7 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 		CreatedAt:         time.Now(),
 		TransactionType:   string(model.TRANSACTION_TYPE_INCOME),
 		TransactionReason: string(model.TRANSACTION_REASON_REFERRAL),
+		OuterId:           referral.ReferralID,
 	})
 	if err != nil {
 		return model.ReferralCode{}, err
@@ -108,6 +109,7 @@ func (u *ReferralUsecase) AcceptReferralCode(ctx context.Context, userID string,
 		CreatedAt:         time.Now(),
 		TransactionType:   string(model.TRANSACTION_TYPE_INCOME),
 		TransactionReason: string(model.TRANSACTION_REASON_REFERRAL),
+		OuterId:           referral.ReferralID,
 	})
 	if err != nil {
 		return model.ReferralCode{}, err

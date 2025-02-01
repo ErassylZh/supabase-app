@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"strconv"
 	"work-project/internal/middleware"
 	"work-project/internal/schema"
 )
@@ -21,11 +22,11 @@ func (h *Handler) initContest(v1 *gin.RouterGroup) {
 	)
 	v1.POST(
 		"/read",
-		middleware.GinErrorHandle(h.JoinContest),
+		middleware.GinErrorHandle(h.ReadContestBook),
 	)
 	v1.GET(
 		"/prize",
-		middleware.GinErrorHandle(h.JoinContest),
+		middleware.GinErrorHandle(h.GetContestPrizes),
 	)
 }
 
@@ -117,4 +118,62 @@ func (h *Handler) JoinContest(c *gin.Context) error {
 		return err
 	}
 	return schema.Respond(schema.Empty{}, c)
+}
+
+// ReadContestBook
+// WhoAmi godoc
+// @Summary подключиться к розыгрышу
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[schema.Empty{}]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param data body schema.JoinContestRequest true "CreateMark"
+// @Security BearerAuth
+// @tags contest
+// @Router /api/v1/contest/read [post]
+func (h *Handler) ReadContestBook(c *gin.Context) error {
+	ctx := c.Request.Context()
+	token := c.GetHeader("Authorization")
+	userID, err := h.services.Auth.VerifyToken(token)
+	if err != nil {
+		return err
+	}
+
+	var data schema.ReadContestRequest
+	if err := c.ShouldBindJSON(&data); err != nil {
+		return err
+	}
+	data.UserID = userID
+
+	err = h.services.Contest.Read(ctx, data)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(schema.Empty{}, c)
+}
+
+// GetContestPrizes
+// WhoAmi godoc
+// @Summary получить активные контесты
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.ContestPrize]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param contest_id query int true "contest_id"
+// @Security BearerAuth
+// @tags contest
+// @Router /api/v1/contest/prize [get]
+func (h *Handler) GetContestPrizes(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	contestId, err := strconv.ParseUint(c.Query("contest_id"), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	contestPrizes, err := h.services.Contest.GetPrizes(ctx, uint(contestId))
+	if err != nil {
+		return err
+	}
+	return schema.Respond(contestPrizes, c)
 }
