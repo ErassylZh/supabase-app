@@ -13,6 +13,9 @@ type ContestParticipant struct {
 	UserID               string    `gorm:"column:user_id" json:"user_id"`
 	Points               int       `gorm:"column:points" json:"points"`
 	ReadTime             int       `gorm:"column:read_time" json:"read_time"`
+	Number               int       `gorm:"column:number" json:"number"`
+	ContestPrizeId       uint      `gorm:"column:contest_prize_id"  json:"contest_prize_id"`
+	PrizeGet             bool      `gorm:"column:prize_get" json:"prize_get"`
 
 	User User `json:"user"`
 }

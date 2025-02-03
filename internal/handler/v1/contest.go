@@ -68,11 +68,11 @@ func (h *Handler) GetContestData(c *gin.Context) error {
 // @Summary получить активные контесты
 // @Accept json
 // @Produce json
-// @Success 200 {object} schema.Response[[]schema.ContestData]
+// @Success 200 {object} schema.Response[schema.ContestActivity]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags contest
-// @Router /api/v1/contest [get]
+// @Router /api/v1/contest/active [get]
 func (h *Handler) GetActiveContest(c *gin.Context) error {
 	ctx := c.Request.Context()
 	token := c.GetHeader("Authorization")
@@ -93,7 +93,7 @@ func (h *Handler) GetActiveContest(c *gin.Context) error {
 // @Summary подключиться к розыгрышу
 // @Accept json
 // @Produce json
-// @Success 200 {object} schema.Response[schema.Empty{}]
+// @Success 200 {object} schema.Response[schema.Empty]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param data body schema.JoinContestRequest true "CreateMark"
 // @Security BearerAuth
@@ -122,10 +122,10 @@ func (h *Handler) JoinContest(c *gin.Context) error {
 
 // ReadContestBook
 // WhoAmi godoc
-// @Summary подключиться к розыгрышу
+// @Summary Прочесть контест книгу
 // @Accept json
 // @Produce json
-// @Success 200 {object} schema.Response[schema.Empty{}]
+// @Success 200 {object} schema.Response[schema.ContestPassBook]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param data body schema.JoinContestRequest true "CreateMark"
 // @Security BearerAuth
@@ -145,16 +145,16 @@ func (h *Handler) ReadContestBook(c *gin.Context) error {
 	}
 	data.UserID = userID
 
-	err = h.services.Contest.Read(ctx, data)
+	res, err := h.services.Contest.Read(ctx, data)
 	if err != nil {
 		return err
 	}
-	return schema.Respond(schema.Empty{}, c)
+	return schema.Respond(res, c)
 }
 
 // GetContestPrizes
 // WhoAmi godoc
-// @Summary получить активные контесты
+// @Summary получить призы контеста
 // @Accept json
 // @Produce json
 // @Success 200 {object} schema.Response[[]model.ContestPrize]

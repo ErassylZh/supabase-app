@@ -34,6 +34,7 @@ type Repositories struct {
 	ContestBook        ContestBook
 	ContestParticipant ContestParticipant
 	ContestHistory     ContestHistory
+	ContestPrize       ContestPrize
 
 	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
@@ -77,5 +78,6 @@ func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
 		ContestParticipant: NewContestParticipantDB(db),
 		ContestBook:        NewContestBookDB(db),
 		ContestHistory:     NewContestHistoryDB(db),
+		ContestPrize:       NewContestPrizeDB(db),
 	}, nil
 }

@@ -12,11 +12,11 @@ import (
 )
 
 type Contest interface {
-	GetActive(ctx context.Context, userId string) ([]schema.ContestData, error)
+	GetActive(ctx context.Context, userId string) (schema.ContestActivity, error)
 	Get(ctx context.Context, request schema.ContestGetRequest) (schema.ContestFullData, error)
 	Join(ctx context.Context, data schema.JoinContestRequest) error
 	GetDataForSocket(ctx context.Context, userId string) ([]schema.ContestSocketResponse, error)
-	Read(ctx context.Context, data schema.ReadContestRequest) error
+	Read(ctx context.Context, data schema.ReadContestRequest) (schema.ContestPassBook, error)
 	GetPrizes(ctx context.Context, contestId uint) ([]model.ContestPrize, error)
 }
 
@@ -30,76 +30,121 @@ type ContestService struct {
 	balanceService BalanceService
 }
 
-func NewContestService(contestRepo repository.Contest, contestParticipantRepo repository.ContestParticipant, contestBookRepo repository.ContestBook, contestHistoryRepo repository.ContestHistory, balanceService BalanceService) *ContestService {
+func NewContestService(
+	contestRepo repository.Contest,
+	contestParticipantRepo repository.ContestParticipant,
+	contestBookRepo repository.ContestBook,
+	contestHistoryRepo repository.ContestHistory,
+	contestPrizeRepo repository.ContestPrize,
+	balanceService BalanceService,
+) *ContestService {
 	return &ContestService{
 		contestRepo:            contestRepo,
 		contestParticipantRepo: contestParticipantRepo,
 		contestBookRepo:        contestBookRepo,
 		contestHistoryRepo:     contestHistoryRepo,
+		contestPrizeRepo:       contestPrizeRepo,
 		balanceService:         balanceService,
 	}
 }
 
-func (s *ContestService) Read(ctx context.Context, data schema.ReadContestRequest) error {
+func (s *ContestService) getResultPrizes(ctx context.Context, userId string) ([]schema.ContestResultPrize, error) {
+	contests, err := s.contestRepo.GetEnded(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	prizes := make([]schema.ContestResultPrize, 0)
+	for _, contest := range contests {
+		contestParticipant, err := s.contestParticipantRepo.GetByContestAndUserID(ctx, contest.ContestID, userId)
+		if err != nil {
+			return nil, err
+		}
+		contestPrize, err := s.contestPrizeRepo.GetByContestIDAndNumber(ctx, contest.ContestID, contestParticipant.Number)
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+
+		result := schema.ContestResultPrize{
+			ContestId: contest.ContestID,
+		}
+		if err == nil {
+			result.Prize = &contestPrize
+		}
+		result.Number = contestParticipant.Number
+		result.ConsolationPrizeSapphire = contest.ConsolationPrizeSapphire
+		prizes = append(prizes, result)
+	}
+
+	return prizes, nil
+}
+
+func (s *ContestService) Read(ctx context.Context, data schema.ReadContestRequest) (schema.ContestPassBook, error) {
 	_, err := s.contestHistoryRepo.GetByContestBookAndUserID(ctx, data.ContestBookId, data.UserID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return err
+		return schema.ContestPassBook{}, err
 	}
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return fmt.Errorf("user already read this book")
+		return schema.ContestPassBook{}, fmt.Errorf("user already read this book")
 	}
 
 	contestBook, err := s.contestBookRepo.GetByID(ctx, data.ContestBookId)
 	if err != nil {
-		return err
+		return schema.ContestPassBook{}, err
 	}
 	contest, err := s.contestRepo.GetById(ctx, contestBook.ContestID)
 	if err != nil {
-		return err
+		return schema.ContestPassBook{}, err
 	}
 	contestParticipant, err := s.contestParticipantRepo.GetByContestAndUserID(ctx, contest.ContestID, data.UserID)
 	if err != nil {
-		return err
+		return schema.ContestPassBook{}, err
 	}
 
+	points := int(float64(data.RightQuestions/contestBook.CountOfQuestions) * 10 * 1.5)
+	coins := int(float64(data.RightQuestions/contestBook.CountOfQuestions) * 10 * 1.5)
 	if contest.CurrentDayNumber() == contestBook.DayNumber {
-		data.Coins *= 2
-		data.ContestPoints *= 2
+		coins = int(float64(coins * 4 / 3))
+		points *= int(float64(points * 4 / 3))
 	}
 
 	_, err = s.contestHistoryRepo.Create(ctx, model.ContestHistory{
 		ContestID:     contest.ContestID,
 		ContestBookID: contestBook.ContestBookID,
 		UserID:        data.UserID,
-		Points:        data.ContestPoints,
+		Points:        points,
 		ReadTime:      data.ReadTime,
 	})
 
-	contestParticipant.Points += data.ContestPoints
+	contestParticipant.Points += points
 	contestParticipant.ReadTime += data.ReadTime
 	contestParticipant, err = s.contestParticipantRepo.Update(ctx, contestParticipant)
 	if err != nil {
-		return err
+		return schema.ContestPassBook{}, err
 	}
 
 	_, err = s.balanceService.CreateTransaction(ctx, data.UserID, model.Transaction{
 		UserId:            data.UserID,
 		TransactionType:   string(model.TRANSACTION_TYPE_INCOME),
-		Coins:             data.Coins,
+		Coins:             coins,
 		TransactionReason: string(model.TRANSACTION_REASON_CONTEST),
 		OuterId:           contestBook.ContestBookID,
 	})
-	return err
+	return schema.ContestPassBook{
+		Coins:  coins,
+		Points: points,
+	}, err
 }
 
-func (s *ContestService) GetActive(ctx context.Context, userId string) ([]schema.ContestData, error) {
+func (s *ContestService) GetActive(ctx context.Context, userId string) (schema.ContestActivity, error) {
 	contests, err := s.contestRepo.GetActive(ctx)
 	if err != nil {
-		return nil, err
+		return schema.ContestActivity{}, err
 	}
-	result := make([]schema.ContestData, 0)
+
+	activeContest := make([]schema.ContestData, 0)
 	for _, contest := range contests {
-		result = append(result, schema.ContestData{
+		activeContest = append(activeContest, schema.ContestData{
 			ContestID:        contest.ContestID,
 			AlreadyJoined:    contest.UserJoined(userId),
 			StartDate:        contest.StartTime,
@@ -108,7 +153,16 @@ func (s *ContestService) GetActive(ctx context.Context, userId string) ([]schema
 			TotalUsersCount:  len(contest.ContestParticipants),
 		})
 	}
-	return result, nil
+
+	endedContestPrizes, err := s.getResultPrizes(ctx, userId)
+	if err != nil {
+		return schema.ContestActivity{}, err
+	}
+
+	return schema.ContestActivity{
+		Active: activeContest,
+		Ended:  endedContestPrizes,
+	}, nil
 }
 
 func (s *ContestService) Get(ctx context.Context, request schema.ContestGetRequest) (schema.ContestFullData, error) {

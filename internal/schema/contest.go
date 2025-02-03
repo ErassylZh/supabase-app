@@ -5,6 +5,11 @@ import (
 	"work-project/internal/model"
 )
 
+type ContestActivity struct {
+	Active []ContestData        `json:"active"`
+	Ended  []ContestResultPrize `json:"ended"`
+}
+
 type ContestData struct {
 	ContestID        uint      `json:"contest_id"`
 	AlreadyJoined    bool      `json:"already_joined"`
@@ -30,11 +35,10 @@ type JoinContestRequest struct {
 }
 
 type ReadContestRequest struct {
-	ContestBookId uint   `json:"contest_book_id"`
-	Coins         int    `json:"coins"`
-	ContestPoints int    `json:"contest_points"`
-	ReadTime      int    `json:"read_time"`
-	UserID        string `json:"-"`
+	ContestBookId  uint   `json:"contest_book_id"`
+	RightQuestions int    `json:"right_questions"`
+	ReadTime       int    `json:"read_time"`
+	UserID         string `json:"-"`
 }
 
 type ContestSocketResponse struct {
@@ -51,4 +55,16 @@ type ContestUserSocketData struct {
 	Number        int    `json:"number"`
 	Points        int    `json:"points"`
 	TotalReadTime int    `json:"total_read_time"`
+}
+
+type ContestPassBook struct {
+	Coins  int `json:"coins"`
+	Points int `json:"points"`
+}
+
+type ContestResultPrize struct {
+	ContestId                uint                `json:"contest_id"`
+	Prize                    *model.ContestPrize `json:"prize"`
+	Number                   int                 `json:"number"`
+	ConsolationPrizeSapphire int                 `json:"consolation_prize_sapphire"`
 }

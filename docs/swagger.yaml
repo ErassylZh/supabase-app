@@ -34,6 +34,23 @@ definitions:
           $ref: '#/definitions/model.Post'
         type: array
     type: object
+  model.ContestPrize:
+    properties:
+      contest_id:
+        type: integer
+      contest_prize_id:
+        type: integer
+      created_at:
+        type: string
+      number:
+        type: integer
+      photo_path:
+        type: string
+      prize_name:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.Hashtag:
     properties:
       hashtag_id:
@@ -315,6 +332,8 @@ definitions:
         type: integer
       created_at:
         type: string
+      outer_id:
+        type: integer
       reason:
         type: string
       sapphires:
@@ -429,12 +448,61 @@ definitions:
       already_used_referral_code:
         type: boolean
     type: object
+  schema.ContestActivity:
+    properties:
+      active:
+        items:
+          $ref: '#/definitions/schema.ContestData'
+        type: array
+      ended:
+        items:
+          $ref: '#/definitions/schema.ContestResultPrize'
+        type: array
+    type: object
+  schema.ContestData:
+    properties:
+      already_joined:
+        type: boolean
+      contest_id:
+        type: integer
+      current_day_number:
+        type: integer
+      end_time:
+        type: string
+      start_date:
+        type: string
+      total_users_count:
+        type: integer
+    type: object
+  schema.ContestPassBook:
+    properties:
+      coins:
+        type: integer
+      points:
+        type: integer
+    type: object
+  schema.ContestResultPrize:
+    properties:
+      consolation_prize_sapphire:
+        type: integer
+      contest_id:
+        type: integer
+      number:
+        type: integer
+      prize:
+        $ref: '#/definitions/model.ContestPrize'
+    type: object
   schema.CreateMark:
     properties:
       post_id:
         type: integer
     type: object
   schema.Empty:
+    type: object
+  schema.JoinContestRequest:
+    properties:
+      contest_id:
+        type: integer
     type: object
   schema.PassQuizPost:
     properties:
@@ -549,6 +617,17 @@ definitions:
       status:
         type: boolean
     type: object
+  schema.Response-array_model_ContestPrize:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.ContestPrize'
+        type: array
+      status:
+        type: boolean
+    type: object
   schema.Response-array_model_Hashtag:
     properties:
       message:
@@ -659,6 +738,17 @@ definitions:
       status:
         type: boolean
     type: object
+  schema.Response-array_schema_ContestData:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/schema.ContestData'
+        type: array
+      status:
+        type: boolean
+    type: object
   schema.Response-array_schema_PostResponse:
     properties:
       message:
@@ -730,6 +820,24 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/schema.CheckAvailable'
+      status:
+        type: boolean
+    type: object
+  schema.Response-schema_ContestActivity:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/schema.ContestActivity'
+      status:
+        type: boolean
+    type: object
+  schema.Response-schema_ContestPassBook:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/schema.ContestPassBook'
       status:
         type: boolean
     type: object
@@ -838,6 +946,132 @@ paths:
       summary: получить все коллекций
       tags:
       - collection
+  /api/v1/contest:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: contest_id
+        in: query
+        name: contest_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_schema_ContestData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить активные контесты
+      tags:
+      - contest
+  /api/v1/contest/active:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_ContestActivity'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить активные контесты
+      tags:
+      - contest
+  /api/v1/contest/join:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateMark
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.JoinContestRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: подключиться к розыгрышу
+      tags:
+      - contest
+  /api/v1/contest/prize:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: contest_id
+        in: query
+        name: contest_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_ContestPrize'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить призы контеста
+      tags:
+      - contest
+  /api/v1/contest/read:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateMark
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.JoinContestRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_ContestPassBook'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: Прочесть контест книгу
+      tags:
+      - contest
   /api/v1/hashtag:
     get:
       consumes:

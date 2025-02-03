@@ -13,6 +13,7 @@ type Contest interface {
 	Create(ctx context.Context, contest model.Contest) (model.Contest, error)
 	Update(ctx context.Context, contest model.Contest) (model.Contest, error)
 	GetActiveJoinedByUser(ctx context.Context, id string) ([]model.Contest, error)
+	GetEnded(ctx context.Context, userId string) (contests []model.Contest, err error)
 }
 
 type ContestDB struct {
@@ -28,6 +29,20 @@ func (r *ContestDB) GetActive(ctx context.Context) (contests []model.Contest, er
 	q := db.Model(&model.Contest{})
 	err = q.Where("is_active and end_time > ?", time.Now()).
 		Preload("ContestParticipants").
+		Find(&contests).
+		Error
+	if err != nil {
+		return contests, err
+	}
+	return contests, nil
+}
+
+func (r *ContestDB) GetEnded(ctx context.Context, userId string) (contests []model.Contest, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Contest{})
+	err = q.Joins("JOIN public.contest_participant on public.contest_participant.contest_id = public.contest.contest_id").
+		Where("public.contest_participant.user_id = ?", userId).
+		Where("not public.contest.is_active and public.contest.end_time < ?", time.Now()).
 		Find(&contests).
 		Error
 	if err != nil {
