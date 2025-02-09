@@ -36,9 +36,10 @@ func NewDB(
 		return nil, nil, err
 	}
 
-	connection.SetConnMaxLifetime(time.Minute)
 	connection.SetMaxIdleConns(15)
 	connection.SetMaxOpenConns(15)
+	connection.SetConnMaxLifetime(30 * time.Minute)
+	connection.SetConnMaxIdleTime(5 * time.Minute)
 
 	fmt.Println("db connected")
 
