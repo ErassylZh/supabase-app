@@ -12,6 +12,11 @@ import (
 // LoggerMiddleware логирует запросы и ответы сервера
 func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if c.Request.URL.Path == "/swagger/" || len(c.Request.URL.Path) >= 9 && c.Request.URL.Path[:9] == "/swagger/" {
+			c.Next()
+			return
+		}
+
 		startTime := time.Now()
 
 		// Логируем запрос
