@@ -6,7 +6,4 @@ type Message struct {
 	Attachments interface{}
 	From        string
 	To          []string
-
-	FileData []byte
-	FileName string
 }

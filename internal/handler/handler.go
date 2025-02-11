@@ -38,13 +38,10 @@ func NewHandlerDelivery(
 }
 
 func (h *Handler) Init(cfg *config.Config) (*gin.Engine, error) {
-	app := gin.New()
+	app := gin.Default()
 	app.Use(
-		gin.Logger(),
-		gin.Recovery(),
 		middlewares.Cors(),
 		middlewares.Recovery(middleware.GinRecoveryFn),
-		middlewares.LoggerMiddleware(),
 		//h.authMiddleware.SetCurrentUser(),
 	)
 	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
