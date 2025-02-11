@@ -14,20 +14,30 @@ type BaseObject[T any] struct {
 }
 
 type ProductListResponse struct {
-	Count       int      `json:"count"`
-	Point       int      `json:"point"`
-	Sapphire    int      `json:"sapphire"`
-	Description string   `json:"description"`
-	Title       string   `json:"title"`
-	Image       []Image  `json:"image"`
-	Sku         string   `json:"sku"`
-	ProductType string   `json:"product_type"`
-	SellType    string   `json:"sell_type"`
-	Status      string   `json:"status"`
-	Offer       string   `json:"offer"`
-	TagName     []string `json:"tag_name"`
-	Discount    string   `json:"discount"`
-	Contacts    string   `json:"contacts"`
+	Count         int      `json:"count"`
+	Point         int      `json:"point"`
+	Sapphire      int      `json:"sapphire"`
+	Description   string   `json:"description"`
+	DescriptionKz string   `json:"description_kz"`
+	DescriptionEn string   `json:"description_en"`
+	Title         string   `json:"title"`
+	TitleEn       string   `json:"title_en"`
+	TitleKz       string   `json:"title_kz"`
+	Image         []Image  `json:"image"`
+	Sku           string   `json:"sku"`
+	ProductType   string   `json:"product_type"`
+	SellType      string   `json:"sell_type"`
+	Status        string   `json:"status"`
+	Offer         string   `json:"offer"`
+	OfferKz       string   `json:"offer_kz"`
+	OfferEn       string   `json:"offer_en"`
+	TagName       []string `json:"tag_name"`
+	Discount      string   `json:"discount"`
+	DiscountKz    string   `json:"discount_kz"`
+	DiscountEn    string   `json:"discount_en"`
+	Contacts      string   `json:"contacts"`
+	ContactsKz    string   `json:"contacts_kz"`
+	ContactsEn    string   `json:"contacts_en"`
 }
 
 type Image struct {

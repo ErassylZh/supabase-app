@@ -149,24 +149,40 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 			if product.Point != productsAirtableBySku[sku].Fields.Point ||
 				product.Count != productsAirtableBySku[sku].Fields.Count ||
 				!strings.EqualFold(product.Description, productsAirtableBySku[sku].Fields.Description) ||
+				!strings.EqualFold(product.DescriptionKz, productsAirtableBySku[sku].Fields.DescriptionKz) ||
+				!strings.EqualFold(product.DescriptionEn, productsAirtableBySku[sku].Fields.DescriptionEn) ||
 				!strings.EqualFold(product.Title, productsAirtableBySku[sku].Fields.Title) ||
+				!strings.EqualFold(product.TitleKz, productsAirtableBySku[sku].Fields.TitleKz) ||
+				!strings.EqualFold(product.TitleEn, productsAirtableBySku[sku].Fields.TitleEn) ||
 				product.Sapphire != productsAirtableBySku[sku].Fields.Sapphire ||
 				!strings.EqualFold(product.SellType, productsAirtableBySku[sku].Fields.SellType) ||
 				!strings.EqualFold(product.ProductType, productsAirtableBySku[sku].Fields.ProductType) ||
 				!strings.EqualFold(product.Status, productsAirtableBySku[sku].Fields.Status) ||
 				!strings.EqualFold(product.Offer, productsAirtableBySku[sku].Fields.Offer) ||
+				!strings.EqualFold(product.OfferKz, productsAirtableBySku[sku].Fields.OfferKz) ||
+				!strings.EqualFold(product.OfferEn, productsAirtableBySku[sku].Fields.OfferEn) ||
 				!strings.EqualFold(product.Discount, productsAirtableBySku[sku].Fields.Discount) ||
-				!strings.EqualFold(product.Contacts, productsAirtableBySku[sku].Fields.Contacts) {
+				!strings.EqualFold(product.Contacts, productsAirtableBySku[sku].Fields.Contacts) ||
+				!strings.EqualFold(product.ContactsKz, productsAirtableBySku[sku].Fields.ContactsKz) ||
+				!strings.EqualFold(product.ContactsEn, productsAirtableBySku[sku].Fields.ContactsEn) {
 
 				product.Point = productsAirtableBySku[sku].Fields.Point
 				product.Sapphire = productsAirtableBySku[sku].Fields.Sapphire
 				product.Count = productsAirtableBySku[sku].Fields.Count
 				product.Description = productsAirtableBySku[sku].Fields.Description
+				product.DescriptionEn = productsAirtableBySku[sku].Fields.DescriptionEn
+				product.DescriptionKz = productsAirtableBySku[sku].Fields.DescriptionKz
 				product.Title = productsAirtableBySku[sku].Fields.Title
+				product.TitleEn = productsAirtableBySku[sku].Fields.TitleEn
+				product.TitleKz = productsAirtableBySku[sku].Fields.TitleKz
 				product.SellType = productsAirtableBySku[sku].Fields.SellType
 				product.ProductType = productsAirtableBySku[sku].Fields.ProductType
 				product.Status = productsAirtableBySku[sku].Fields.Status
 				product.Offer = productsAirtableBySku[sku].Fields.Offer
+				product.OfferKz = productsAirtableBySku[sku].Fields.OfferKz
+				product.OfferEn = productsAirtableBySku[sku].Fields.OfferEn
+				product.ContactsEn = productsAirtableBySku[sku].Fields.ContactsEn
+				product.ContactsKz = productsAirtableBySku[sku].Fields.ContactsKz
 				product.Contacts = productsAirtableBySku[sku].Fields.Contacts
 				product.Discount = productsAirtableBySku[sku].Fields.Discount
 				updateProducts = append(updateProducts, product)
