@@ -3,7 +3,6 @@ package service
 import (
 	"bytes"
 	"context"
-	"fmt"
 	mail "work-project/internal/email"
 	"work-project/internal/schema"
 
@@ -46,7 +45,6 @@ func (e *EmailSenderService) Send(ctx context.Context, message schema.Message) e
 		msg.Attachments = append(msg.Attachments, attachment)
 	}
 
-	fmt.Println(message.FileData)
 	// Добавляем файл в сообщение, если он указан в виде []byte
 	if len(message.FileData) > 0 {
 		fileReader := bytes.NewReader(message.FileData)
@@ -55,7 +53,6 @@ func (e *EmailSenderService) Send(ctx context.Context, message schema.Message) e
 			return err
 		}
 	}
-	fmt.Println(msg.Attachments)
 
 	auth := mail.NewAuth(e.username, e.password)
 	return msg.Send(e.addr, auth)
