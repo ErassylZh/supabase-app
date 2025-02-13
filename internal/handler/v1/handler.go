@@ -40,7 +40,13 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initMark(v1)
 		h.initHashtag(v1)
 		h.initCollection(v1)
+		h.initPrivacyTerms(v1)
 		h.initContest(v1)
+	}
+
+	v2 := api.Group("/v2")
+	{
+		h.initPostV2(v2)
 	}
 }
 

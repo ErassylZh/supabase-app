@@ -70,6 +70,10 @@ func (h *AirTableSync) Run() (err error) {
 		//return err
 	}
 
+	if err := h.syncProductTags(ctx); err != nil {
+		log.Println("error while syncing product tags:", err)
+	}
+
 	if err := h.syncProducts(ctx); err != nil {
 		log.Println("error while syncing products:", err)
 		//return err
@@ -145,30 +149,50 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 			if product.Point != productsAirtableBySku[sku].Fields.Point ||
 				product.Count != productsAirtableBySku[sku].Fields.Count ||
 				!strings.EqualFold(product.Description, productsAirtableBySku[sku].Fields.Description) ||
+				!strings.EqualFold(product.DescriptionKz, productsAirtableBySku[sku].Fields.DescriptionKz) ||
+				!strings.EqualFold(product.DescriptionEn, productsAirtableBySku[sku].Fields.DescriptionEn) ||
 				!strings.EqualFold(product.Title, productsAirtableBySku[sku].Fields.Title) ||
+				!strings.EqualFold(product.TitleKz, productsAirtableBySku[sku].Fields.TitleKz) ||
+				!strings.EqualFold(product.TitleEn, productsAirtableBySku[sku].Fields.TitleEn) ||
 				product.Sapphire != productsAirtableBySku[sku].Fields.Sapphire ||
 				!strings.EqualFold(product.SellType, productsAirtableBySku[sku].Fields.SellType) ||
 				!strings.EqualFold(product.ProductType, productsAirtableBySku[sku].Fields.ProductType) ||
 				!strings.EqualFold(product.Status, productsAirtableBySku[sku].Fields.Status) ||
-				!strings.EqualFold(product.Offer, productsAirtableBySku[sku].Fields.Offer) {
+				!strings.EqualFold(product.Offer, productsAirtableBySku[sku].Fields.Offer) ||
+				!strings.EqualFold(product.OfferKz, productsAirtableBySku[sku].Fields.OfferKz) ||
+				!strings.EqualFold(product.OfferEn, productsAirtableBySku[sku].Fields.OfferEn) ||
+				!strings.EqualFold(product.Discount, productsAirtableBySku[sku].Fields.Discount) ||
+				!strings.EqualFold(product.Contacts, productsAirtableBySku[sku].Fields.Contacts) ||
+				!strings.EqualFold(product.ContactsKz, productsAirtableBySku[sku].Fields.ContactsKz) ||
+				!strings.EqualFold(product.ContactsEn, productsAirtableBySku[sku].Fields.ContactsEn) {
 
 				product.Point = productsAirtableBySku[sku].Fields.Point
 				product.Sapphire = productsAirtableBySku[sku].Fields.Sapphire
 				product.Count = productsAirtableBySku[sku].Fields.Count
 				product.Description = productsAirtableBySku[sku].Fields.Description
+				product.DescriptionEn = productsAirtableBySku[sku].Fields.DescriptionEn
+				product.DescriptionKz = productsAirtableBySku[sku].Fields.DescriptionKz
 				product.Title = productsAirtableBySku[sku].Fields.Title
+				product.TitleEn = productsAirtableBySku[sku].Fields.TitleEn
+				product.TitleKz = productsAirtableBySku[sku].Fields.TitleKz
 				product.SellType = productsAirtableBySku[sku].Fields.SellType
 				product.ProductType = productsAirtableBySku[sku].Fields.ProductType
 				product.Status = productsAirtableBySku[sku].Fields.Status
 				product.Offer = productsAirtableBySku[sku].Fields.Offer
+				product.OfferKz = productsAirtableBySku[sku].Fields.OfferKz
+				product.OfferEn = productsAirtableBySku[sku].Fields.OfferEn
+				product.ContactsEn = productsAirtableBySku[sku].Fields.ContactsEn
+				product.ContactsKz = productsAirtableBySku[sku].Fields.ContactsKz
+				product.Contacts = productsAirtableBySku[sku].Fields.Contacts
+				product.Discount = productsAirtableBySku[sku].Fields.Discount
 				updateProducts = append(updateProducts, product)
 			}
-			if !h.compareHashtags(existsHashtags, productsAirtableBySku[sku].Fields.Tags) {
+			if !h.compareHashtags(existsHashtags, productsAirtableBySku[sku].Fields.TagName) {
 				err = h.productProductTag.DeleteByProductId(ctx, product.ProductID)
 				if err != nil {
 					return err
 				}
-				names := productsAirtableBySku[sku].Fields.Tags
+				names := productsAirtableBySku[sku].Fields.TagName
 				var postHashtags []model.ProductProductTag
 				for _, name := range names {
 					ht, err := h.productTag.GetByName(ctx, name)
@@ -201,6 +225,8 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 			SellType:          productsAirtableBySku[sku].Fields.SellType,
 			ProductType:       productsAirtableBySku[sku].Fields.ProductType,
 			Offer:             productsAirtableBySku[sku].Fields.Offer,
+			Contacts:          productsAirtableBySku[sku].Fields.Contacts,
+			Discount:          productsAirtableBySku[sku].Fields.Discount,
 		})
 	}
 	if len(newProducts) > 0 {
@@ -214,7 +240,7 @@ func (h *AirTableSync) syncProducts(ctx context.Context) error {
 		productHashtags := make([]model.ProductProductTag, 0)
 		for _, np := range newProducts {
 			productId := np.ProductID
-			for _, hashtag := range productsAirtableBySku[np.Sku].Fields.Tags {
+			for _, hashtag := range productsAirtableBySku[np.Sku].Fields.TagName {
 				hashtagObj, err := h.productTag.GetByName(ctx, hashtag)
 				if err != nil {
 					return err

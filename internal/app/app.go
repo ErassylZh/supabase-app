@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,27 +18,15 @@ import (
 	"work-project/internal/service"
 	"work-project/internal/usecase"
 	"work-project/internal/worker"
+	"work-project/pkg/db/postgresql"
 )
 
 func Run(cfg *config.Config) {
 
-	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  cfg.Database.Dsn,
-		PreferSimpleProtocol: true,
-	}), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			//TablePrefix:   "wa.",
-			SingularTable: false,
-		},
-	})
+	_, db, err := postgresql.NewDB(cfg.Database.Dsn)
 	if err != nil {
-		panic("Failed to connect to database")
+		fmt.Println(err.Error())
 	}
-	sqlDB, _ := db.DB()
-	sqlDB.SetMaxOpenConns(10)                 // Maximum number of open connections
-	sqlDB.SetMaxIdleConns(5)                  // Maximum number of idle connections
-	sqlDB.SetConnMaxLifetime(time.Minute * 5) // Recycle connections periodically
-	sqlDB.SetConnMaxIdleTime(time.Minute * 2) // Close idle connections after a certain time
 
 	//connection, err := db.DB()
 	//if err != nil {

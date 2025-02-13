@@ -10,7 +10,7 @@ import (
 )
 
 type Collection interface {
-	GetAllCollection(ctx context.Context, language string, userId *string) ([]schema.CollectionListResponse, error)
+	GetAllCollection(ctx context.Context, language string, userId *string, withoutPosts bool) ([]schema.CollectionListResponse, error)
 	GetAllRecommendation(ctx context.Context, language string) ([]schema.CollectionListResponse, error)
 }
 
@@ -25,15 +25,15 @@ func NewCollectionService(collectionRepo repository.Collection, userPostRepo rep
 	return &CollectionService{collectionRepo: collectionRepo, postService: postService, markRepo: markRepo, userPostRepo: userPostRepo}
 }
 
-func (s *CollectionService) GetAllCollection(ctx context.Context, language string, userId *string) ([]schema.CollectionListResponse, error) {
-	collections, err := s.collectionRepo.GetAllCollection(ctx, language)
+func (s *CollectionService) GetAllCollection(ctx context.Context, language string, userId *string, withoutPosts bool) ([]schema.CollectionListResponse, error) {
+	collections, err := s.collectionRepo.GetAllCollection(ctx, language, withoutPosts)
 	if err != nil {
 		return nil, err
 	}
 
 	postIdMark := make(map[uint]model.Mark)
 	userPostMap := make(map[uint]model.UserPost)
-	if userId != nil {
+	if userId != nil && !withoutPosts {
 		userMarks, err := s.markRepo.FindByUserID(ctx, *userId)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
@@ -99,7 +99,7 @@ func (s *CollectionService) GetAllRecommendation(ctx context.Context, language s
 
 	result := make([]schema.CollectionListResponse, len(collections))
 	for i, collection := range collections {
-		posts, err := s.postService.GetListing(ctx, schema.GetListingFilter{
+		posts, _, err := s.postService.GetListing(ctx, schema.GetListingFilter{
 			CollectionIds: []uint{collection.CollectionID},
 			Language:      &language,
 		})

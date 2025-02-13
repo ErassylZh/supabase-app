@@ -83,11 +83,6 @@ const docTemplate = `{
         },
         "/api/v1/collection": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -779,6 +774,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/privacy-terms": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "privacy-terms"
+                ],
+                "summary": "получить все коллекций",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_PrivacyTerms"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/product": {
             "get": {
                 "consumes": [
@@ -1346,6 +1369,151 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v2/post": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "summary": "список группированных постов",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "hashtag_id",
+                        "name": "hashtag_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "collection_id",
+                        "name": "collection_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_PostResponseByGroup"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/post/filter": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "summary": "список постов с фильтром",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "hashtag_id",
+                        "name": "hashtag_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "collection_id",
+                        "name": "collection_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "search",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "post_ids",
+                        "name": "post_ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "all, post, partner",
+                        "name": "post_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_schema_PostResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1640,10 +1808,30 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PrivacyTerms": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "privacy_terms_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Product": {
             "type": "object",
             "properties": {
                 "airtable_product_id": {
+                    "type": "string"
+                },
+                "contacts": {
                     "type": "string"
                 },
                 "count": {
@@ -1653,6 +1841,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "discount": {
                     "type": "string"
                 },
                 "images": {
@@ -2353,6 +2544,23 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.Order"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-array_model_PrivacyTerms": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PrivacyTerms"
                     }
                 },
                 "status": {

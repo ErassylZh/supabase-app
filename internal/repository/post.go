@@ -12,7 +12,7 @@ type Post interface {
 	CreateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
 	GetAll(ctx context.Context) ([]model.Post, error)
 	UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error)
-	GetAllForListing(ctx context.Context, filter schema.GetListingFilter) ([]model.Post, error)
+	GetAllForListing(ctx context.Context, filter schema.GetListingFilter) ([]model.Post, int64, error)
 	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 	DeleteAllNotInUuid(ctx context.Context, uuids []string) error
 	GetAllGroupedByPostId(ctx context.Context, id uint) ([]model.Post, error)
@@ -60,7 +60,7 @@ func (r *PostDB) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Po
 	}
 	return posts, nil
 }
-func (r *PostDB) GetAllForListing(ctx context.Context, filter schema.GetListingFilter) (posts []model.Post, err error) {
+func (r *PostDB) GetAllForListing(ctx context.Context, filter schema.GetListingFilter) (posts []model.Post, total int64, err error) {
 	db := r.db.WithContext(ctx)
 
 	query := db.Model(&model.Post{})
@@ -86,8 +86,18 @@ func (r *PostDB) GetAllForListing(ctx context.Context, filter schema.GetListingF
 	if len(filter.PostIds) > 0 {
 		query = query.Where("public.post.post_id in (?)", filter.PostIds)
 	}
+	query = query.Where("public.post.status = ?", model.PRODUCT_STATUS_PUBLISH)
+	err = query.Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if filter.Page != 0 && filter.Size != 0 {
+		query.Offset(filter.Size * (filter.Page - 1))
+		query.Limit(filter.Size)
+	}
+
 	query = query.
-		Where("public.post.status = ?", model.PRODUCT_STATUS_PUBLISH).
 		Preload("Images").
 		Preload("Hashtags").
 		Preload("Collections").
@@ -96,10 +106,10 @@ func (r *PostDB) GetAllForListing(ctx context.Context, filter schema.GetListingF
 
 	err = query.Find(&posts).Error
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return posts, nil
+	return posts, total, nil
 }
 
 func (r *PostDB) GetAllByIds(ctx context.Context, ids []uint) (posts []model.Post, err error) {
