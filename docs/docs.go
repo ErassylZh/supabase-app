@@ -15,6 +15,33 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/all/": {
+            "get": {
+                "description": "Сокет для получения рейтинга всех участников в контесте (ws://host:port/ws/v1/all?)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WebSocket"
+                ],
+                "summary": "WebSocket for rating aggregation",
+                "parameters": [
+                    {
+                        "description": "JWT Token",
+                        "name": "token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/v1/balance": {
             "get": {
                 "security": [
@@ -1834,6 +1861,12 @@ const docTemplate = `{
                 "contacts": {
                     "type": "string"
                 },
+                "contacts_en": {
+                    "type": "string"
+                },
+                "contacts_kz": {
+                    "type": "string"
+                },
                 "count": {
                     "type": "integer"
                 },
@@ -1843,7 +1876,19 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "description_en": {
+                    "type": "string"
+                },
+                "description_kz": {
+                    "type": "string"
+                },
                 "discount": {
+                    "type": "string"
+                },
+                "discount_en": {
+                    "type": "string"
+                },
+                "discount_kz": {
                     "type": "string"
                 },
                 "images": {
@@ -1853,6 +1898,12 @@ const docTemplate = `{
                     }
                 },
                 "offer": {
+                    "type": "string"
+                },
+                "offer_en": {
+                    "type": "string"
+                },
+                "offer_kz": {
                     "type": "string"
                 },
                 "point": {
@@ -1883,6 +1934,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "title_en": {
+                    "type": "string"
+                },
+                "title_kz": {
                     "type": "string"
                 }
             }

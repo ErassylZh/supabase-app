@@ -9,6 +9,33 @@
     "host": "localhost:8000",
     "basePath": "/",
     "paths": {
+        "/all/": {
+            "get": {
+                "description": "Сокет для получения рейтинга всех участников в контесте (ws://host:port/ws/v1/all?)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WebSocket"
+                ],
+                "summary": "WebSocket for rating aggregation",
+                "parameters": [
+                    {
+                        "description": "JWT Token",
+                        "name": "token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/v1/balance": {
             "get": {
                 "security": [
@@ -1828,6 +1855,12 @@
                 "contacts": {
                     "type": "string"
                 },
+                "contacts_en": {
+                    "type": "string"
+                },
+                "contacts_kz": {
+                    "type": "string"
+                },
                 "count": {
                     "type": "integer"
                 },
@@ -1837,7 +1870,19 @@
                 "description": {
                     "type": "string"
                 },
+                "description_en": {
+                    "type": "string"
+                },
+                "description_kz": {
+                    "type": "string"
+                },
                 "discount": {
+                    "type": "string"
+                },
+                "discount_en": {
+                    "type": "string"
+                },
+                "discount_kz": {
                     "type": "string"
                 },
                 "images": {
@@ -1847,6 +1892,12 @@
                     }
                 },
                 "offer": {
+                    "type": "string"
+                },
+                "offer_en": {
+                    "type": "string"
+                },
+                "offer_kz": {
                     "type": "string"
                 },
                 "point": {
@@ -1877,6 +1928,12 @@
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "title_en": {
+                    "type": "string"
+                },
+                "title_kz": {
                     "type": "string"
                 }
             }

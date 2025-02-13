@@ -208,19 +208,35 @@ definitions:
         type: string
       contacts:
         type: string
+      contacts_en:
+        type: string
+      contacts_kz:
+        type: string
       count:
         type: integer
       created_at:
         type: string
       description:
         type: string
+      description_en:
+        type: string
+      description_kz:
+        type: string
       discount:
+        type: string
+      discount_en:
+        type: string
+      discount_kz:
         type: string
       images:
         items:
           $ref: '#/definitions/model.Image'
         type: array
       offer:
+        type: string
+      offer_en:
+        type: string
+      offer_kz:
         type: string
       point:
         type: integer
@@ -241,6 +257,10 @@ definitions:
       status:
         type: string
       title:
+        type: string
+      title_en:
+        type: string
+      title_kz:
         type: string
     type: object
   model.ProductTag:
@@ -906,6 +926,24 @@ info:
   title: swagger API
   version: "1.0"
 paths:
+  /all/:
+    get:
+      consumes:
+      - application/json
+      description: Сокет для получения рейтинга всех участников в контесте (ws://host:port/ws/v1/all?)
+      parameters:
+      - description: JWT Token
+        in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: WebSocket for rating aggregation
+      tags:
+      - WebSocket
   /api/v1/balance:
     get:
       consumes:

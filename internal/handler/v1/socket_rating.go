@@ -26,6 +26,14 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+// SocketAggregator
+// @Summary WebSocket for rating aggregation
+// @Description Сокет для получения рейтинга всех участников в контесте (ws://host:port/ws/v1/all?)
+// @Tags WebSocket
+// @Accept json
+// @Produce json
+// @Param token body string true "JWT Token"
+// @Router /all/ [get]
 func (h *Handler) SocketAggregator(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
