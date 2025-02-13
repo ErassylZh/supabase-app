@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"work-project/internal/model"
 	"work-project/internal/repository"
 	"work-project/internal/schema"
@@ -14,14 +16,16 @@ type User interface {
 }
 
 type UserService struct {
-	profileRepo repository.Profile
-	userRepo    repository.User
+	profileRepo  repository.Profile
+	userRepo     repository.User
+	badWordsRepo repository.BadWord
 }
 
-func NewUserService(userRepo repository.User, profile repository.Profile) *UserService {
+func NewUserService(userRepo repository.User, profile repository.Profile, badWords repository.BadWord) *UserService {
 	return &UserService{
-		userRepo:    userRepo,
-		profileRepo: profile,
+		userRepo:     userRepo,
+		profileRepo:  profile,
+		badWordsRepo: badWords,
 	}
 }
 
@@ -42,7 +46,21 @@ func (s *UserService) Update(ctx context.Context, data schema.UserUpdate) error 
 	if err != nil {
 		return err
 	}
-	profile.UserName = data.Nickname
+
+	if len(data.Nickname) > 0 {
+		badWords, err := s.badWordsRepo.GetAll(ctx)
+		if err != nil {
+			return err
+		}
+		nickname := strings.ToLower(data.Nickname)
+		for _, badWord := range badWords {
+			if strings.Contains(badWord, nickname) {
+				return fmt.Errorf("invalid word")
+			}
+		}
+
+		profile.UserName = data.Nickname
+	}
 
 	return s.profileRepo.Update(ctx, profile)
 }

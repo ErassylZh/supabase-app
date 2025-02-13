@@ -32,7 +32,7 @@ var upgrader = websocket.Upgrader{
 // @Tags WebSocket
 // @Accept json
 // @Produce json
-// @Param token body string true "JWT Token"
+// @Param token body TokenData true "JWT Token"
 // @Router /all/ [get]
 func (h *Handler) SocketAggregator(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -48,9 +48,7 @@ func (h *Handler) SocketAggregator(c *gin.Context) {
 	//var warehouseCodeUt string
 	tokenChan := make(chan string)
 	go func() {
-		var msg struct {
-			Token string `json:"token"`
-		}
+		var msg TokenData
 		if err := conn.ReadJSON(&msg); err != nil {
 			service.GetHub().SendErrorToClient(&service.SocketClient{Conn: conn}, fmt.Errorf("failed to read token message"))
 			close(tokenChan)
@@ -90,4 +88,8 @@ func (h *Handler) SocketAggregator(c *gin.Context) {
 
 	h.serviceAggregator.SocketAggregate(context.Background(), conn, client, "")
 
+}
+
+type TokenData struct {
+	Token string `json:"token"`
 }

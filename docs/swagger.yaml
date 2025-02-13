@@ -919,6 +919,11 @@ definitions:
       token:
         type: string
     type: object
+  v1.TokenData:
+    properties:
+      token:
+        type: string
+    type: object
 host: localhost:8000
 info:
   contact: {}
@@ -937,7 +942,7 @@ paths:
         name: token
         required: true
         schema:
-          type: string
+          $ref: '#/definitions/v1.TokenData'
       produces:
       - application/json
       responses: {}

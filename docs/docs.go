@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/v1.TokenData"
                         }
                     }
                 ],
@@ -2947,6 +2947,14 @@ const docTemplate = `{
             }
         },
         "schema.UserDeviceTokenCreateRequest": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.TokenData": {
             "type": "object",
             "properties": {
                 "token": {
