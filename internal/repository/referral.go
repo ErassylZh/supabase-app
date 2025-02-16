@@ -9,7 +9,7 @@ import (
 type Referral interface {
 	GetByUserId(ctx context.Context, userId string) (model.Referral, error)
 	GetByInvitedUserId(ctx context.Context, userId string) (model.Referral, error)
-	Create(ctx context.Context, referral model.Referral) error
+	Create(ctx context.Context, referral model.Referral) (model.Referral, error)
 }
 
 type ReferralDB struct {
@@ -32,11 +32,11 @@ func (r *ReferralDB) GetByUserId(ctx context.Context, userId string) (referral m
 	return referral, nil
 }
 
-func (r *ReferralDB) Create(ctx context.Context, referral model.Referral) error {
+func (r *ReferralDB) Create(ctx context.Context, referral model.Referral) (model.Referral, error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Referral{})
 	err := q.Create(&referral).Error
-	return err
+	return referral, err
 }
 
 func (r *ReferralDB) GetByInvitedUserId(ctx context.Context, userId string) (referral model.Referral, err error) {

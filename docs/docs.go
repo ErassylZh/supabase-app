@@ -15,6 +15,33 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/all/": {
+            "get": {
+                "description": "Сокет для получения рейтинга всех участников в контесте (ws://host:port/ws/v1/all?)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WebSocket"
+                ],
+                "summary": "WebSocket for rating aggregation",
+                "parameters": [
+                    {
+                        "description": "JWT Token",
+                        "name": "token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.TokenData"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/v1/balance": {
             "get": {
                 "security": [
@@ -107,6 +134,211 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-array_model_Collection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/contest": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "получить активные контесты",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "contest_id",
+                        "name": "contest_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_schema_ContestData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/contest/active": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "получить активные контесты",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_ContestActivity"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/contest/join": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "подключиться к розыгрышу",
+                "parameters": [
+                    {
+                        "description": "CreateMark",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schema.JoinContestRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/contest/prize": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "получить призы контеста",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "contest_id",
+                        "name": "contest_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_ContestPrize"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/contest/read": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "Прочесть контест книгу",
+                "parameters": [
+                    {
+                        "description": "CreateMark",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schema.JoinContestRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_ContestPassBook"
                         }
                     },
                     "400": {
@@ -916,6 +1148,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "обновить пользователя",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user-device-token": {
             "get": {
                 "security": [
@@ -1033,11 +1298,6 @@ const docTemplate = `{
         },
         "/api/v1/user/:user_id": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1336,6 +1596,32 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ContestPrize": {
+            "type": "object",
+            "properties": {
+                "contest_id": {
+                    "type": "integer"
+                },
+                "contest_prize_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "photo_path": {
+                    "type": "string"
+                },
+                "prize_name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Hashtag": {
             "type": "object",
             "properties": {
@@ -1575,6 +1861,12 @@ const docTemplate = `{
                 "contacts": {
                     "type": "string"
                 },
+                "contacts_en": {
+                    "type": "string"
+                },
+                "contacts_kz": {
+                    "type": "string"
+                },
                 "count": {
                     "type": "integer"
                 },
@@ -1584,7 +1876,19 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "description_en": {
+                    "type": "string"
+                },
+                "description_kz": {
+                    "type": "string"
+                },
                 "discount": {
+                    "type": "string"
+                },
+                "discount_en": {
+                    "type": "string"
+                },
+                "discount_kz": {
                     "type": "string"
                 },
                 "images": {
@@ -1594,6 +1898,12 @@ const docTemplate = `{
                     }
                 },
                 "offer": {
+                    "type": "string"
+                },
+                "offer_en": {
+                    "type": "string"
+                },
+                "offer_kz": {
                     "type": "string"
                 },
                 "point": {
@@ -1625,6 +1935,12 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                },
+                "title_en": {
+                    "type": "string"
+                },
+                "title_kz": {
+                    "type": "string"
                 }
             }
         },
@@ -1645,6 +1961,32 @@ const docTemplate = `{
                 },
                 "product_tag_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.Profile": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_name": {
+                    "type": "string"
                 }
             }
         },
@@ -1761,6 +2103,9 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "outer_id": {
+                    "type": "integer"
+                },
                 "reason": {
                     "type": "string"
                 },
@@ -1798,6 +2143,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "profile": {
+                    "$ref": "#/definitions/model.Profile"
                 }
             }
         },
@@ -1932,6 +2280,74 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.ContestActivity": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.ContestData"
+                    }
+                },
+                "ended": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.ContestResultPrize"
+                    }
+                }
+            }
+        },
+        "schema.ContestData": {
+            "type": "object",
+            "properties": {
+                "already_joined": {
+                    "type": "boolean"
+                },
+                "contest_id": {
+                    "type": "integer"
+                },
+                "current_day_number": {
+                    "type": "integer"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "total_users_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schema.ContestPassBook": {
+            "type": "object",
+            "properties": {
+                "coins": {
+                    "type": "integer"
+                },
+                "points": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schema.ContestResultPrize": {
+            "type": "object",
+            "properties": {
+                "consolation_prize_sapphire": {
+                    "type": "integer"
+                },
+                "contest_id": {
+                    "type": "integer"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "prize": {
+                    "$ref": "#/definitions/model.ContestPrize"
+                }
+            }
+        },
         "schema.CreateMark": {
             "type": "object",
             "properties": {
@@ -1942,6 +2358,14 @@ const docTemplate = `{
         },
         "schema.Empty": {
             "type": "object"
+        },
+        "schema.JoinContestRequest": {
+            "type": "object",
+            "properties": {
+                "contest_id": {
+                    "type": "integer"
+                }
+            }
         },
         "schema.PassQuizPost": {
             "type": "object",
@@ -2109,6 +2533,23 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.Collection"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-array_model_ContestPrize": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ContestPrize"
                     }
                 },
                 "status": {
@@ -2303,6 +2744,23 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.Response-array_schema_ContestData": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schema.ContestData"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.Response-array_schema_PostResponse": {
             "type": "object",
             "properties": {
@@ -2418,6 +2876,34 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.Response-schema_ContestActivity": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/schema.ContestActivity"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-schema_ContestPassBook": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/schema.ContestPassBook"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.Response-schema_Empty": {
             "type": "object",
             "properties": {
@@ -2461,6 +2947,14 @@ const docTemplate = `{
             }
         },
         "schema.UserDeviceTokenCreateRequest": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.TokenData": {
             "type": "object",
             "properties": {
                 "token": {

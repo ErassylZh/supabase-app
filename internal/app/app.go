@@ -13,6 +13,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"work-project/internal/aggregator"
 	"work-project/internal/config"
 	"work-project/internal/handler"
 	"work-project/internal/middleware"
@@ -55,6 +56,8 @@ func Run(cfg *config.Config) {
 		Repositories: repositories,
 	})
 
+	serviceAggregator := aggregator.NewServiceAggregatorService(*services)
+
 	healthCheckFn := func() error {
 		//if err := connection.Ping(); err != nil {
 		//	return fmt.Errorf("database is not responding: %w", err)
@@ -65,7 +68,9 @@ func Run(cfg *config.Config) {
 	//handlers := v1.NewHandler(services)
 
 	authMiddleware := middleware.NewAuthMiddleware(middleware.GinRecoveryFn)
-	handlerDelivery := handler.NewHandlerDelivery(usecases, services, "", *authMiddleware, healthCheckFn)
+	handlerDelivery := handler.NewHandlerDelivery(usecases, services, serviceAggregator, "", *authMiddleware, healthCheckFn)
+
+	service.NewHub()
 
 	// Удаление старого лог-файла
 	if err := os.Remove(logFilePath); err != nil && !os.IsNotExist(err) {
@@ -82,18 +87,14 @@ func Run(cfg *config.Config) {
 	// Устанавливаем запись логов в файл и консоль
 	multiWriter := io.MultiWriter(logFile, os.Stdout)
 	log.SetOutput(multiWriter)
-
-	// Настройка логирования Gin
 	gin.DefaultWriter = multiWriter
 	gin.DefaultErrorWriter = logFile
 
-	// Инициализация сервера
 	srv, err := server.NewServer(cfg, handlerDelivery)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	// Запуск сервера
 	go func() {
 		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
 			log.Println("🔥 Server stopped due error:", err.Error())
@@ -101,8 +102,6 @@ func Run(cfg *config.Config) {
 			log.Println("✅ Server shutdown successfully")
 		}
 	}()
-
-	// Запуск воркера
 	handlerWorker := worker.NewHandlerWorker(cfg, services, repositories)
 	go handlerWorker.Init()
 
@@ -110,6 +109,7 @@ func Run(cfg *config.Config) {
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+
 	<-quit
 
 	// Отправка логов по почте

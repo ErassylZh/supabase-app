@@ -1,23 +1,28 @@
 package v1
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
+	"work-project/internal/aggregator"
 	"work-project/internal/middleware"
+	"work-project/internal/model"
 	"work-project/internal/service"
 	"work-project/internal/usecase"
 )
 
 type Handler struct {
-	services *service.Services
-	auth     *middleware.AuthMiddleware
-	usecases *usecase.Usecases
+	services          *service.Services
+	serviceAggregator *aggregator.ServiceAggregatorService
+	auth              *middleware.AuthMiddleware
+	usecases          *usecase.Usecases
 }
 
-func NewHandler(services *service.Services, usecases *usecase.Usecases, auth *middleware.AuthMiddleware) *Handler {
+func NewHandler(services *service.Services, serviceAggregator *aggregator.ServiceAggregatorService, usecases *usecase.Usecases, auth *middleware.AuthMiddleware) *Handler {
 	return &Handler{
-		services: services,
-		auth:     auth,
-		usecases: usecases,
+		services:          services,
+		serviceAggregator: serviceAggregator,
+		auth:              auth,
+		usecases:          usecases,
 	}
 }
 
@@ -36,10 +41,22 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initHashtag(v1)
 		h.initCollection(v1)
 		h.initPrivacyTerms(v1)
+		h.initContest(v1)
 	}
 
 	v2 := api.Group("/v2")
 	{
 		h.initPostV2(v2)
 	}
+}
+
+func (h *Handler) InitWs(api *gin.RouterGroup) {
+	v1 := api.Group("/v1")
+	{
+		h.initRatingSocket(v1)
+	}
+}
+
+func (h *Handler) GetUserFromToken(token string) (model.User, error) {
+	return h.services.Auth.GetUserByToken(context.Background(), token)
 }

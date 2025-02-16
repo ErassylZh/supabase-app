@@ -23,6 +23,7 @@ type Services struct {
 	Order            Order
 	EmailSender      EmailSender
 	ProductTag       ProductTag
+	Contest          Contest
 	PrivacyTerms     PrivacyTerms
 }
 
@@ -34,11 +35,12 @@ type Deps struct {
 func NewServices(deps Deps) *Services {
 	postService := NewPostService(deps.Repos.Post)
 	markService := NewMarkService(deps.Repos.Mark, deps.Repos.Post, deps.Repos.UserPost)
+	balanceService := NewBalanceService(deps.Repos.Balance, deps.Repos.Transaction)
 	return &Services{
-		User:             NewUserService(deps.Repos.User, deps.Repos.Profile),
-		Auth:             NewAuthService(deps.Cgf.Security.Secret),
+		User:             NewUserService(deps.Repos.User, deps.Repos.Profile, deps.Repos.BadWord),
+		Auth:             NewAuthService(deps.Repos.User, deps.Cgf.Security.Secret),
 		PushNotification: NewPushNotificationService(deps.Repos.PushNotification, deps.Repos.FirebaseMessaging),
-		Balance:          NewBalanceService(deps.Repos.Balance, deps.Repos.Transaction),
+		Balance:          balanceService,
 		UserDeviceToken:  NewUserDeviceTokenService(deps.Repos.UserDeviceToken),
 		Product:          NewProductService(deps.Repos.Product),
 		Post:             NewPostService(deps.Repos.Post),
@@ -51,5 +53,6 @@ func NewServices(deps Deps) *Services {
 		Order:            NewOrderService(deps.Repos.Order, deps.Repos.OrderProduct),
 		ProductTag:       NewProductTagService(deps.Repos.ProductTag),
 		PrivacyTerms:     NewPrivacyTermsService(deps.Repos.PrivacyTerms),
+		Contest:          NewContestService(deps.Repos.Contest, deps.Repos.ContestParticipant, deps.Repos.ContestBook, deps.Repos.ContestHistory, deps.Repos.ContestPrize, *balanceService),
 	}
 }

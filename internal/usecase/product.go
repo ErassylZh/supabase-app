@@ -55,6 +55,7 @@ func (u *ProductUsecase) Buy(ctx context.Context, request schema.ProductBuyReque
 		TransactionType:   string(model.TRANSACTION_TYPE_SPEND),
 		Coins:             product.Point,
 		TransactionReason: string(model.TRANSACTION_REASON_STORE),
+		OuterId:           product.ProductID,
 	})
 
 	order, err := u.orderService.CreateOrder(ctx, request.UserId, []model.Product{product})
