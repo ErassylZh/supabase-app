@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -20,23 +21,28 @@ func LoggerMiddleware() gin.HandlerFunc {
 		startTime := time.Now()
 
 		// Логируем запрос
-		body, _ := io.ReadAll(c.Request.Body)
-		c.Request.Body = io.NopCloser(bytes.NewBuffer(body)) // Восстанавливаем body после чтения
 
-		log.Printf("➡️ REQUEST: %s %s\nHeaders: %v\nBody: %s\n",
-			c.Request.Method, c.Request.URL, c.Request.Header, string(body))
+		if c.Request.Method == http.MethodGet {
+			log.Printf("➡️ REQUEST: %s %s\nHeaders: %v\n",
+				c.Request.Method, c.Request.URL, c.Request.Header)
+		} else {
+			body, _ := io.ReadAll(c.Request.Body)
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 
-		// Перехватываем ответ
-		responseBody := &bytes.Buffer{}
-		writer := &responseRecorder{ResponseWriter: c.Writer, body: responseBody}
-		c.Writer = writer
+			log.Printf("➡️ REQUEST: %s %s\nHeaders: %v\nBody: %s\n",
+				c.Request.Method, c.Request.URL, c.Request.Header, string(body))
 
-		// Выполняем запрос
-		c.Next()
+			responseBody := &bytes.Buffer{}
+			writer := &responseRecorder{ResponseWriter: c.Writer, body: responseBody}
+			c.Writer = writer
 
-		// Логируем ответ
-		log.Printf("⬅️ RESPONSE: %d\nBody: %s\nTime: %v\n",
-			c.Writer.Status(), responseBody.String(), time.Since(startTime))
+			// Выполняем запрос
+			c.Next()
+
+			// Логируем ответ
+			log.Printf("⬅️ RESPONSE: %d\nBody: %s\nTime: %v\n",
+				c.Writer.Status(), responseBody.String(), time.Since(startTime))
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	mail "work-project/internal/email"
 	"work-project/internal/schema"
@@ -33,21 +34,26 @@ func (e *EmailSenderService) Send(ctx context.Context, message schema.Message) e
 	}
 	message.From = e.username
 
-	msg := &email.Email{
-		ReplyTo:     nil,
-		From:        message.From,
-		To:          message.To,
-		Bcc:         nil,
-		Cc:          nil,
-		Subject:     message.Subject,
-		Text:        []byte(message.Body),
-		HTML:        nil,
-		Sender:      message.From,
-		Headers:     nil,
-		Attachments: attachments,
-		ReadReceipt: nil,
-	}
-	auth := mail.NewAuth(e.username, e.password)
+	msg := email.NewEmail()
+	msg.From = message.From
+	msg.To = message.To
+	msg.Subject = message.Subject
+	msg.Text = []byte(message.Body)
 
+	// Добавляем вложения из списка
+	for _, attachment := range attachments {
+		msg.Attachments = append(msg.Attachments, attachment)
+	}
+
+	// Добавляем файл в сообщение, если он указан в виде []byte
+	if len(message.FileData) > 0 {
+		fileReader := bytes.NewReader(message.FileData)
+		_, err := msg.Attach(fileReader, message.FileName, "application/octet-stream")
+		if err != nil {
+			return err
+		}
+	}
+
+	auth := mail.NewAuth(e.username, e.password)
 	return msg.Send(e.addr, auth)
 }

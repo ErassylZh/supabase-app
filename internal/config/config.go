@@ -19,6 +19,7 @@ type (
 
 	Service struct {
 		Port string `envconfig:"PORT" default:"8000"`
+		ENV  string `envconfig:"ENV" default:"prod"`
 	}
 
 	Database struct {
@@ -42,6 +43,10 @@ type (
 		Addr     string `envconfig:"EMAIL_ADDR" default:"smtp.office365.com:587"`
 	}
 )
+
+func (c Config) IsLocal() bool {
+	return c.Service.ENV == "local"
+}
 
 var (
 	once   sync.Once
