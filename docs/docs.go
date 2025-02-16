@@ -1165,6 +1165,17 @@ const docTemplate = `{
                     "user"
                 ],
                 "summary": "обновить пользователя",
+                "parameters": [
+                    {
+                        "description": "user update",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schema.UserUpdate"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2950,6 +2961,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "schema.UserUpdate": {
+            "type": "object",
+            "properties": {
+                "nickname": {
                     "type": "string"
                 }
             }

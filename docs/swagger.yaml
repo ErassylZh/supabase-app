@@ -919,6 +919,11 @@ definitions:
       token:
         type: string
     type: object
+  schema.UserUpdate:
+    properties:
+      nickname:
+        type: string
+    type: object
   v1.TokenData:
     properties:
       token:
@@ -1643,6 +1648,13 @@ paths:
     put:
       consumes:
       - application/json
+      parameters:
+      - description: user update
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.UserUpdate'
       produces:
       - application/json
       responses:
