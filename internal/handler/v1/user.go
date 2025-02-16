@@ -67,6 +67,7 @@ func (h *Handler) GetUserByID(c *gin.Context) error {
 // @Produce json
 // @Success 200 {object} schema.Response[schema.Empty]
 // @Failure 400 {object} schema.Response[schema.Empty]
+// @Param data body schema.UserUpdate true "user update"
 // @Security BearerAuth
 // @tags user
 // @Router /api/v1/user [put]
