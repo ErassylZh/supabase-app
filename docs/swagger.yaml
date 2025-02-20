@@ -1641,7 +1641,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: список моих заказов
+      summary: список тегов продуктов(фильтра)
       tags:
       - product
   /api/v1/user:

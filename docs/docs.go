@@ -1131,7 +1131,7 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
-                "summary": "список моих заказов",
+                "summary": "список тегов продуктов(фильтра)",
                 "responses": {
                     "200": {
                         "description": "OK",

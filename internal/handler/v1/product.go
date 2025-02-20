@@ -115,7 +115,7 @@ func (h *Handler) GetMyOrders(c *gin.Context) error {
 
 // Tags
 // WhoAmi godoc
-// @Summary список моих заказов
+// @Summary список тегов продуктов(фильтра)
 // @Accept json
 // @Produce json
 // @Success 200 {object} schema.Response[[]model.ProductTag]
