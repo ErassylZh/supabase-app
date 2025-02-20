@@ -13,6 +13,7 @@ type Contest struct {
 	EndTime                  time.Time `gorm:"column:end_time" json:"end_time"`
 	IsActive                 bool      `gorm:"column:is_active" json:"is_active"`
 	ConsolationPrizeSapphire int       `gorm:"column:consolation_prize_sapphire" json:"consolation_prize_sapphire"`
+	Code                     string    `gorm:"column:code" json:"code"`
 
 	ContestParticipants []ContestParticipant `gorm:"foreignKey:ContestID;references:ContestID" json:"contest_participants"`
 	ContestBooks        ContestBooks         `gorm:"foreignKey:ContestID;references:ContestID" json:"contest_books"`

@@ -106,3 +106,33 @@ type Collection struct {
 	ImageKz          *[]Image `json:"image_kz"`
 	IsRecommendation bool     `json:"is_recommendation"`
 }
+
+type Contest struct {
+	StartTime                time.Time `json:"start_time"`
+	EndTime                  time.Time `json:"end_time"`
+	IsActive                 bool
+	Code                     string `json:"uuid"`
+	ConsolationPrizeSapphire int
+}
+
+type ContestBook struct {
+	Body             string
+	Title            string
+	Description      string   `gorm:"column:description" json:"description"`
+	DayNumber        int      `gorm:"column:day_number" json:"day_number"`
+	ContestCoins     int      `gorm:"column:contest_coins" json:"contest_coins"`
+	Point            int      `gorm:"column:point" json:"point"`
+	CountOfQuestions int      `gorm:"column:count_of_questions"  json:"count_of_questions"`
+	Image            *[]Image `json:"image"`
+	Code             string   `json:"code"`
+}
+
+type ContestPrize struct {
+	ContestPrizeID uint     `gorm:"primaryKey;column:contest_prize_id" json:"contest_prize_id"`
+	ContestID      uint     `gorm:"column:contest_id" json:"contest_id"`
+	Number         int      `gorm:"column:number" json:"number"`
+	PrizeName      string   `gorm:"column:prize_name" json:"prize_name"`
+	PhotoPath      string   `gorm:"column:photo_path" json:"photo_path"`
+	Image          *[]Image `json:"image"`
+	Code           string   `json:"code"`
+}

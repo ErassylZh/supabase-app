@@ -18,6 +18,7 @@ type ContestBook struct {
 	Status           string    `gorm:"column:status" json:"status"`
 	Body             string    `gorm:"column:body" json:"body"`
 	CountOfQuestions int       `gorm:"column:count_of_questions"  json:"count_of_questions"`
+	PhotoPath        *string   `gorm:"column:photo_path" json:"photo_path"`
 
 	ContestHistory []ContestHistory `json:"contest_history"`
 }

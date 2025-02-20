@@ -14,6 +14,9 @@ type Contest interface {
 	Update(ctx context.Context, contest model.Contest) (model.Contest, error)
 	GetActiveJoinedByUser(ctx context.Context, id string) ([]model.Contest, error)
 	GetEnded(ctx context.Context, userId string) (contests []model.Contest, err error)
+	GetAll(ctx context.Context) ([]model.Contest, error)
+	CreateMany(ctx context.Context, contests []model.Contest) ([]model.Contest, error)
+	UpdateMany(ctx context.Context, contests []model.Contest) ([]model.Contest, error)
 }
 
 type ContestDB struct {
@@ -22,6 +25,17 @@ type ContestDB struct {
 
 func NewContestDB(db *gorm.DB) *ContestDB {
 	return &ContestDB{db: db}
+}
+
+func (r *ContestDB) GetAll(ctx context.Context) (contests []model.Contest, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Contest{})
+	err = q.Find(&contests).
+		Error
+	if err != nil {
+		return contests, err
+	}
+	return contests, nil
 }
 
 func (r *ContestDB) GetActive(ctx context.Context) (contests []model.Contest, err error) {
@@ -100,6 +114,34 @@ func (r *ContestDB) GetActiveJoinedByUser(ctx context.Context, userId string) (c
 		Error
 	if err != nil {
 		return contests, err
+	}
+	return contests, nil
+}
+
+func (r *ContestDB) CreateMany(ctx context.Context, contests []model.Contest) ([]model.Contest, error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Collection{})
+	err := q.Create(&contests).
+		Error
+	if err != nil {
+		return contests, err
+	}
+	return contests, nil
+}
+
+func (r *ContestDB) UpdateMany(ctx context.Context, contests []model.Contest) ([]model.Contest, error) {
+	db := r.db.WithContext(ctx)
+
+	for _, contest := range contests {
+		if err := db.Model(&model.Collection{}).Where("contest_id = ?", contest.ContestID).Updates(map[string]interface{}{
+			"is_active":                  contest.IsActive,
+			"start_time":                 contest.StartTime,
+			"end_time":                   contest.EndTime,
+			"code":                       contest.Code,
+			"consolation_prize_sapphire": contest.ConsolationPrizeSapphire,
+		}).Error; err != nil {
+			return nil, err
+		}
 	}
 	return contests, nil
 }

@@ -24,6 +24,9 @@ type AirTableSync struct {
 	storyPage         repository.StoryPage
 	productTag        repository.ProductTag
 	productProductTag repository.ProductProductTag
+	contest           repository.Contest
+	contestBook       repository.ContestBook
+	contestPrize      repository.ContestPrize
 }
 
 func NewAirTableSync(
@@ -86,6 +89,21 @@ func (h *AirTableSync) Run() (err error) {
 
 	if err := h.syncStories(ctx); err != nil {
 		log.Println("error while syncing stories:", err)
+		//return err
+	}
+
+	if err := h.syncContests(ctx); err != nil {
+		log.Println("error while syncing hashtags:", err)
+		//return err
+	}
+
+	if err := h.syncContestBooks(ctx); err != nil {
+		log.Println("error while syncing hashtags:", err)
+		//return err
+	}
+
+	if err := h.syncContestPrizes(ctx); err != nil {
+		log.Println("error while syncing hashtags:", err)
 		//return err
 	}
 
@@ -1181,4 +1199,240 @@ func (h *AirTableSync) checkImageUpdates(imagesDB []model.Image, airtableImages 
 	}
 
 	return false
+}
+
+func (h *AirTableSync) syncContests(ctx context.Context) interface{} {
+	contests, err := h.airTable.GetContests(ctx)
+	if err != nil {
+		return err
+	}
+
+	contestsAirtableByCode := make(map[string][]airtable.BaseObject[airtable.Contest])
+	for _, contest := range contests {
+		contestsAirtableByCode[contest.Fields.Code] = []airtable.BaseObject[airtable.Contest]{}
+	}
+	for _, contest := range contests {
+		if !contest.Fields.IsActive {
+			continue
+		}
+		contestsAirtableByCode[contest.Fields.Code] = append(contestsAirtableByCode[contest.Fields.Code], contest)
+	}
+
+	contestsDB, err := h.contest.GetAll(ctx)
+	contestsDBByCode := make(map[string]model.Contest)
+	for _, contest := range contestsDB {
+		contestsDBByCode[contest.Code] = contest
+	}
+
+	createContests := make([]model.Contest, 0)
+	updateContests := make([]model.Contest, 0)
+
+	for key := range contestsAirtableByCode {
+		if _, ok := contestsDBByCode[key]; ok {
+			if contestsDBByCode[key].StartTime != contestsAirtableByCode[key][0].Fields.StartTime ||
+				contestsDBByCode[key].EndTime != contestsAirtableByCode[key][0].Fields.EndTime ||
+				contestsDBByCode[key].IsActive != contestsAirtableByCode[key][0].Fields.IsActive {
+				temp := contestsDBByCode[key]
+				temp.StartTime = contestsAirtableByCode[key][0].Fields.StartTime
+				temp.EndTime = contestsAirtableByCode[key][0].Fields.EndTime
+
+				updateContests = append(updateContests, temp)
+			}
+			continue
+		}
+		// Добавление новой истории
+		contest := model.Contest{
+			CreatedAt:                time.Now(),
+			StartTime:                contestsAirtableByCode[key][0].Fields.StartTime,
+			EndTime:                  contestsAirtableByCode[key][0].Fields.EndTime,
+			Code:                     contestsAirtableByCode[key][0].Fields.Code,
+			IsActive:                 contestsAirtableByCode[key][0].Fields.IsActive,
+			ConsolationPrizeSapphire: contestsAirtableByCode[key][0].Fields.ConsolationPrizeSapphire,
+		}
+		createContests = append(createContests, contest)
+	}
+
+	if len(createContests) > 0 {
+		createContests, err = h.contest.CreateMany(ctx, createContests)
+		if err != nil {
+			return err
+		}
+	}
+
+	if len(updateContests) > 0 {
+		updateContests, err = h.contest.UpdateMany(ctx, updateContests)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (h *AirTableSync) syncContestBooks(ctx context.Context) interface{} {
+	contestBooks, err := h.airTable.GetContestBooks(ctx)
+	if err != nil {
+		return err
+	}
+
+	contestBooksAirtableByCode := make(map[string]airtable.BaseObject[airtable.ContestBook])
+	for _, contestBook := range contestBooks {
+		contestBooksAirtableByCode[contestBook.Fields.Title] = contestBook
+	}
+
+	contestBooksDB, err := h.contestBook.GetAll(ctx)
+	contestsBookDBByCode := make(map[string]model.ContestBook)
+	for _, contest := range contestBooksDB {
+		contestsBookDBByCode[contest.Title] = contest
+	}
+
+	contestsDB, err := h.contest.GetAll(ctx)
+	contestsDBByCode := make(map[string]model.Contest)
+	for _, contest := range contestsDB {
+		contestsDBByCode[contest.Code] = contest
+	}
+
+	createContests := make([]model.ContestBook, 0)
+	updateContests := make([]model.ContestBook, 0)
+
+	for key := range contestBooksAirtableByCode {
+		if _, ok := contestsDBByCode[key]; ok {
+			var images []airtable.Image
+			if contestBooksAirtableByCode[key].Fields.Image != nil {
+				images = *contestBooksAirtableByCode[key].Fields.Image
+			}
+			if !strings.EqualFold(contestsBookDBByCode[key].Title, contestBooksAirtableByCode[key].Fields.Title) ||
+				!strings.EqualFold(contestsBookDBByCode[key].Description, contestBooksAirtableByCode[key].Fields.Description) ||
+				!strings.EqualFold(contestsBookDBByCode[key].Body, contestBooksAirtableByCode[key].Fields.Description) ||
+				(images != nil && len(images) > 0) ||
+				!(contestsBookDBByCode[key].PhotoPath != nil && images != nil && len(images) > 0 && strings.Contains(*contestsBookDBByCode[key].PhotoPath, images[0].FileName)) {
+				temp := contestsBookDBByCode[key]
+				temp.Body = contestBooksAirtableByCode[key].Fields.Body
+				temp.Title = contestBooksAirtableByCode[key].Fields.Title
+				temp.Description = contestBooksAirtableByCode[key].Fields.Description
+				temp.DayNumber = contestBooksAirtableByCode[key].Fields.DayNumber
+				temp.CountOfQuestions = contestBooksAirtableByCode[key].Fields.CountOfQuestions
+				temp.ContestCoins = contestBooksAirtableByCode[key].Fields.ContestCoins
+				if (contestsBookDBByCode[key].PhotoPath == nil && images != nil && len(images) > 0) ||
+					(contestsBookDBByCode[key].PhotoPath != nil && images != nil && len(images) > 0 && strings.Contains(*contestsBookDBByCode[key].PhotoPath, images[0].FileName)) {
+					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_CONTEST), images[0].FileName, images[0].Url)
+					if err != nil {
+						log.Println(ctx, "some err while create image", "err", err, "product contest book title", contestBooksAirtableByCode[key].Fields.Title)
+					}
+					temp.PhotoPath = &file
+				}
+
+				updateContests = append(updateContests, temp)
+			}
+			continue
+		}
+		// Добавление новой истории
+		contest := model.ContestBook{
+			CreatedAt:        time.Now(),
+			ContestCoins:     contestBooksAirtableByCode[key].Fields.ContestCoins,
+			CountOfQuestions: contestBooksAirtableByCode[key].Fields.CountOfQuestions,
+			Title:            contestBooksAirtableByCode[key].Fields.Title,
+			Description:      contestBooksAirtableByCode[key].Fields.Description,
+			Body:             contestBooksAirtableByCode[key].Fields.Body,
+			DayNumber:        contestBooksAirtableByCode[key].Fields.DayNumber,
+			Point:            contestBooksAirtableByCode[key].Fields.Point,
+			ContestID:        contestsBookDBByCode[contestBooksAirtableByCode[key].Fields.Code].ContestID,
+		}
+		createContests = append(createContests, contest)
+	}
+
+	if len(createContests) > 0 {
+		createContests, err = h.contestBook.CreateMany(ctx, createContests)
+		if err != nil {
+			return err
+		}
+	}
+
+	if len(updateContests) > 0 {
+		updateContests, err = h.contestBook.UpdateMany(ctx, updateContests)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (h *AirTableSync) syncContestPrizes(ctx context.Context) error {
+	contestPrizes, err := h.airTable.GetContestPrizes(ctx)
+	if err != nil {
+		return err
+	}
+
+	contestPrizesAirtableByCode := make(map[string]airtable.BaseObject[airtable.ContestPrize])
+	for _, contestPrize := range contestPrizes {
+		contestPrizesAirtableByCode[contestPrize.Fields.PrizeName] = contestPrize
+	}
+
+	contestPrizesDB, err := h.contestPrize.GetAll(ctx)
+	contestsBookDBByCode := make(map[string]model.ContestPrize)
+	for _, contest := range contestPrizesDB {
+		contestsBookDBByCode[contest.PrizeName] = contest
+	}
+
+	contestsDB, err := h.contest.GetAll(ctx)
+	contestsDBByCode := make(map[string]model.Contest)
+	for _, contest := range contestsDB {
+		contestsDBByCode[contest.Code] = contest
+	}
+
+	createContests := make([]model.ContestPrize, 0)
+	updateContests := make([]model.ContestPrize, 0)
+
+	for key := range contestPrizesAirtableByCode {
+		if _, ok := contestsDBByCode[key]; ok {
+			var images []airtable.Image
+			if contestPrizesAirtableByCode[key].Fields.Image != nil {
+				images = *contestPrizesAirtableByCode[key].Fields.Image
+			}
+			if !strings.EqualFold(contestsBookDBByCode[key].PrizeName, contestPrizesAirtableByCode[key].Fields.PrizeName) ||
+				contestsBookDBByCode[key].Number != contestPrizesAirtableByCode[key].Fields.Number ||
+				(images != nil && len(images) > 0) ||
+				!(contestsBookDBByCode[key].PhotoPath != nil && images != nil && len(images) > 0 && strings.Contains(*contestsBookDBByCode[key].PhotoPath, images[0].FileName)) {
+				temp := contestsBookDBByCode[key]
+				temp.PrizeName = contestPrizesAirtableByCode[key].Fields.PrizeName
+				temp.Number = contestPrizesAirtableByCode[key].Fields.Number
+				if (contestsBookDBByCode[key].PhotoPath == nil && images != nil && len(images) > 0) ||
+					(contestsBookDBByCode[key].PhotoPath != nil && images != nil && len(images) > 0 && strings.Contains(*contestsBookDBByCode[key].PhotoPath, images[0].FileName)) {
+					file, err := h.storage.CreateImage(ctx, string(model.BUCKET_NAME_CONTEST), images[0].FileName, images[0].Url)
+					if err != nil {
+						log.Println(ctx, "some err while create image", "err", err, "product contest prize title", contestPrizesAirtableByCode[key].Fields.PrizeName)
+					}
+					temp.PhotoPath = &file
+				}
+
+				updateContests = append(updateContests, temp)
+			}
+			continue
+		}
+		// Добавление новой истории
+		contest := model.ContestPrize{
+			CreatedAt: time.Now(),
+			PrizeName: contestPrizesAirtableByCode[key].Fields.PrizeName,
+			Number:    contestPrizesAirtableByCode[key].Fields.Number,
+			ContestID: contestsBookDBByCode[contestPrizesAirtableByCode[key].Fields.Code].ContestID,
+		}
+		createContests = append(createContests, contest)
+	}
+
+	if len(createContests) > 0 {
+		createContests, err = h.contestPrize.CreateMany(ctx, createContests)
+		if err != nil {
+			return err
+		}
+	}
+
+	if len(updateContests) > 0 {
+		updateContests, err = h.contestPrize.UpdateMany(ctx, updateContests)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

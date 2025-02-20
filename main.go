@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	_ "net/http/pprof"
 	_ "work-project/docs"
 	"work-project/internal/app"
 	"work-project/internal/config"
@@ -17,6 +20,9 @@ import (
 // @name Authorization
 func main() {
 
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
 	cfg, err := config.GetConfig()
 	if err != nil {
 		panic(err)

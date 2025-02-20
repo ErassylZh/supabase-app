@@ -14,6 +14,7 @@ const (
 	BUCKET_NAME_HASHTAG     BucketName = "hashtags"
 	BUCKET_NAME_COLLECTION  BucketName = "collection"
 	BUCKET_NAME_PRODUCT_TAG BucketName = "product_tag"
+	BUCKET_NAME_CONTEST     BucketName = "contest"
 )
 
 type Image struct {

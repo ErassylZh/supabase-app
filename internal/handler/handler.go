@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
+	"runtime"
 	"work-project/internal/aggregator"
 	"work-project/internal/config"
 	v1 "work-project/internal/handler/v1"
@@ -55,6 +57,16 @@ func (h *Handler) Init(cfg *config.Config) (*gin.Engine, error) {
 
 	app.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, map[string]string{"message": "pong"})
+	})
+	app.GET("/goroutine", func(c *gin.Context) {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"number": runtime.NumGoroutine(),
+			"data": func() string {
+				buf := make([]byte, 1<<16)
+				n := runtime.Stack(buf, true)
+				return fmt.Sprintf("%s", buf[:n])
+			}(),
+		})
 	})
 	app.GET("/readiness", func(c *gin.Context) {
 		if err := h.healthcheckFn(); err != nil {

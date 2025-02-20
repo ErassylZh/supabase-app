@@ -19,6 +19,9 @@ type AirTable interface {
 	GetHashtags(ctx context.Context) ([]airtable.BaseObject[airtable.Hashtag], error)
 	GetCollections(ctx context.Context) ([]airtable.BaseObject[airtable.Collection], error)
 	GetProductTags(ctx context.Context) ([]airtable.BaseObject[airtable.ProductTag], error)
+	GetContests(ctx context.Context) ([]airtable.BaseObject[airtable.Contest], error)
+	GetContestBooks(ctx context.Context) ([]airtable.BaseObject[airtable.ContestBook], error)
+	GetContestPrizes(ctx context.Context) ([]airtable.BaseObject[airtable.ContestPrize], error)
 }
 
 type AirTableClient struct {
@@ -319,6 +322,153 @@ func (r *AirTableClient) GetProductTags(ctx context.Context) ([]airtable.BaseObj
 		}
 
 		var response airtable.BaseResponse[airtable.ProductTag]
+		if err := json.Unmarshal(rawResponse, &response); err != nil {
+			return nil, err
+		}
+
+		allRecords = append(allRecords, response.Records...)
+
+		if response.Offset == nil {
+			break
+		}
+
+		offset = response.Offset
+	}
+
+	return allRecords, nil
+}
+
+func (r *AirTableClient) GetContests(ctx context.Context) ([]airtable.BaseObject[airtable.Contest], error) {
+	var allRecords []airtable.BaseObject[airtable.Contest]
+	var offset *string
+
+	for {
+		requestURL := r.baseURL.JoinPath("/Contest")
+		if offset != nil {
+			query := requestURL.Query()
+			query.Set("offset", *offset)
+			requestURL.RawQuery = query.Encode()
+		}
+
+		req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := r.client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("error while getting Airtable hashtag. Response code: %d", resp.StatusCode)
+		}
+
+		rawResponse, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var response airtable.BaseResponse[airtable.Contest]
+		if err := json.Unmarshal(rawResponse, &response); err != nil {
+			return nil, err
+		}
+
+		allRecords = append(allRecords, response.Records...)
+
+		if response.Offset == nil {
+			break
+		}
+
+		offset = response.Offset
+	}
+
+	return allRecords, nil
+}
+
+func (r *AirTableClient) GetContestBooks(ctx context.Context) ([]airtable.BaseObject[airtable.ContestBook], error) {
+	var allRecords []airtable.BaseObject[airtable.ContestBook]
+	var offset *string
+
+	for {
+		requestURL := r.baseURL.JoinPath("/ContestBook")
+		if offset != nil {
+			query := requestURL.Query()
+			query.Set("offset", *offset)
+			requestURL.RawQuery = query.Encode()
+		}
+
+		req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := r.client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("error while getting Airtable ContestBook. Response code: %d", resp.StatusCode)
+		}
+
+		rawResponse, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var response airtable.BaseResponse[airtable.ContestBook]
+		if err := json.Unmarshal(rawResponse, &response); err != nil {
+			return nil, err
+		}
+
+		allRecords = append(allRecords, response.Records...)
+
+		if response.Offset == nil {
+			break
+		}
+
+		offset = response.Offset
+	}
+
+	return allRecords, nil
+}
+
+func (r *AirTableClient) GetContestPrizes(ctx context.Context) ([]airtable.BaseObject[airtable.ContestPrize], error) {
+	var allRecords []airtable.BaseObject[airtable.ContestPrize]
+	var offset *string
+
+	for {
+		requestURL := r.baseURL.JoinPath("/ContestPrize")
+		if offset != nil {
+			query := requestURL.Query()
+			query.Set("offset", *offset)
+			requestURL.RawQuery = query.Encode()
+		}
+
+		req, err := r.newRequest(ctx, http.MethodGet, requestURL, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := r.client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("error while getting Airtable ContestPrize. Response code: %d", resp.StatusCode)
+		}
+
+		rawResponse, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var response airtable.BaseResponse[airtable.ContestPrize]
 		if err := json.Unmarshal(rawResponse, &response); err != nil {
 			return nil, err
 		}

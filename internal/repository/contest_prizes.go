@@ -12,6 +12,7 @@ type ContestPrize interface {
 	Create(ctx context.Context, contestPrize model.ContestPrize) (model.ContestPrize, error)
 	UpdateMany(ctx context.Context, contestPrizes []model.ContestPrize) ([]model.ContestPrize, error)
 	GetByContestIDAndNumber(ctx context.Context, contestId uint, number int) (model.ContestPrize, error)
+	GetAll(ctx context.Context) ([]model.ContestPrize, error)
 }
 
 type ContestPrizeDB struct {
@@ -79,6 +80,17 @@ func (r *ContestPrizeDB) UpdateMany(ctx context.Context, contestPrizes []model.C
 			Error; err != nil {
 			return nil, err
 		}
+	}
+	return contestPrizes, nil
+}
+
+func (r *ContestPrizeDB) GetAll(ctx context.Context) (contestPrizes []model.ContestPrize, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.ContestPrize{})
+	err = q.Find(&contestPrizes).
+		Error
+	if err != nil {
+		return contestPrizes, err
 	}
 	return contestPrizes, nil
 }

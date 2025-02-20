@@ -42,6 +42,7 @@ func (r *BalanceDB) GetByUserID(ctx context.Context, userId string) (balance mod
 	}
 	return balance, nil
 }
+
 func (r *BalanceDB) Update(ctx context.Context, balance model.Balance) error {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Balance{})

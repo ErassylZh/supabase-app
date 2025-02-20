@@ -12,7 +12,7 @@ type ContestPrize struct {
 	ContestID      uint      `gorm:"column:contest_id" json:"contest_id"`
 	Number         int       `gorm:"column:number" json:"number"`
 	PrizeName      string    `gorm:"column:prize_name" json:"prize_name"`
-	PhotoPath      string    `gorm:"column:photo_path" json:"photo_path"`
+	PhotoPath      *string   `gorm:"column:photo_path" json:"photo_path"`
 }
 
 func (c *ContestPrize) TableName() string {

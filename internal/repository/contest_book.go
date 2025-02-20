@@ -11,6 +11,7 @@ type ContestBook interface {
 	GetByID(ctx context.Context, contestBookId uint) (model.ContestBook, error)
 	CreateMany(ctx context.Context, contestBooks []model.ContestBook) ([]model.ContestBook, error)
 	UpdateMany(ctx context.Context, contestBooks []model.ContestBook) ([]model.ContestBook, error)
+	GetAll(ctx context.Context) ([]model.ContestBook, error)
 }
 
 type ContestBookDB struct {
