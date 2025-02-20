@@ -23,7 +23,7 @@ func (h *Handler) initProduct(v1 *gin.RouterGroup) {
 	)
 	v1.GET(
 		"/tags",
-		middleware.GinErrorHandle(h.GetMyOrders),
+		middleware.GinErrorHandle(h.Tags),
 	)
 }
 
