@@ -22,6 +22,17 @@ func NewContestBookDB(db *gorm.DB) *ContestBookDB {
 	return &ContestBookDB{db: db}
 }
 
+func (r *ContestBookDB) GetAll(ctx context.Context) (contestBooks []model.ContestBook, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.ContestBook{})
+	err = q.Find(&contestBooks).
+		Error
+	if err != nil {
+		return contestBooks, err
+	}
+	return contestBooks, nil
+}
+
 func (r *ContestBookDB) GetByID(ctx context.Context, contestBookId uint) (contestBook model.ContestBook, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.ContestBook{})
