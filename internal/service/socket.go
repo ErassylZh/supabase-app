@@ -155,6 +155,15 @@ func (h *Hub) SendErrorToClient(client *SocketClient, err error) {
 	}
 }
 
+func (h *Hub) Disconnect(client *SocketClient) {
+	if _, exists := h.Groups[client.GroupID]; exists {
+		h.RemoveClientFromGroup(client, client.GroupID)
+		close(client.Send)
+		client.Conn.Close()
+		log.Println("Client disconnected", "client", client.UserID)
+	}
+}
+
 func (cg *ClientGroup) Run() {
 	for {
 		select {

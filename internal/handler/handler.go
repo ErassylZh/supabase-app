@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"log"
 	"net/http"
 	"runtime"
 	"work-project/internal/aggregator"
@@ -51,13 +52,19 @@ func (h *Handler) Init(cfg *config.Config) (*gin.Engine, error) {
 		middlewares.Cors(),
 		middlewares.Recovery(middleware.GinRecoveryFn),
 		middlewares.LoggerMiddleware(),
-		//h.authMiddleware.SetCurrentUser(),
+		func(c *gin.Context) { // Логируем кол-во горутин перед обработкой запроса
+			log.Printf("🔄 Перед обработкой запроса: %d горутин", runtime.NumGoroutine())
+			c.Next()
+			log.Printf("✅ После обработки запроса: %d горутин", runtime.NumGoroutine())
+		},
 	)
+
 	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	app.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, map[string]string{"message": "pong"})
 	})
+
 	app.GET("/goroutine", func(c *gin.Context) {
 		c.JSON(http.StatusOK, map[string]interface{}{
 			"number": runtime.NumGoroutine(),
@@ -68,6 +75,7 @@ func (h *Handler) Init(cfg *config.Config) (*gin.Engine, error) {
 			}(),
 		})
 	})
+
 	app.GET("/readiness", func(c *gin.Context) {
 		if err := h.healthcheckFn(); err != nil {
 			c.JSON(http.StatusServiceUnavailable, map[string]string{"message": err.Error()})
@@ -76,6 +84,7 @@ func (h *Handler) Init(cfg *config.Config) (*gin.Engine, error) {
 			c.JSON(http.StatusOK, map[string]string{"message": "ok"})
 		}
 	})
+
 	app.GET("/liveness", func(c *gin.Context) {
 		if err := h.healthcheckFn(); err != nil {
 			c.JSON(http.StatusServiceUnavailable, map[string]string{"message": err.Error()})

@@ -42,13 +42,15 @@ func (h *Handler) SocketAggregator(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	ticker := time.NewTicker(10 * time.Second)
-	defer ticker.Stop()
+	// Таймаут для закрытия неактивных соединений
+	pingTicker := time.NewTicker(30 * time.Second)
+	defer pingTicker.Stop()
 
-	//var warehouseCodeUt string
+	// Таймер ожидания получения токена
 	tokenChan := make(chan string)
 	go func() {
 		var msg TokenData
+		conn.SetReadDeadline(time.Now().Add(5 * time.Second)) // Таймаут на получение токена
 		if err := conn.ReadJSON(&msg); err != nil {
 			service.GetHub().SendErrorToClient(&service.SocketClient{Conn: conn}, fmt.Errorf("failed to read token message"))
 			close(tokenChan)
@@ -86,7 +88,29 @@ func (h *Handler) SocketAggregator(c *gin.Context) {
 	service.GetHub().Connect(client)
 	log.Println("socket connected", "client", conn.RemoteAddr().String(), "count_of_connects", service.GetHub().GetCountOfClientsByGroup("warehouseCodeUt"))
 
-	h.serviceAggregator.SocketAggregate(context.Background(), conn, client, "")
+	// Контекст для управления завершением горутины
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Горутина для проверки активности соединения
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-pingTicker.C:
+				err := conn.WriteMessage(websocket.PingMessage, nil)
+				if err != nil {
+					log.Println("closing inactive WebSocket connection:", conn.RemoteAddr().String())
+					service.GetHub().Disconnect(client)
+					conn.Close()
+					return
+				}
+			}
+		}
+	}()
+
+	h.serviceAggregator.SocketAggregate(ctx, conn, client, "")
 
 }
 

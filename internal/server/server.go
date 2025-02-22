@@ -24,8 +24,9 @@ func NewServer(cfg *config.Config, handler *handler.Handler) (*Server, error) {
 			Addr:           fmt.Sprintf(":%s", cfg.Service.Port),
 			Handler:        httpHandler,
 			ReadTimeout:    10 * time.Second,
-			WriteTimeout:   30 * time.Second,
-			MaxHeaderBytes: 2 << 20, // 2MB
+			WriteTimeout:   10 * time.Second,
+			IdleTimeout:    30 * time.Second, // Закрывает неиспользуемые соединения
+			MaxHeaderBytes: 1 << 20,          // 1MB
 		},
 	}, nil
 }
