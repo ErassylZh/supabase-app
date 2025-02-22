@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	_ "net/http/pprof"
+	"runtime"
+	"time"
 	_ "work-project/docs"
 	"work-project/internal/app"
 	"work-project/internal/config"
@@ -29,4 +31,14 @@ func main() {
 	}
 
 	app.Run(cfg)
+	go func() {
+		for {
+			log.Printf("📌 Текущее количество горутин: %d", runtime.NumGoroutine())
+			time.Sleep(10 * time.Second)
+		}
+	}()
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
 }
