@@ -106,20 +106,25 @@ func (r *CollectionDB) CreateMany(ctx context.Context, collections []model.Colle
 }
 
 func (r *CollectionDB) UpdateMany(ctx context.Context, collections []model.Collection) ([]model.Collection, error) {
-	db := r.db.WithContext(ctx)
-
-	for _, post := range collections {
-		if err := db.Model(&model.Collection{}).Where("collection_id = ?", post.CollectionID).Updates(map[string]interface{}{
-			"name":              post.Name,
-			"name_ru":           post.NameRu,
-			"name_kz":           post.NameKz,
-			"image_path":        post.ImagePath,
-			"image_path_kz":     post.ImagePathKz,
-			"image_path_ru":     post.ImagePathRu,
-			"is_recommendation": post.IsRecommendation, // Явное указание поля
-		}).Error; err != nil {
-			return nil, err
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, collection := range collections {
+			if err := tx.Model(&model.Collection{}).Where("collection_id = ?", collection.CollectionID).Updates(map[string]interface{}{
+				"name":              collection.Name,
+				"name_ru":           collection.NameRu,
+				"name_kz":           collection.NameKz,
+				"image_path":        collection.ImagePath,
+				"image_path_kz":     collection.ImagePathKz,
+				"image_path_ru":     collection.ImagePathRu,
+				"is_recommendation": collection.IsRecommendation, // Явное указание поля
+			}).Error; err != nil {
+				return err // Если ошибка — транзакция отменяется
+			}
 		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
 	return collections, nil
 }
