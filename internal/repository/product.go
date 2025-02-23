@@ -46,12 +46,17 @@ func (r *ProductDB) GetAll(ctx context.Context) (products []model.Product, err e
 }
 
 func (r *ProductDB) UpdateMany(ctx context.Context, products []model.Product) ([]model.Product, error) {
-	db := r.db.WithContext(ctx)
-
-	for _, product := range products {
-		if err := db.Model(&model.Product{}).Where("product_id = ?", product.ProductID).Updates(&product).Error; err != nil {
-			return nil, err
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, product := range products {
+			if err := tx.Model(&model.Product{}).Where("product_id = ?", product.ProductID).Updates(&product).Error; err != nil {
+				return err // Если ошибка — транзакция отменяется
+			}
 		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
 	return products, nil
 }

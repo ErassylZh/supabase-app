@@ -41,12 +41,17 @@ func (r *StoryPageDB) CreateMany(ctx context.Context, stories []model.StoryPage)
 }
 
 func (r *StoryPageDB) UpdateMany(ctx context.Context, pages []model.StoryPage) ([]model.StoryPage, error) {
-	db := r.db.WithContext(ctx)
-
-	for _, page := range pages {
-		if err := db.Model(&model.StoryPage{}).Where("story_page_id = ?", page.StoryPageId).Updates(&page).Error; err != nil {
-			return nil, err
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, page := range pages {
+			if err := tx.Model(&model.StoryPage{}).Where("story_page_id = ?", page.StoryPageId).Updates(&page).Error; err != nil {
+				return err // Если ошибка — транзакция отменяется
+			}
 		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
 	return pages, nil
 

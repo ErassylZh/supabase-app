@@ -69,15 +69,17 @@ func (r *ContestBookDB) CreateMany(ctx context.Context, contestBooks []model.Con
 }
 
 func (r *ContestBookDB) UpdateMany(ctx context.Context, contestBooks []model.ContestBook) ([]model.ContestBook, error) {
-	db := r.db.WithContext(ctx)
-
-	for _, contestBook := range contestBooks {
-		if err := db.Model(&model.ContestBook{}).
-			Where("contest_id = ?", contestBook.ContestBookID).
-			Updates(&contestBook).
-			Error; err != nil {
-			return nil, err
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, contestBook := range contestBooks {
+			if err := tx.Model(&model.ContestBook{}).Where("contest_book_id = ?", contestBook.ContestBookID).Updates(&contestBook).Error; err != nil {
+				return err // Если ошибка — транзакция отменяется
+			}
 		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
 	return contestBooks, nil
 }

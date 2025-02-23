@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -49,6 +50,12 @@ func (r *AirTableClient) GetProducts(ctx context.Context) ([]airtable.BaseObject
 	var offset *string
 
 	for {
+		select {
+		case <-ctx.Done(): // ✅ Прерываем цикл, если контекст отменен
+			log.Println("⏳ GetProducts отменен:", ctx.Err())
+			return nil, ctx.Err()
+		default:
+		}
 		requestURL := r.baseURL.JoinPath("/Store")
 		if offset != nil {
 			query := requestURL.Query()
@@ -98,6 +105,12 @@ func (r *AirTableClient) GetPosts(ctx context.Context) ([]airtable.BaseObject[ai
 	var offset *string
 
 	for {
+		select {
+		case <-ctx.Done(): // ✅ Прерываем цикл, если контекст отменен
+			log.Println("⏳ GetPosts отменен:", ctx.Err())
+			return nil, ctx.Err()
+		default:
+		}
 		requestURL := r.baseURL.JoinPath("/Post")
 		if offset != nil {
 			query := requestURL.Query()
@@ -147,6 +160,12 @@ func (r *AirTableClient) GetStories(ctx context.Context) ([]airtable.BaseObject[
 	var offset *string
 
 	for {
+		select {
+		case <-ctx.Done(): // ✅ Прерываем цикл, если контекст отменен
+			log.Println("⏳ GetStories отменен:", ctx.Err())
+			return nil, ctx.Err()
+		default:
+		}
 		requestURL := r.baseURL.JoinPath("/Stories")
 		if offset != nil {
 			query := requestURL.Query()
@@ -196,6 +215,12 @@ func (r *AirTableClient) GetHashtags(ctx context.Context) ([]airtable.BaseObject
 	var offset *string
 
 	for {
+		select {
+		case <-ctx.Done(): // ✅ Прерываем цикл, если контекст отменен
+			log.Println("⏳ GetHashtags отменен:", ctx.Err())
+			return nil, ctx.Err()
+		default:
+		}
 		requestURL := r.baseURL.JoinPath("/Hashtags")
 		if offset != nil {
 			query := requestURL.Query()
@@ -245,6 +270,12 @@ func (r *AirTableClient) GetCollections(ctx context.Context) ([]airtable.BaseObj
 	var offset *string
 
 	for {
+		select {
+		case <-ctx.Done(): // ✅ Прерываем цикл, если контекст отменен
+			log.Println("⏳ GetCollections отменен:", ctx.Err())
+			return nil, ctx.Err()
+		default:
+		}
 		requestURL := r.baseURL.JoinPath("/Collections")
 		if offset != nil {
 			query := requestURL.Query()
@@ -294,6 +325,12 @@ func (r *AirTableClient) GetProductTags(ctx context.Context) ([]airtable.BaseObj
 	var offset *string
 
 	for {
+		select {
+		case <-ctx.Done(): // ✅ Прерываем цикл, если контекст отменен
+			log.Println("⏳ GetProductTags отменен:", ctx.Err())
+			return nil, ctx.Err()
+		default:
+		}
 		requestURL := r.baseURL.JoinPath("/StoreTag")
 		if offset != nil {
 			query := requestURL.Query()
@@ -343,6 +380,12 @@ func (r *AirTableClient) GetContests(ctx context.Context) ([]airtable.BaseObject
 	var offset *string
 
 	for {
+		select {
+		case <-ctx.Done(): // ✅ Прерываем цикл, если контекст отменен
+			log.Println("⏳ GetContests отменен:", ctx.Err())
+			return nil, ctx.Err()
+		default:
+		}
 		requestURL := r.baseURL.JoinPath("/Contest")
 		if offset != nil {
 			query := requestURL.Query()
@@ -392,6 +435,12 @@ func (r *AirTableClient) GetContestBooks(ctx context.Context) ([]airtable.BaseOb
 	var offset *string
 
 	for {
+		select {
+		case <-ctx.Done(): // ✅ Прерываем цикл, если контекст отменен
+			log.Println("⏳ GetContestBooks отменен:", ctx.Err())
+			return nil, ctx.Err()
+		default:
+		}
 		requestURL := r.baseURL.JoinPath("/ContestBook")
 		if offset != nil {
 			query := requestURL.Query()
@@ -441,6 +490,12 @@ func (r *AirTableClient) GetContestPrizes(ctx context.Context) ([]airtable.BaseO
 	var offset *string
 
 	for {
+		select {
+		case <-ctx.Done(): // ✅ Прерываем цикл, если контекст отменен
+			log.Println("⏳ GetContestPrizes отменен:", ctx.Err())
+			return nil, ctx.Err()
+		default:
+		}
 		requestURL := r.baseURL.JoinPath("/ContestPrize")
 		if offset != nil {
 			query := requestURL.Query()

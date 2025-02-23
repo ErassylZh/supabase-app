@@ -51,15 +51,22 @@ func (r *PostDB) GetAll(ctx context.Context) (posts []model.Post, err error) {
 }
 
 func (r *PostDB) UpdateMany(ctx context.Context, posts []model.Post) ([]model.Post, error) {
-	db := r.db.WithContext(ctx)
-
-	for _, post := range posts {
-		if err := db.Model(&model.Post{}).Where("post_id = ?", post.PostID).Updates(&post).Error; err != nil {
-			return nil, err
+	// Открываем транзакцию
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, post := range posts {
+			if err := tx.Model(&model.Post{}).Where("post_id = ?", post.PostID).Updates(&post).Error; err != nil {
+				return err // Если ошибка — транзакция отменяется
+			}
 		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
 	return posts, nil
 }
+
 func (r *PostDB) GetAllForListing(ctx context.Context, filter schema.GetListingFilter) (posts []model.Post, total int64, err error) {
 	db := r.db.WithContext(ctx)
 

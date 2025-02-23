@@ -36,10 +36,10 @@ func NewDB(
 		return nil, nil, err
 	}
 
-	connection.SetMaxIdleConns(15)
-	connection.SetMaxOpenConns(15)
-	connection.SetConnMaxLifetime(10 * time.Minute)
-	connection.SetConnMaxIdleTime(5 * time.Minute)
+	connection.SetMaxIdleConns(10)                  // Меньше, чем MaxOpenConns
+	connection.SetMaxOpenConns(20)                  // Увеличено для лучшей нагрузки
+	connection.SetConnMaxLifetime(30 * time.Minute) // Дольше держим соединения
+	connection.SetConnMaxIdleTime(10 * time.Minute) // Больше времени перед закрытием
 
 	fmt.Println("db connected")
 

@@ -130,18 +130,23 @@ func (r *ContestDB) CreateMany(ctx context.Context, contests []model.Contest) ([
 }
 
 func (r *ContestDB) UpdateMany(ctx context.Context, contests []model.Contest) ([]model.Contest, error) {
-	db := r.db.WithContext(ctx)
-
-	for _, contest := range contests {
-		if err := db.Model(&model.Collection{}).Where("contest_id = ?", contest.ContestID).Updates(map[string]interface{}{
-			"is_active":                  contest.IsActive,
-			"start_time":                 contest.StartTime,
-			"end_time":                   contest.EndTime,
-			"code":                       contest.Code,
-			"consolation_prize_sapphire": contest.ConsolationPrizeSapphire,
-		}).Error; err != nil {
-			return nil, err
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, contest := range contests {
+			if err := tx.Model(&model.Contest{}).Where("contest_id = ?", contest.ContestID).Updates(map[string]interface{}{
+				"is_active":                  contest.IsActive,
+				"start_time":                 contest.StartTime,
+				"end_time":                   contest.EndTime,
+				"code":                       contest.Code,
+				"consolation_prize_sapphire": contest.ConsolationPrizeSapphire,
+			}).Error; err != nil {
+				return err // Если ошибка — транзакция отменяется
+			}
 		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
 	return contests, nil
 }

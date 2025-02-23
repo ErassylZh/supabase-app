@@ -83,15 +83,20 @@ func (r *StoriesDB) GetAllActiveByUser(ctx context.Context, userId string) (stor
 	return stories, nil
 }
 
-func (r *StoriesDB) UpdateMany(ctx context.Context, posts []model.Stories) ([]model.Stories, error) {
-	db := r.db.WithContext(ctx)
-
-	for _, post := range posts {
-		if err := db.Model(&model.Stories{}).Where("stories_id = ?", post.StoriesId).Updates(&post).Error; err != nil {
-			return nil, err
+func (r *StoriesDB) UpdateMany(ctx context.Context, stories []model.Stories) ([]model.Stories, error) {
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, story := range stories {
+			if err := tx.Model(&model.Stories{}).Where("stories_id = ?", story.StoriesId).Updates(&story).Error; err != nil {
+				return err // Если ошибка — транзакция отменяется
+			}
 		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
 	}
-	return posts, nil
+	return stories, nil
 }
 
 func (r *StoriesDB) DeleteManyByTitle(ctx context.Context, titles []string) error {
