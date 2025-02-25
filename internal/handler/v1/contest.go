@@ -28,6 +28,10 @@ func (h *Handler) initContest(v1 *gin.RouterGroup) {
 		"/prize",
 		middleware.GinErrorHandle(h.GetContestPrizes),
 	)
+	v1.GET(
+		"/book",
+		middleware.GinErrorHandle(h.GetContestBooks),
+	)
 }
 
 // GetContestData
