@@ -177,3 +177,29 @@ func (h *Handler) GetContestPrizes(c *gin.Context) error {
 	}
 	return schema.Respond(contestPrizes, c)
 }
+
+// GetContestBooks
+// WhoAmi godoc
+// @Summary получить книги контеста
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]model.ContestBook]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param contest_id query int true "contest_id"
+// @Security BearerAuth
+// @tags contest
+// @Router /api/v1/contest/book [get]
+func (h *Handler) GetContestBooks(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	contestId, err := strconv.ParseUint(c.Query("contest_id"), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	contestPrizes, err := h.services.Contest.GetBooks(ctx, uint(contestId))
+	if err != nil {
+		return err
+	}
+	return schema.Respond(contestPrizes, c)
+}

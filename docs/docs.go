@@ -220,6 +220,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/contest/book": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "получить книги контеста",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "contest_id",
+                        "name": "contest_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_ContestBook"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/contest/join": {
             "post": {
                 "security": [
@@ -1607,6 +1649,85 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ContestBook": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "contest_book_id": {
+                    "type": "integer"
+                },
+                "contest_coins": {
+                    "type": "integer"
+                },
+                "contest_history": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ContestHistory"
+                    }
+                },
+                "contest_id": {
+                    "type": "integer"
+                },
+                "count_of_questions": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "day_number": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "photo_path": {
+                    "type": "string"
+                },
+                "point": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ContestHistory": {
+            "type": "object",
+            "properties": {
+                "contest_book_id": {
+                    "type": "integer"
+                },
+                "contest_history_id": {
+                    "type": "integer"
+                },
+                "contest_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "points": {
+                    "type": "integer"
+                },
+                "read_time": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ContestPrize": {
             "type": "object",
             "properties": {
@@ -2551,6 +2672,23 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.Response-array_model_ContestBook": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ContestBook"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.Response-array_model_ContestPrize": {
             "type": "object",
             "properties": {
@@ -2968,6 +3106,9 @@ const docTemplate = `{
         "schema.UserUpdate": {
             "type": "object",
             "properties": {
+                "avatar_photo": {
+                    "type": "string"
+                },
                 "nickname": {
                     "type": "string"
                 }

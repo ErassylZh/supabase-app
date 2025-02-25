@@ -34,6 +34,58 @@ definitions:
           $ref: '#/definitions/model.Post'
         type: array
     type: object
+  model.ContestBook:
+    properties:
+      body:
+        type: string
+      contest_book_id:
+        type: integer
+      contest_coins:
+        type: integer
+      contest_history:
+        items:
+          $ref: '#/definitions/model.ContestHistory'
+        type: array
+      contest_id:
+        type: integer
+      count_of_questions:
+        type: integer
+      created_at:
+        type: string
+      day_number:
+        type: integer
+      description:
+        type: string
+      photo_path:
+        type: string
+      point:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.ContestHistory:
+    properties:
+      contest_book_id:
+        type: integer
+      contest_history_id:
+        type: integer
+      contest_id:
+        type: integer
+      created_at:
+        type: string
+      points:
+        type: integer
+      read_time:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
   model.ContestPrize:
     properties:
       contest_id:
@@ -652,6 +704,17 @@ definitions:
       status:
         type: boolean
     type: object
+  schema.Response-array_model_ContestBook:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.ContestBook'
+        type: array
+      status:
+        type: boolean
+    type: object
   schema.Response-array_model_ContestPrize:
     properties:
       message:
@@ -921,6 +984,8 @@ definitions:
     type: object
   schema.UserUpdate:
     properties:
+      avatar_photo:
+        type: string
       nickname:
         type: string
     type: object
@@ -1062,6 +1127,32 @@ paths:
       security:
       - BearerAuth: []
       summary: получить активные контесты
+      tags:
+      - contest
+  /api/v1/contest/book:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: contest_id
+        in: query
+        name: contest_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_ContestBook'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить книги контеста
       tags:
       - contest
   /api/v1/contest/join:

@@ -18,6 +18,7 @@ type Contest interface {
 	GetDataForSocket(ctx context.Context, userId string) ([]schema.ContestSocketResponse, error)
 	Read(ctx context.Context, data schema.ReadContestRequest) (schema.ContestPassBook, error)
 	GetPrizes(ctx context.Context, contestId uint) ([]model.ContestPrize, error)
+	GetBooks(ctx context.Context, contestId uint) ([]model.ContestBook, error)
 }
 
 type ContestService struct {
@@ -255,4 +256,9 @@ func (s *ContestService) GetDataForSocket(ctx context.Context, userId string) ([
 
 func (s *ContestService) GetPrizes(ctx context.Context, contestId uint) ([]model.ContestPrize, error) {
 	return s.contestPrizeRepo.GetByContestID(ctx, contestId)
+}
+
+func (s *ContestService) GetBooks(ctx context.Context, contestId uint) ([]model.ContestBook, error) {
+	return s.contestBookRepo.GetByContestID(ctx, contestId)
+
 }
