@@ -17,19 +17,19 @@ func (h *Handler) initContest(v1 *gin.RouterGroup) {
 		middleware.GinErrorHandle(h.GetContestData),
 	)
 	v1.POST(
-		"/join",
+		"/contest/join",
 		middleware.GinErrorHandle(h.JoinContest),
 	)
 	v1.POST(
-		"/read",
+		"/contest/read",
 		middleware.GinErrorHandle(h.ReadContestBook),
 	)
 	v1.GET(
-		"/prize",
+		"/contest/prize",
 		middleware.GinErrorHandle(h.GetContestPrizes),
 	)
 	v1.GET(
-		"/book",
+		"/contest/book",
 		middleware.GinErrorHandle(h.GetContestBooks),
 	)
 }
