@@ -3,6 +3,7 @@ package repository
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,6 +14,7 @@ import (
 
 type Storage interface {
 	CreateImage(ctx context.Context, bucketName string, fileName, fileUrl string) (string, error)
+	CreateImageFromBase64(ctx context.Context, bucketName string, fileName, base64Data string) (string, error)
 }
 
 type StorageClient struct {
@@ -57,6 +59,53 @@ func (s *StorageClient) CreateImage(ctx context.Context, bucketName string, file
 		responseBody, _ := io.ReadAll(resp.Body)
 		fmt.Printf("Response Body: %s\n %s", string(responseBody), fileName)
 
+		return "", fmt.Errorf("failed to upload file, status: %s", resp.Status)
+	}
+
+	var uploadResponse UploadResponse
+	if err := json.NewDecoder(resp.Body).Decode(&uploadResponse); err != nil {
+		return "", fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return uploadResponse.Key, nil
+}
+
+func (s *StorageClient) CreateImageFromBase64(ctx context.Context, bucketName string, fileName, base64Data string) (string, error) {
+	fileName = strings.Replace(fileName, "·", "_", len(fileName))
+	fileName = time.Now().Format("20060102_150405") + " " + fileName
+
+	// Декодируем base64
+	fileData, err := base64.StdEncoding.DecodeString(base64Data)
+	if err != nil {
+		return "", fmt.Errorf("failed to decode base64 data: %w", err)
+	}
+
+	uploadURL := fmt.Sprintf("%s/storage/v1/object/%s/%s", s.supabaseURL, bucketName, fileName)
+
+	body := bytes.NewBuffer(fileData)
+	contentType := http.DetectContentType(fileData)
+
+	req, err := http.NewRequest(http.MethodPost, uploadURL, body)
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+s.supabaseKey)
+	req.Header.Set("Content-Type", contentType)
+
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to execute request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		responseBody, _ := io.ReadAll(resp.Body)
+		fmt.Printf("Response Body: %s\n %s", string(responseBody), fileName)
 		return "", fmt.Errorf("failed to upload file, status: %s", resp.Status)
 	}
 

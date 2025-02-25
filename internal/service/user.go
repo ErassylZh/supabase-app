@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 	"work-project/internal/model"
 	"work-project/internal/repository"
 	"work-project/internal/schema"
@@ -19,6 +20,7 @@ type UserService struct {
 	profileRepo  repository.Profile
 	userRepo     repository.User
 	badWordsRepo repository.BadWord
+	storage      repository.Storage
 }
 
 func NewUserService(userRepo repository.User, profile repository.Profile, badWords repository.BadWord) *UserService {
@@ -60,6 +62,14 @@ func (s *UserService) Update(ctx context.Context, data schema.UserUpdate) error 
 		}
 
 		profile.UserName = data.Nickname
+	}
+	if data.AvatarPhoto != nil {
+		fileName, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), data.UserID+time.Now().String(), *data.AvatarPhoto)
+		if err != nil {
+			return err
+		}
+
+		profile.AvatarUrl = &fileName
 	}
 
 	return s.profileRepo.Update(ctx, profile)
