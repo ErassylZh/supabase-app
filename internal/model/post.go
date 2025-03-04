@@ -38,10 +38,10 @@ type Post struct {
 	CreatedAt        time.Time `gorm:"column:created_at" json:"created_at"`
 	PostID           uint      `gorm:"primaryKey;column:post_id" json:"post_id"`
 	Company          *string   `gorm:"column:company" json:"company"`
-	Language         *string   `gorm:"column:language" json:"language"`
+	Language         string    `gorm:"column:language" json:"language"`
 	Title            string    `gorm:"column:title" json:"title"`
 	Description      *string   `gorm:"column:description" json:"description"`
-	Status           *string   `gorm:"column:status" json:"status"`
+	Status           string    `gorm:"column:status" json:"status"`
 	Body             *string   `gorm:"column:body" json:"body"`
 	ReadTime         *int      `gorm:"column:read_time" json:"read_time"`
 	Point            *int      `gorm:"column:point" json:"point"`

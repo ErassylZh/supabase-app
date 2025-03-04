@@ -151,7 +151,7 @@ func (r *CollectionDB) Create(ctx context.Context, collection model.Collection) 
 
 // Обновление коллекции
 func (r *CollectionDB) Update(ctx context.Context, collection model.Collection) (model.Collection, error) {
-	err := r.db.WithContext(ctx).Save(&collection).Error
+	err := r.db.WithContext(ctx).Where("collection_id = ?", collection.CollectionID).Save(&collection).Error
 	return collection, err
 }
 

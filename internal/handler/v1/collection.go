@@ -3,8 +3,8 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"work-project/internal/admin"
 	"work-project/internal/middleware"
-	"work-project/internal/model"
 	"work-project/internal/schema"
 )
 
@@ -82,7 +82,7 @@ func (h *Handler) GetAllRecommendations(c *gin.Context) error {
 func (h *Handler) CreateCollection(c *gin.Context) error {
 	ctx := c.Request.Context()
 
-	var data model.Collection
+	var data admin.CreateCollection
 	err := c.Bind(&data)
 	if err != nil {
 		return err
@@ -143,7 +143,7 @@ func (h *Handler) UpdateCollection(c *gin.Context) error {
 		return err
 	}
 
-	var data model.Collection
+	var data admin.UpdateCollection
 	err = c.Bind(&data)
 	if err != nil {
 		return err

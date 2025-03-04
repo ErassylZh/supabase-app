@@ -16,7 +16,7 @@ import (
 type Collection interface {
 	GetAllCollection(ctx context.Context, language string, userId *string, withoutPosts bool) ([]schema.CollectionListResponse, error)
 	GetAllRecommendation(ctx context.Context, language string) ([]schema.CollectionListResponse, error)
-	Create(ctx context.Context, data model.Collection) (model.Collection, error)
+	Create(ctx context.Context, data admin.CreateCollection) (model.Collection, error)
 	GetAll(ctx context.Context) ([]model.Collection, error)
 	GetByID(ctx context.Context, id uint) (model.Collection, error)
 	Update(ctx context.Context, data admin.UpdateCollection) (model.Collection, error)
@@ -132,8 +132,50 @@ func (s *CollectionService) GetAllRecommendation(ctx context.Context, language s
 	return result, nil
 }
 
-func (s *CollectionService) Create(ctx context.Context, data model.Collection) (model.Collection, error) {
-	return s.collectionRepo.Create(ctx, data)
+func (s *CollectionService) Create(ctx context.Context, data admin.CreateCollection) (model.Collection, error) {
+	collection := model.Collection{}
+
+	// Обновляем поля
+	collection.Name = data.Name
+	collection.NameRu = data.NameRu
+	collection.NameKz = data.NameKz
+	collection.IsRecommendation = data.IsRecommendation
+
+	// Обрабатываем изображения, если они есть
+	if data.ImageBase64 != nil && *data.ImageBase64 != "" {
+		newPath, err := s.saveBase64Image(ctx, *data.ImageBase64, collection.Name+time.Now().String())
+		if err != nil {
+			log.Println("Ошибка сохранения image_path:", err)
+			return model.Collection{}, err
+		}
+		collection.ImagePath = newPath
+	}
+
+	if data.ImageKzBase64 != nil && *data.ImageKzBase64 != "" {
+		newPath, err := s.saveBase64Image(ctx, *data.ImageKzBase64, collection.NameKz+time.Now().String())
+		if err != nil {
+			log.Println("Ошибка сохранения image_path_kz:", err)
+			return model.Collection{}, err
+		}
+		collection.ImagePathKz = newPath
+	}
+
+	if data.ImageRuBase64 != nil && *data.ImageRuBase64 != "" {
+		newPath, err := s.saveBase64Image(ctx, *data.ImageRuBase64, collection.NameRu+time.Now().String())
+		if err != nil {
+			log.Println("Ошибка сохранения image_path_ru:", err)
+			return model.Collection{}, err
+		}
+		collection.ImagePathRu = newPath
+	}
+
+	// Сохраняем обновленную коллекцию
+	updatedCollection, err := s.collectionRepo.Create(ctx, collection)
+	if err != nil {
+		return model.Collection{}, err
+	}
+
+	return updatedCollection, nil
 }
 
 // Получение всех коллекций

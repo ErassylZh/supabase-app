@@ -14,6 +14,9 @@ type Hashtag interface {
 	UpdateMany(ctx context.Context, hashtags []model.Hashtag) ([]model.Hashtag, error)
 	DeleteMany(ctx context.Context, hashtagIds []uint) error
 	GetVisible(ctx context.Context) ([]model.Hashtag, error)
+	Create(ctx context.Context, hashtag model.Hashtag) (model.Hashtag, error)
+	Update(ctx context.Context, hashtag model.Hashtag) (model.Hashtag, error)
+	Delete(ctx context.Context, id uint) error
 }
 
 type HashtagDB struct {
@@ -109,4 +112,20 @@ func (r *HashtagDB) DeleteMany(ctx context.Context, hashtagIds []uint) error {
 		return err
 	}
 	return nil
+}
+
+func (r *HashtagDB) Create(ctx context.Context, hashtag model.Hashtag) (model.Hashtag, error) {
+	err := r.db.WithContext(ctx).Create(&hashtag).Error
+	return hashtag, err
+}
+
+// Обновление хэштега
+func (r *HashtagDB) Update(ctx context.Context, hashtag model.Hashtag) (model.Hashtag, error) {
+	err := r.db.WithContext(ctx).Where("hashtag_id = ?", hashtag.HashtagID).Save(&hashtag).Error
+	return hashtag, err
+}
+
+// Удаление хэштега
+func (r *HashtagDB) Delete(ctx context.Context, id uint) error {
+	return r.db.WithContext(ctx).Delete(&model.Hashtag{}, id).Error
 }
