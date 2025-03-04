@@ -561,13 +561,6 @@ definitions:
       total_users_count:
         type: integer
     type: object
-  schema.ContestPassBook:
-    properties:
-      coins:
-        type: integer
-      points:
-        type: integer
-    type: object
   schema.ContestResultPrize:
     properties:
       consolation_prize_sapphire:
@@ -677,6 +670,15 @@ definitions:
   schema.ProductBuyRequest:
     properties:
       product_id:
+        type: integer
+    type: object
+  schema.ReadContestRequest:
+    properties:
+      contest_book_id:
+        type: integer
+      read_time:
+        type: integer
+      right_questions:
         type: integer
     type: object
   schema.ReadPost:
@@ -941,15 +943,6 @@ definitions:
       status:
         type: boolean
     type: object
-  schema.Response-schema_ContestPassBook:
-    properties:
-      message:
-        type: string
-      result:
-        $ref: '#/definitions/schema.ContestPassBook'
-      status:
-        type: boolean
-    type: object
   schema.Response-schema_Empty:
     properties:
       message:
@@ -965,6 +958,15 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/schema.PostResponseByGroup'
+      status:
+        type: boolean
+    type: object
+  schema.Response-schema_ReadContestRequest:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/schema.ReadContestRequest'
       status:
         type: boolean
     type: object
@@ -1225,7 +1227,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response-schema_ContestPassBook'
+            $ref: '#/definitions/schema.Response-schema_ReadContestRequest'
         "400":
           description: Bad Request
           schema:

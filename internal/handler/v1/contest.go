@@ -129,7 +129,7 @@ func (h *Handler) JoinContest(c *gin.Context) error {
 // @Summary Прочесть контест книгу
 // @Accept json
 // @Produce json
-// @Success 200 {object} schema.Response[schema.ContestPassBook]
+// @Success 200 {object} schema.Response[schema.ReadContestRequest]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param data body schema.JoinContestRequest true "CreateMark"
 // @Security BearerAuth

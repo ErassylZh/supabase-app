@@ -380,7 +380,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-schema_ContestPassBook"
+                            "$ref": "#/definitions/schema.Response-schema_ReadContestRequest"
                         }
                     },
                     "400": {
@@ -2452,17 +2452,6 @@ const docTemplate = `{
                 }
             }
         },
-        "schema.ContestPassBook": {
-            "type": "object",
-            "properties": {
-                "coins": {
-                    "type": "integer"
-                },
-                "points": {
-                    "type": "integer"
-                }
-            }
-        },
         "schema.ContestResultPrize": {
             "type": "object",
             "properties": {
@@ -2629,6 +2618,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "product_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schema.ReadContestRequest": {
+            "type": "object",
+            "properties": {
+                "contest_book_id": {
+                    "type": "integer"
+                },
+                "read_time": {
+                    "type": "integer"
+                },
+                "right_questions": {
                     "type": "integer"
                 }
             }
@@ -3039,20 +3042,6 @@ const docTemplate = `{
                 }
             }
         },
-        "schema.Response-schema_ContestPassBook": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "result": {
-                    "$ref": "#/definitions/schema.ContestPassBook"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
         "schema.Response-schema_Empty": {
             "type": "object",
             "properties": {
@@ -3075,6 +3064,20 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/schema.PostResponseByGroup"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-schema_ReadContestRequest": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/schema.ReadContestRequest"
                 },
                 "status": {
                     "type": "boolean"
