@@ -14,9 +14,15 @@ type ContestBook struct {
 	ContestCoins     int       `gorm:"column:contest_coins" json:"contest_coins"`
 	Point            int       `gorm:"column:point" json:"point"`
 	Title            string    `gorm:"column:title" json:"title"`
+	TitleKz          string    `gorm:"column:title_kz" json:"title_kz"`
+	TitleEn          string    `gorm:"column:title_en" json:"title_en"`
 	Description      string    `gorm:"column:description" json:"description"`
+	DescriptionKz    string    `gorm:"column:description_kz" json:"description_kz"`
+	DescriptionEn    string    `gorm:"column:description_en" json:"description_en"`
 	Status           string    `gorm:"column:status" json:"status"`
 	Body             string    `gorm:"column:body" json:"body"`
+	BodyKz           string    `gorm:"column:body_kz" json:"body_kz"`
+	BodyEn           string    `gorm:"column:body_en" json:"body_en"`
 	CountOfQuestions int       `gorm:"column:count_of_questions"  json:"count_of_questions"`
 	PhotoPath        *string   `gorm:"column:photo_path" json:"photo_path"`
 

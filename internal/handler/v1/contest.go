@@ -32,6 +32,10 @@ func (h *Handler) initContest(v1 *gin.RouterGroup) {
 		"/contest/book",
 		middleware.GinErrorHandle(h.GetContestBooks),
 	)
+	v1.GET(
+		"/contest/book/by-id",
+		middleware.GinErrorHandle(h.GetContestBookByID),
+	)
 }
 
 // GetContestData
@@ -202,6 +206,32 @@ func (h *Handler) GetContestBooks(c *gin.Context) error {
 	}
 
 	contestPrizes, err := h.services.Contest.GetBooks(ctx, uint(contestId))
+	if err != nil {
+		return err
+	}
+	return schema.Respond(contestPrizes, c)
+}
+
+// GetContestBookByID
+// WhoAmi godoc
+// @Summary получить книги контеста
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.ContestBook]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param contest_book_id query int true "contest_book_id"
+// @Security BearerAuth
+// @tags contest
+// @Router /api/v1/contest/book/by-id [get]
+func (h *Handler) GetContestBookByID(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	contestBookId, err := strconv.ParseUint(c.Query("contest_book_id"), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	contestPrizes, err := h.services.Contest.GetBookByID(ctx, uint(contestBookId))
 	if err != nil {
 		return err
 	}

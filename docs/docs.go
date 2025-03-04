@@ -262,6 +262,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/contest/book/by-id": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "получить книги контеста",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "contest_book_id",
+                        "name": "contest_book_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_ContestBook"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/contest/join": {
             "post": {
                 "security": [
@@ -1655,6 +1697,12 @@ const docTemplate = `{
                 "body": {
                     "type": "string"
                 },
+                "body_en": {
+                    "type": "string"
+                },
+                "body_kz": {
+                    "type": "string"
+                },
                 "contest_book_id": {
                     "type": "integer"
                 },
@@ -1682,6 +1730,12 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "description_en": {
+                    "type": "string"
+                },
+                "description_kz": {
+                    "type": "string"
+                },
                 "photo_path": {
                     "type": "string"
                 },
@@ -1692,6 +1746,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "title_en": {
+                    "type": "string"
+                },
+                "title_kz": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -2938,6 +2998,20 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/model.Balance"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-model_ContestBook": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/model.ContestBook"
                 },
                 "status": {
                     "type": "boolean"

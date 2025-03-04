@@ -38,6 +38,10 @@ definitions:
     properties:
       body:
         type: string
+      body_en:
+        type: string
+      body_kz:
+        type: string
       contest_book_id:
         type: integer
       contest_coins:
@@ -56,6 +60,10 @@ definitions:
         type: integer
       description:
         type: string
+      description_en:
+        type: string
+      description_kz:
+        type: string
       photo_path:
         type: string
       point:
@@ -63,6 +71,10 @@ definitions:
       status:
         type: string
       title:
+        type: string
+      title_en:
+        type: string
+      title_kz:
         type: string
       updated_at:
         type: string
@@ -880,6 +892,15 @@ definitions:
       status:
         type: boolean
     type: object
+  schema.Response-model_ContestBook:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.ContestBook'
+      status:
+        type: boolean
+    type: object
   schema.Response-model_Mark:
     properties:
       message:
@@ -1148,6 +1169,32 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schema.Response-array_model_ContestBook'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: получить книги контеста
+      tags:
+      - contest
+  /api/v1/contest/book/by-id:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: contest_book_id
+        in: query
+        name: contest_book_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_ContestBook'
         "400":
           description: Bad Request
           schema:
