@@ -33,7 +33,7 @@ type Deps struct {
 }
 
 func NewServices(deps Deps) *Services {
-	postService := NewPostService(deps.Repos.Post)
+	postService := NewPostService(deps.Repos.Post, deps.Repos.Image, deps.Repos.StorageClient)
 	markService := NewMarkService(deps.Repos.Mark, deps.Repos.Post, deps.Repos.UserPost)
 	balanceService := NewBalanceService(deps.Repos.Balance, deps.Repos.Transaction)
 	return &Services{
@@ -42,7 +42,7 @@ func NewServices(deps Deps) *Services {
 		PushNotification: NewPushNotificationService(deps.Repos.PushNotification, deps.Repos.FirebaseMessaging),
 		Balance:          balanceService,
 		UserDeviceToken:  NewUserDeviceTokenService(deps.Repos.UserDeviceToken),
-		Product:          NewProductService(deps.Repos.Product),
+		Product:          NewProductService(deps.Repos.Product, deps.Repos.Image, deps.Repos.StorageClient),
 		Post:             postService,
 		Stories:          NewStoriesService(deps.Repos.Stories, deps.Repos.StoryPage, deps.Repos.StoryPageUser),
 		Mark:             markService,

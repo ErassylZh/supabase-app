@@ -12,6 +12,9 @@ type Product interface {
 	UpdateMany(ctx context.Context, products []model.Product) ([]model.Product, error)
 	GetAllListing(ctx context.Context, productTagIds []uint) ([]model.Product, error)
 	GetById(ctx context.Context, id uint) (model.Product, error)
+	Create(ctx context.Context, product model.Product) (model.Product, error)
+	Update(ctx context.Context, product model.Product) (model.Product, error)
+	DeleteById(ctx context.Context, id uint) error
 }
 
 type ProductDB struct {
@@ -20,6 +23,41 @@ type ProductDB struct {
 
 func NewProductDB(db *gorm.DB) *ProductDB {
 	return &ProductDB{db: db}
+}
+
+func (r *ProductDB) DeleteById(ctx context.Context, id uint) error {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Product{}).
+		Where("product_id = ?", id).
+		Delete(&model.Product{}).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *ProductDB) Update(ctx context.Context, product model.Product) (model.Product, error) {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Product{}).
+		Where("product_id = ?", product.ProductID).
+		Save(&product).
+		Error
+	if err != nil {
+		return product, err
+	}
+	return product, nil
+}
+
+func (r *ProductDB) Create(ctx context.Context, product model.Product) (model.Product, error) {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Product{}).
+		Create(&product).
+		Error
+	if err != nil {
+		return product, err
+	}
+	return product, nil
 }
 
 func (r *ProductDB) CreateMany(ctx context.Context, products []model.Product) ([]model.Product, error) {

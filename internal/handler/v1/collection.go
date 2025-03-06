@@ -22,7 +22,7 @@ func (h *Handler) initCollection(v1 *gin.RouterGroup) {
 		middleware.GinErrorHandle(h.CreateCollection),
 	)
 	v1.GET(
-		"/collection",
+		"/collection/id",
 		middleware.GinErrorHandle(h.GetCollectionByID),
 	)
 	v1.PUT(
@@ -128,7 +128,7 @@ func (h *Handler) CreateCollection(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.Collection]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @tags collection
-// @Router /api/v1/collection [get]
+// @Router /api/v1/collection/id [get]
 func (h *Handler) GetCollectionByID(c *gin.Context) error {
 	ctx := c.Request.Context()
 

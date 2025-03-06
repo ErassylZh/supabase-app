@@ -18,7 +18,7 @@ func (h *Handler) initHashtag(v1 *gin.RouterGroup) {
 		middleware.GinErrorHandle(h.CreateHashtag),
 	)
 	v1.GET(
-		"/hashtag",
+		"/hashtag/id",
 		middleware.GinErrorHandle(h.GetHashtagByID),
 	)
 	v1.PUT(
@@ -92,7 +92,7 @@ func (h *Handler) CreateHashtag(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.Hashtag]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @tags collection
-// @Router /api/v1/hashtag [get]
+// @Router /api/v1/hashtag/id [get]
 func (h *Handler) GetHashtagByID(c *gin.Context) error {
 	ctx := c.Request.Context()
 
