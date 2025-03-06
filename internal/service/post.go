@@ -15,6 +15,8 @@ type Post interface {
 	GetByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 	Create(ctx context.Context, data admin.CreatePost) (model.Post, error)
 	Update(ctx context.Context, data admin.UpdatePost) (model.Post, error)
+	Delete(ctx context.Context, id uint) error
+	GetById(ctx context.Context, id uint) (model.Post, error)
 }
 
 type PostService struct {
@@ -29,6 +31,10 @@ func NewPostService(postRepo repository.Post) *PostService {
 
 func (s *PostService) GetListing(ctx context.Context, filter schema.GetListingFilter) ([]model.Post, int64, error) {
 	return s.postRepo.GetAllForListing(ctx, filter)
+}
+
+func (s *PostService) GetById(ctx context.Context, id uint) (model.Post, error) {
+	return s.postRepo.GetById(ctx, id)
 }
 
 func (s *PostService) GetByIds(ctx context.Context, ids []uint) ([]model.Post, error) {
@@ -130,4 +136,8 @@ func (s *PostService) Update(ctx context.Context, data admin.UpdatePost) (model.
 	}
 
 	return s.postRepo.Update(ctx, post)
+}
+
+func (s *PostService) Delete(ctx context.Context, id uint) error {
+	return s.postRepo.DeleteById(ctx, id)
 }

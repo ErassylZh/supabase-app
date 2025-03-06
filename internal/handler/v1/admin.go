@@ -11,8 +11,7 @@ import (
 func (h *Handler) initAdmin(v1 *gin.RouterGroup) {
 	group := v1.Group("/admin")
 	group.POST("/post", middleware.GinErrorHandle(h.CreatePost))
-	group.GET("/post/all", middleware.GinErrorHandle(h.GetPostList))
-	group.GET("/post", middleware.GinErrorHandle(h.GetPostList))
+	group.GET("/post", middleware.GinErrorHandle(h.GetPost))
 	group.PUT("/post", middleware.GinErrorHandle(h.UpdatePost))
 	group.DELETE("/post", middleware.GinErrorHandle(h.DeletePost))
 
@@ -98,27 +97,28 @@ func (h *Handler) DeletePost(c *gin.Context) error {
 	return schema.Respond(schema.Empty{}, c)
 }
 
-// GetPostList
+// GetPost
 // WhoAmi godoc
 // @Accept json
 // @Produce json
-// @Param hashtag_id query string false "hashtag_id"
-// @Param collection_id query string false "collection_id"
-// @Param language query string true "language"
-// @Param search query string false "search"
-// @Param post_ids query string false "post_ids"
-// @Param post_type query string true "all, post, partner"
-// @Success 200 {object} schema.Response[[]model.Post]
+// @Param post_id query int true "id"
+// @Success 200 {object} schema.Response[schema.Empty]
 // @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
 // @tags publication
-// @Router /api/v1/publication/all [get]
-func (h *Handler) GetPostList(c *gin.Context) error {
+// @Router /api/v1/post [get]
+func (h *Handler) GetPost(c *gin.Context) error {
 	ctx := c.Request.Context()
 
-	publications, err := h.services.Post.GetListing(ctx)
+	postId, err := strconv.ParseUint(c.Query("post_id"), 10, 64)
 	if err != nil {
 		return err
 	}
 
-	return schema.Respond(publications, c)
+	post, err := h.services.Post.GetById(ctx, uint(postId))
+	if err != nil {
+		return err
+	}
+
+	return schema.Respond(post, c)
 }

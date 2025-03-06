@@ -19,6 +19,7 @@ type Post interface {
 	Create(ctx context.Context, posts model.Post) (model.Post, error)
 	GetById(ctx context.Context, id uint) (model.Post, error)
 	Update(ctx context.Context, post model.Post) (model.Post, error)
+	DeleteById(ctx context.Context, id uint) error
 }
 
 type PostDB struct {
@@ -208,4 +209,17 @@ func (r *PostDB) Update(ctx context.Context, post model.Post) (model.Post, error
 	}
 
 	return post, nil
+}
+
+func (r *PostDB) DeleteById(ctx context.Context, id uint) error {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Post{}).
+		Where("post_id = ?", id).
+		Delete(&model.Post{}).
+		Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
