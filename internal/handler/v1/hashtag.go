@@ -107,3 +107,53 @@ func (h *Handler) DeleteHashtag(c *gin.Context) error {
 
 	return schema.Respond(schema.Empty{}, c)
 }
+
+// AddHashtagToPost
+// WhoAmi godoc
+// @Summary добавить пост в коллекцию
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.Hashtag]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param language query string true "language"
+// @tags collection
+// @Router /api/v1/hashtag/add [post]
+func (h *Handler) AddHashtagToPost(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var data admin.AddHashtag
+	if err := c.BindJSON(&data); err != nil {
+		return err
+	}
+
+	hashtag, err := h.services.Hashtag.AddToPost(ctx, data)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(hashtag, c)
+}
+
+// DeleteHashtagToPost
+// WhoAmi godoc
+// @Summary удалить пост из коллекцию
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.Collection]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param language query string true "language"
+// @tags collection
+// @Router /api/v1/hashtag/delete-post [delete]
+func (h *Handler) DeleteHashtagToPost(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var data admin.DeleteHashtagPost
+	if err := c.BindJSON(&data); err != nil {
+		return err
+	}
+
+	collections, err := h.services.Hashtag.DeleteCollectionPost(ctx, data)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(collections, c)
+}

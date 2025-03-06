@@ -182,3 +182,53 @@ func (h *Handler) DeleteCollection(c *gin.Context) error {
 
 	return schema.Respond(schema.Empty{}, c)
 }
+
+// AddCollectionToPost
+// WhoAmi godoc
+// @Summary добавить пост в коллекцию
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.Collection]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param language query string true "language"
+// @tags collection
+// @Router /api/v1/collection/add [post]
+func (h *Handler) AddCollectionToPost(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var data admin.AddCollection
+	if err := c.BindJSON(&data); err != nil {
+		return err
+	}
+
+	collections, err := h.services.Collection.AddToPost(ctx, data)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(collections, c)
+}
+
+// DeleteCollectionToPost
+// WhoAmi godoc
+// @Summary удалить пост из коллекцию
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.Collection]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param language query string true "language"
+// @tags collection
+// @Router /api/v1/collection/delete-post [delete]
+func (h *Handler) DeleteCollectionToPost(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var data admin.DeleteCollectionPost
+	if err := c.BindJSON(&data); err != nil {
+		return err
+	}
+
+	collections, err := h.services.Collection.DeleteCollectionPost(ctx, data)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(collections, c)
+}

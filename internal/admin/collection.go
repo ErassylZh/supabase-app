@@ -20,3 +20,13 @@ type CreateCollection struct {
 	ImageKzBase64    *string `json:"image_kz_base64"`
 	ImageRuBase64    *string `json:"image_ru_base64"`
 }
+
+type AddCollection struct {
+	PostID       uint `json:"post_id"`
+	CollectionID uint `json:"collection_id"`
+}
+
+type DeleteCollectionPost struct {
+	PostID       uint `json:"post_id"`
+	CollectionID uint `json:"collection_id"`
+}

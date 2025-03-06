@@ -16,3 +16,13 @@ type CreateHashtag struct {
 	IsVisible   bool    `json:"is_visible"`
 	ImageBase64 *string `json:"image_base64"`
 }
+
+type AddHashtag struct {
+	PostID    uint `json:"post_id"`
+	HashtagID uint `json:"hashtag_id"`
+}
+
+type DeleteHashtagPost struct {
+	PostID    uint `json:"post_id"`
+	HashtagID uint `json:"hashtag_id"`
+}

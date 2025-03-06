@@ -21,14 +21,17 @@ type Collection interface {
 	GetByID(ctx context.Context, id uint) (model.Collection, error)
 	Update(ctx context.Context, data admin.UpdateCollection) (model.Collection, error)
 	Delete(ctx context.Context, id uint) error
+	AddToPost(ctx context.Context, data admin.AddCollection) (model.Collection, error)
+	DeleteCollectionPost(ctx context.Context, data admin.DeleteCollectionPost) (model.Collection, error)
 }
 
 type CollectionService struct {
-	collectionRepo repository.Collection
-	userPostRepo   repository.UserPost
-	markRepo       repository.Mark
-	storage        repository.StorageClient
-	postService    Post
+	collectionRepo     repository.Collection
+	postCollectionRepo repository.PostCollection
+	userPostRepo       repository.UserPost
+	markRepo           repository.Mark
+	storage            repository.StorageClient
+	postService        Post
 }
 
 func NewCollectionService(collectionRepo repository.Collection, userPostRepo repository.UserPost, markRepo repository.Mark, storage repository.StorageClient, postService Post) *CollectionService {
@@ -264,4 +267,17 @@ func (s *CollectionService) Update(ctx context.Context, data admin.UpdateCollect
 // Удаление коллекции
 func (s *CollectionService) Delete(ctx context.Context, id uint) error {
 	return s.collectionRepo.Delete(ctx, id)
+}
+
+func (s *CollectionService) AddToPost(ctx context.Context, data admin.AddCollection) (model.Collection, error) {
+	_, err := s.postCollectionRepo.Create(ctx, model.PostCollection{
+		PostId:       data.PostID,
+		CollectionId: data.CollectionID,
+	})
+	return model.Collection{}, err
+}
+
+func (s *CollectionService) DeleteCollectionPost(ctx context.Context, data admin.DeleteCollectionPost) (model.Collection, error) {
+	err := s.postCollectionRepo.DeleteByPostAndCollectionId(ctx, data.PostID, data.CollectionID)
+	return model.Collection{}, err
 }
