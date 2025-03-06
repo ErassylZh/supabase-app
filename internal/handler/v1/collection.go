@@ -17,6 +17,30 @@ func (h *Handler) initCollection(v1 *gin.RouterGroup) {
 		"/recommendation",
 		middleware.GinErrorHandle(h.GetAllRecommendations),
 	)
+	v1.POST(
+		"/collection",
+		middleware.GinErrorHandle(h.CreateCollection),
+	)
+	v1.GET(
+		"/collection",
+		middleware.GinErrorHandle(h.GetCollectionByID),
+	)
+	v1.PUT(
+		"/collection",
+		middleware.GinErrorHandle(h.UpdateCollection),
+	)
+	v1.DELETE(
+		"/collection",
+		middleware.GinErrorHandle(h.DeleteCollection),
+	)
+	v1.POST(
+		"/collection/add",
+		middleware.GinErrorHandle(h.AddCollectionToPost),
+	)
+	v1.DELETE(
+		"/collection/delete-post",
+		middleware.GinErrorHandle(h.DeleteCollectionToPost),
+	)
 }
 
 // GetAllCollections
@@ -73,11 +97,11 @@ func (h *Handler) GetAllRecommendations(c *gin.Context) error {
 // WhoAmi godoc
 // @Accept json
 // @Produce json
-// @Param data body model.Collection true "CreatePost data"
+// @Param data body admin.CreateCollection true "CreatePost data"
 // @Success 200 {object} schema.Response[model.Collection]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags publication
+// @tags collection
 // @Router /api/v1/collection [post]
 func (h *Handler) CreateCollection(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -100,19 +124,15 @@ func (h *Handler) CreateCollection(c *gin.Context) error {
 // WhoAmi godoc
 // @Accept json
 // @Produce json
-// @Param data body model.Collection true "CreatePost data"
-// @Param language query string true "language"
-// @Param search query string false "search"
-// @Param post_ids query string false "post_ids"
-// @Param post_type query string true "all, post, partner"
-// @Success 200 {object} schema.Response[[]model.Post]
+// @Param collection_id query int true "collection_id"
+// @Success 200 {object} schema.Response[model.Collection]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @tags publication
-// @Router /api/v1/collection/ [get]
+// @tags collection
+// @Router /api/v1/collection [get]
 func (h *Handler) GetCollectionByID(c *gin.Context) error {
 	ctx := c.Request.Context()
 
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Query("collection_id"))
 	if err != nil {
 		return err
 	}
@@ -129,26 +149,19 @@ func (h *Handler) GetCollectionByID(c *gin.Context) error {
 // WhoAmi godoc
 // @Accept json
 // @Produce json
-// @Param hashtag_id query string false "hashtag_id"
-// @Param collection_id query string false "collection_id"
-// @Success 200 {object} schema.Response[[]model.Post]
+// @Param data body admin.UpdateCollection true "CreatePost data"
+// @Success 200 {object} schema.Response[model.Collection]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @tags publication
-// @Router /api/v1/collection/ [get]
+// @tags collection
+// @Router /api/v1/collection [put]
 func (h *Handler) UpdateCollection(c *gin.Context) error {
 	ctx := c.Request.Context()
 
-	id, err := strconv.Atoi(c.Query("id"))
-	if err != nil {
-		return err
-	}
-
 	var data admin.UpdateCollection
-	err = c.Bind(&data)
+	err := c.Bind(&data)
 	if err != nil {
 		return err
 	}
-	data.CollectionID = uint(id)
 
 	collection, err := h.services.Collection.Update(ctx, data)
 	if err != nil {
@@ -165,12 +178,12 @@ func (h *Handler) UpdateCollection(c *gin.Context) error {
 // @Param collection_id query int false "collection_id"
 // @Success 200 {object} schema.Response[schema.Empty]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @tags publication
-// @Router /api/v1/collection/all [get]
+// @tags collection
+// @Router /api/v1/collection [delete]
 func (h *Handler) DeleteCollection(c *gin.Context) error {
 	ctx := c.Request.Context()
 
-	id, err := strconv.Atoi(c.Param("collection_id"))
+	id, err := strconv.Atoi(c.Query("collection_id"))
 	if err != nil {
 		return err
 	}
@@ -190,7 +203,7 @@ func (h *Handler) DeleteCollection(c *gin.Context) error {
 // @Produce json
 // @Success 200 {object} schema.Response[model.Collection]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @Param language query string true "language"
+// @Param data body admin.AddCollection true "CreatePost data"
 // @tags collection
 // @Router /api/v1/collection/add [post]
 func (h *Handler) AddCollectionToPost(c *gin.Context) error {
@@ -215,7 +228,7 @@ func (h *Handler) AddCollectionToPost(c *gin.Context) error {
 // @Produce json
 // @Success 200 {object} schema.Response[model.Collection]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @Param language query string true "language"
+// @Param data body admin.DeleteCollectionPost true "CreatePost data"
 // @tags collection
 // @Router /api/v1/collection/delete-post [delete]
 func (h *Handler) DeleteCollectionToPost(c *gin.Context) error {

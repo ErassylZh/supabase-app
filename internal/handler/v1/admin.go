@@ -25,7 +25,7 @@ func (h *Handler) initAdmin(v1 *gin.RouterGroup) {
 // @Success 200 {object} schema.Response[model.Post]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags publication
+// @tags post
 // @Router /api/v1/admin/post [post]
 func (h *Handler) CreatePost(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -48,12 +48,12 @@ func (h *Handler) CreatePost(c *gin.Context) error {
 // WhoAmi godoc
 // @Accept json
 // @Produce json
-// @Param data body schema.UpdatePost true "UserLogin data"
+// @Param data body admin.UpdatePost true "UserLogin data"
 // @Success 200 {object} schema.Response[model.Post]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags publication
-// @Router /api/v1/publication [put]
+// @tags post
+// @Router /api/v1/post [put]
 func (h *Handler) UpdatePost(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -63,12 +63,12 @@ func (h *Handler) UpdatePost(c *gin.Context) error {
 		return err
 	}
 
-	publication, err := h.services.Post.Update(ctx, data)
+	post, err := h.services.Post.Update(ctx, data)
 	if err != nil {
 		return err
 	}
 
-	return schema.Respond(publication, c)
+	return schema.Respond(post, c)
 }
 
 // DeletePost
@@ -79,8 +79,8 @@ func (h *Handler) UpdatePost(c *gin.Context) error {
 // @Success 200 {object} schema.Response[schema.Empty]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags publication
-// @Router /api/v1/publication [delete]
+// @tags post
+// @Router /api/v1/post [delete]
 func (h *Handler) DeletePost(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -105,7 +105,7 @@ func (h *Handler) DeletePost(c *gin.Context) error {
 // @Success 200 {object} schema.Response[schema.Empty]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags publication
+// @tags post
 // @Router /api/v1/post [get]
 func (h *Handler) GetPost(c *gin.Context) error {
 	ctx := c.Request.Context()

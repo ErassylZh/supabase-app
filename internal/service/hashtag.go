@@ -18,7 +18,7 @@ type Hashtag interface {
 	Create(ctx context.Context, data admin.CreateHashtag) (model.Hashtag, error)
 	Update(ctx context.Context, data admin.UpdateHashtag) (model.Hashtag, error)
 	AddToPost(ctx context.Context, data admin.AddHashtag) (model.Hashtag, error)
-	DeleteCollectionPost(ctx context.Context, data admin.DeleteHashtagPost) (model.Hashtag, error)
+	DeleteHashtagPost(ctx context.Context, data admin.DeleteHashtagPost) (model.Hashtag, error)
 }
 
 type HashtagService struct {
@@ -133,7 +133,7 @@ func (s *HashtagService) AddToPost(ctx context.Context, data admin.AddHashtag) (
 	return model.Hashtag{}, err
 }
 
-func (s *HashtagService) DeleteCollectionPost(ctx context.Context, data admin.DeleteHashtagPost) (model.Hashtag, error) {
+func (s *HashtagService) DeleteHashtagPost(ctx context.Context, data admin.DeleteHashtagPost) (model.Hashtag, error) {
 	err := s.postHashtag.DeleteByPostAndHashtagId(ctx, data.PostID, data.HashtagID)
 	return model.Hashtag{}, err
 }
