@@ -16,19 +16,39 @@ func (h *Handler) initAdmin(v1 *gin.RouterGroup) {
 	group.DELETE("/post", middleware.GinErrorHandle(h.DeletePost))
 	group.POST(
 		"/product",
-		middleware.GinErrorHandle(h.GetListingProducts),
+		middleware.GinErrorHandle(h.CreateProduct),
 	)
 	group.PUT(
 		"/product",
-		middleware.GinErrorHandle(h.GetListingProducts),
+		middleware.GinErrorHandle(h.UpdateProduct),
 	)
 	group.GET(
-		"/product",
-		middleware.GinErrorHandle(h.GetListingProducts),
+		"/product/id",
+		middleware.GinErrorHandle(h.GetProduct),
 	)
 	group.DELETE(
 		"/product",
-		middleware.GinErrorHandle(h.GetListingProducts),
+		middleware.GinErrorHandle(h.DeleteProduct),
+	)
+	group.POST(
+		"/product-tag",
+		middleware.GinErrorHandle(h.CreateProductTag),
+	)
+	group.POST(
+		"/product-tag/add",
+		middleware.GinErrorHandle(h.AddProductTagToProduct),
+	)
+	group.DELETE(
+		"/product-tag",
+		middleware.GinErrorHandle(h.DeleteProductTag),
+	)
+	group.PUT(
+		"/product-tag",
+		middleware.GinErrorHandle(h.UpdateProductTag),
+	)
+	group.DELETE(
+		"/product-tag/product",
+		middleware.GinErrorHandle(h.DeleteProductTagToProduct),
 	)
 
 }
@@ -69,7 +89,7 @@ func (h *Handler) CreatePost(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags post
-// @Router /api/v1/post [put]
+// @Router /api/v1/admin/post [put]
 func (h *Handler) UpdatePost(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -96,7 +116,7 @@ func (h *Handler) UpdatePost(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags post
-// @Router /api/v1/post [delete]
+// @Router /api/v1/admin/post [delete]
 func (h *Handler) DeletePost(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -122,7 +142,7 @@ func (h *Handler) DeletePost(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags post
-// @Router /api/v1/post [get]
+// @Router /api/v1/admin/post [get]
 func (h *Handler) GetPost(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -148,7 +168,7 @@ func (h *Handler) GetPost(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags product
-// @Router /api/v1/admin/product [post]
+// @Router /api/v1/admin/admin/product [post]
 func (h *Handler) CreateProduct(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -175,7 +195,7 @@ func (h *Handler) CreateProduct(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags product
-// @Router /api/v1/product [put]
+// @Router /api/v1/admin/product [put]
 func (h *Handler) UpdateProduct(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -202,7 +222,7 @@ func (h *Handler) UpdateProduct(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags product
-// @Router /api/v1/product [delete]
+// @Router /api/v1/admin/product [delete]
 func (h *Handler) DeleteProduct(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -228,7 +248,7 @@ func (h *Handler) DeleteProduct(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags product
-// @Router /api/v1/product [get]
+// @Router /api/v1/admin/product/id [get]
 func (h *Handler) GetProduct(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -243,4 +263,134 @@ func (h *Handler) GetProduct(c *gin.Context) error {
 	}
 
 	return schema.Respond(product, c)
+}
+
+// CreateProductTag
+// WhoAmi godoc
+// @Accept json
+// @Produce json
+// @Param data body admin.CreateProductTag true "CreatePost data"
+// @Success 200 {object} schema.Response[model.ProductTag]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags post
+// @Router /api/v1/admin/admin/product-tag [post]
+func (h *Handler) CreateProductTag(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var data admin.CreateProductTag
+	err := c.Bind(&data)
+	if err != nil {
+		return err
+	}
+
+	productTag, err := h.services.ProductTag.Create(ctx, data)
+	if err != nil {
+		return err
+	}
+
+	return schema.Respond(productTag, c)
+}
+
+// UpdateProductTag
+// WhoAmi godoc
+// @Accept json
+// @Produce json
+// @Param data body admin.UpdatePost true "UserLogin data"
+// @Success 200 {object} schema.Response[model.Post]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags post
+// @Router /api/v1/admin/product-tag [put]
+func (h *Handler) UpdateProductTag(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var data admin.UpdateProductTag
+	err := c.Bind(&data)
+	if err != nil {
+		return err
+	}
+
+	productTag, err := h.services.ProductTag.Update(ctx, data)
+	if err != nil {
+		return err
+	}
+
+	return schema.Respond(productTag, c)
+}
+
+// DeleteProductTag
+// WhoAmi godoc
+// @Accept json
+// @Produce json
+// @Param post_id query int true "id"
+// @Success 200 {object} schema.Response[schema.Empty]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Security BearerAuth
+// @tags post
+// @Router /api/v1/admin/product-tag [delete]
+func (h *Handler) DeleteProductTag(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	productTagId, err := strconv.ParseUint(c.Query("product_tag_id"), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	err = h.services.ProductTag.Delete(ctx, uint(productTagId))
+	if err != nil {
+		return err
+	}
+
+	return schema.Respond(schema.Empty{}, c)
+}
+
+// AddProductTagToProduct
+// WhoAmi godoc
+// @Summary добавить пост в коллекцию
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.ProductTag]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param data body admin.AddProductProductTag true "CreatePost data"
+// @tags collection
+// @Router /api/v1/admin/product-tag/add [post]
+func (h *Handler) AddProductTagToProduct(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var data admin.AddProductProductTag
+	if err := c.BindJSON(&data); err != nil {
+		return err
+	}
+
+	productTag, err := h.services.ProductTag.AddToProduct(ctx, data)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(productTag, c)
+}
+
+// DeleteProductTagToProduct
+// WhoAmi godoc
+// @Summary удалить пост из коллекцию
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[model.ProductTag]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param data body admin.DeleteProductProductTag true "CreatePost data"
+// @tags collection
+// @Router /api/v1/collection/delete [delete]
+func (h *Handler) DeleteProductTagToProduct(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var data admin.DeleteProductProductTag
+	if err := c.BindJSON(&data); err != nil {
+		return err
+	}
+
+	productTag, err := h.services.ProductTag.DeleteToProduct(ctx, data)
+	if err != nil {
+		return err
+	}
+	return schema.Respond(productTag, c)
 }

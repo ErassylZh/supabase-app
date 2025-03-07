@@ -50,3 +50,26 @@ type UpdateProduct struct {
 	ContactsKz    string `gorm:"column:contacts_kz" json:"contacts_kz"`
 	Logo          *Image `json:"logo"`
 }
+
+type CreateProductTag struct {
+	Name   string `json:"name"`
+	NameEn string `json:"name_en"`
+	NameKz string `json:"name_kz"`
+}
+
+type UpdateProductTag struct {
+	ProductTagID uint    `json:"product_tag_id"`
+	Name         *string `json:"name"`
+	NameEn       *string `json:"name_en"`
+	NameKz       *string `json:"name_kz"`
+}
+
+type AddProductProductTag struct {
+	ProductID    uint `json:"product_id"`
+	ProductTagID uint `json:"product_tag_id"`
+}
+
+type DeleteProductProductTag struct {
+	ProductID    uint `json:"product_id"`
+	ProductTagID uint `json:"product_tag_id"`
+}

@@ -10,6 +10,8 @@ type ProductProductTag interface {
 	CreateMany(ctx context.Context, products []model.ProductProductTag) ([]model.ProductProductTag, error)
 	DeleteByProductId(ctx context.Context, productId uint) error
 	GetByProductId(ctx context.Context, productId uint) ([]model.ProductProductTag, error)
+	Create(ctx context.Context, products model.ProductProductTag) (model.ProductProductTag, error)
+	DeleteByProductAndTagId(ctx context.Context, id uint, id2 uint) error
 }
 
 type ProductProductTagDB struct {
@@ -54,4 +56,27 @@ func (r *ProductProductTagDB) GetByProductId(ctx context.Context, productId uint
 		return nil, err
 	}
 	return data, nil
+}
+
+func (r *ProductProductTagDB) Create(ctx context.Context, products model.ProductProductTag) (model.ProductProductTag, error) {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.ProductProductTag{}).
+		Create(&products).
+		Error
+	if err != nil {
+		return products, err
+	}
+	return products, nil
+}
+
+func (r *ProductProductTagDB) DeleteByProductAndTagId(ctx context.Context, productID, productTagID uint) error {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.ProductProductTag{}).
+		Where("product_id = ? and product_tag_id = ?", productID, productTagID).
+		Delete(&model.ProductProductTag{}).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
