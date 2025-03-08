@@ -168,7 +168,7 @@ func (h *Handler) GetPost(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags product
-// @Router /api/v1/admin/admin/product [post]
+// @Router /api/v1/admin/product [post]
 func (h *Handler) CreateProduct(c *gin.Context) error {
 	ctx := c.Request.Context()
 
@@ -274,7 +274,7 @@ func (h *Handler) GetProduct(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags post
-// @Router /api/v1/admin/admin/product-tag [post]
+// @Router /api/v1/admin/product-tag [post]
 func (h *Handler) CreateProductTag(c *gin.Context) error {
 	ctx := c.Request.Context()
 
