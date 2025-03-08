@@ -55,6 +55,7 @@ func (h *Handler) initAdmin(v1 *gin.RouterGroup) {
 
 // CreatePost
 // WhoAmi godoc
+// @Summary создать пост
 // @Accept json
 // @Produce json
 // @Param data body admin.CreatePost true "CreatePost data"
@@ -82,6 +83,7 @@ func (h *Handler) CreatePost(c *gin.Context) error {
 
 // UpdatePost
 // WhoAmi godoc
+// @Summary обновить пост
 // @Accept json
 // @Produce json
 // @Param data body admin.UpdatePost true "UserLogin data"
@@ -109,6 +111,7 @@ func (h *Handler) UpdatePost(c *gin.Context) error {
 
 // DeletePost
 // WhoAmi godoc
+// @Summary удалить пост
 // @Accept json
 // @Produce json
 // @Param post_id query int true "id"
@@ -135,6 +138,7 @@ func (h *Handler) DeletePost(c *gin.Context) error {
 
 // GetPost
 // WhoAmi godoc
+// @Summary по айдищке пост
 // @Accept json
 // @Produce json
 // @Param post_id query int true "id"
@@ -161,6 +165,7 @@ func (h *Handler) GetPost(c *gin.Context) error {
 
 // CreateProduct
 // WhoAmi godoc
+// @Summary создать продукт
 // @Accept json
 // @Produce json
 // @Param data body admin.CreateProduct true "CreateProduct data"
@@ -188,6 +193,7 @@ func (h *Handler) CreateProduct(c *gin.Context) error {
 
 // UpdateProduct
 // WhoAmi godoc
+// @Summary абнавить продукт
 // @Accept json
 // @Produce json
 // @Param data body admin.UpdateProduct true "UserLogin data"
@@ -215,6 +221,7 @@ func (h *Handler) UpdateProduct(c *gin.Context) error {
 
 // DeleteProduct
 // WhoAmi godoc
+// @Summary удолит продукт
 // @Accept json
 // @Produce json
 // @Param product_id query int true "id"
@@ -241,6 +248,7 @@ func (h *Handler) DeleteProduct(c *gin.Context) error {
 
 // GetProduct
 // WhoAmi godoc
+// @Summary палушит продукт по айди
 // @Accept json
 // @Produce json
 // @Param product_id query int true "id"
@@ -267,6 +275,7 @@ func (h *Handler) GetProduct(c *gin.Context) error {
 
 // CreateProductTag
 // WhoAmi godoc
+// @Summary создать тег продукта (для фильтра)
 // @Accept json
 // @Produce json
 // @Param data body admin.CreateProductTag true "CreatePost data"
@@ -294,6 +303,7 @@ func (h *Handler) CreateProductTag(c *gin.Context) error {
 
 // UpdateProductTag
 // WhoAmi godoc
+// @Summary обновить тег продукта (для фильтра)
 // @Accept json
 // @Produce json
 // @Param data body admin.UpdatePost true "UserLogin data"
@@ -321,6 +331,7 @@ func (h *Handler) UpdateProductTag(c *gin.Context) error {
 
 // DeleteProductTag
 // WhoAmi godoc
+// @Summary удалить тег продукта (для фильтра)
 // @Accept json
 // @Produce json
 // @Param post_id query int true "id"
@@ -347,7 +358,7 @@ func (h *Handler) DeleteProductTag(c *gin.Context) error {
 
 // AddProductTagToProduct
 // WhoAmi godoc
-// @Summary добавить пост в коллекцию
+// @Summary добавить/связать тег к продукту  (для фильтра)
 // @Accept json
 // @Produce json
 // @Success 200 {object} schema.Response[model.ProductTag]
@@ -372,7 +383,7 @@ func (h *Handler) AddProductTagToProduct(c *gin.Context) error {
 
 // DeleteProductTagToProduct
 // WhoAmi godoc
-// @Summary удалить пост из коллекцию
+// @Summary  удалить связку тег к продукту
 // @Accept json
 // @Produce json
 // @Success 200 {object} schema.Response[model.ProductTag]

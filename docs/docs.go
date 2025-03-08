@@ -58,6 +58,7 @@ const docTemplate = `{
                 "tags": [
                     "post"
                 ],
+                "summary": "по айдищке пост",
                 "parameters": [
                     {
                         "type": "integer",
@@ -97,6 +98,7 @@ const docTemplate = `{
                 "tags": [
                     "post"
                 ],
+                "summary": "обновить пост",
                 "parameters": [
                     {
                         "description": "UserLogin data",
@@ -138,6 +140,7 @@ const docTemplate = `{
                 "tags": [
                     "post"
                 ],
+                "summary": "создать пост",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -179,6 +182,7 @@ const docTemplate = `{
                 "tags": [
                     "post"
                 ],
+                "summary": "удалить пост",
                 "parameters": [
                     {
                         "type": "integer",
@@ -220,6 +224,7 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
+                "summary": "абнавить продукт",
                 "parameters": [
                     {
                         "description": "UserLogin data",
@@ -261,6 +266,7 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
+                "summary": "создать продукт",
                 "parameters": [
                     {
                         "description": "CreateProduct data",
@@ -302,6 +308,7 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
+                "summary": "удолит продукт",
                 "parameters": [
                     {
                         "type": "integer",
@@ -343,6 +350,7 @@ const docTemplate = `{
                 "tags": [
                     "post"
                 ],
+                "summary": "обновить тег продукта (для фильтра)",
                 "parameters": [
                     {
                         "description": "UserLogin data",
@@ -384,6 +392,7 @@ const docTemplate = `{
                 "tags": [
                     "post"
                 ],
+                "summary": "создать тег продукта (для фильтра)",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -425,6 +434,7 @@ const docTemplate = `{
                 "tags": [
                     "post"
                 ],
+                "summary": "удалить тег продукта (для фильтра)",
                 "parameters": [
                     {
                         "type": "integer",
@@ -461,7 +471,7 @@ const docTemplate = `{
                 "tags": [
                     "collection"
                 ],
-                "summary": "добавить пост в коллекцию",
+                "summary": "добавить/связать тег к продукту  (для фильтра)",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -505,6 +515,7 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
+                "summary": "палушит продукт по айди",
                 "parameters": [
                     {
                         "type": "integer",
@@ -642,6 +653,7 @@ const docTemplate = `{
                 "tags": [
                     "collection"
                 ],
+                "summary": "обновить коллекцию",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -683,6 +695,7 @@ const docTemplate = `{
                 "tags": [
                     "collection"
                 ],
+                "summary": "создать коллекцию",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -719,6 +732,7 @@ const docTemplate = `{
                 "tags": [
                     "collection"
                 ],
+                "summary": "удалить коллекцию",
                 "parameters": [
                     {
                         "type": "integer",
@@ -793,7 +807,7 @@ const docTemplate = `{
                 "tags": [
                     "collection"
                 ],
-                "summary": "удалить пост из коллекцию",
+                "summary": "удалить связку тег к продукту",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -871,6 +885,7 @@ const docTemplate = `{
                 "tags": [
                     "collection"
                 ],
+                "summary": "получить коллекцию",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1196,7 +1211,7 @@ const docTemplate = `{
                 "tags": [
                     "hashtag"
                 ],
-                "summary": "получить все коллекций",
+                "summary": "получить все хештеги",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1222,6 +1237,7 @@ const docTemplate = `{
                 "tags": [
                     "hashtag"
                 ],
+                "summary": "обновить хештег",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -1263,6 +1279,7 @@ const docTemplate = `{
                 "tags": [
                     "publication"
                 ],
+                "summary": "создать хештеги",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -1299,6 +1316,7 @@ const docTemplate = `{
                 "tags": [
                     "hashtag"
                 ],
+                "summary": "удалить хештег",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1334,7 +1352,7 @@ const docTemplate = `{
                 "tags": [
                     "hashtag"
                 ],
-                "summary": "добавить пост в коллекцию",
+                "summary": "добавить пост в хештег",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -1373,7 +1391,7 @@ const docTemplate = `{
                 "tags": [
                     "hashtag"
                 ],
-                "summary": "удалить пост из коллекцию",
+                "summary": "удалить пост в хештег",
                 "parameters": [
                     {
                         "description": "CreatePost data",
@@ -1412,6 +1430,7 @@ const docTemplate = `{
                 "tags": [
                     "collection"
                 ],
+                "summary": "получть хештеги по айдишке епта",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2153,6 +2172,7 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
+                "summary": "обновить сторис",
                 "parameters": [
                     {
                         "description": "CreateProduct data",
@@ -2168,7 +2188,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-model_Product"
+                            "$ref": "#/definitions/schema.Response-model_Stories"
                         }
                     },
                     "400": {
@@ -2264,6 +2284,7 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
+                "summary": "создать сторис",
                 "parameters": [
                     {
                         "description": "CreateProduct data",
@@ -2279,7 +2300,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-model_Product"
+                            "$ref": "#/definitions/schema.Response-model_Stories"
                         }
                     },
                     "400": {
@@ -2337,7 +2358,7 @@ const docTemplate = `{
                 "tags": [
                     "stories"
                 ],
-                "summary": "получить список сторисов",
+                "summary": "удалить сторис",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2379,6 +2400,7 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
+                "summary": "обновить страницу в сторис",
                 "parameters": [
                     {
                         "description": "CreateProduct data",
@@ -2420,6 +2442,7 @@ const docTemplate = `{
                 "tags": [
                     "product"
                 ],
+                "summary": "добавить страницу в сторис",
                 "parameters": [
                     {
                         "description": "CreateProduct data",
@@ -2456,7 +2479,7 @@ const docTemplate = `{
                 "tags": [
                     "stories"
                 ],
-                "summary": "получить список сторисов",
+                "summary": "удалить страницу в сторис",
                 "parameters": [
                     {
                         "type": "integer",

@@ -41,7 +41,7 @@ func (h *Handler) initHashtag(v1 *gin.RouterGroup) {
 
 // GetAllHashtags
 // WhoAmi godoc
-// @Summary получить все коллекций
+// @Summary получить все хештеги
 // @Accept json
 // @Produce json
 // @Success 200 {object} schema.Response[[]model.Hashtag]
@@ -59,6 +59,7 @@ func (h *Handler) GetAllHashtags(c *gin.Context) error {
 
 // CreateHashtag
 // WhoAmi godoc
+// @Summary создать хештеги
 // @Accept json
 // @Produce json
 // @Param data body admin.CreateHashtag true "CreatePost data"
@@ -86,6 +87,7 @@ func (h *Handler) CreateHashtag(c *gin.Context) error {
 
 // GetHashtagByID
 // WhoAmi godoc
+// @Summary получть хештеги по айдишке епта
 // @Accept json
 // @Produce json
 // @Param hashtag_id query int true "hashtag_id"
@@ -111,6 +113,7 @@ func (h *Handler) GetHashtagByID(c *gin.Context) error {
 
 // UpdateHashtag
 // WhoAmi godoc
+// @Summary обновить хештег
 // @Accept json
 // @Produce json
 // @Param data body admin.UpdateHashtag true "CreatePost data"
@@ -137,6 +140,7 @@ func (h *Handler) UpdateHashtag(c *gin.Context) error {
 
 // DeleteHashtag
 // WhoAmi godoc
+// @Summary удалить хештег
 // @Accept json
 // @Produce json
 // @Param hashtag_id query int false "hashtag_id"
@@ -162,7 +166,7 @@ func (h *Handler) DeleteHashtag(c *gin.Context) error {
 
 // AddHashtagToPost
 // WhoAmi godoc
-// @Summary добавить пост в коллекцию
+// @Summary добавить пост в хештег
 // @Accept json
 // @Produce json
 // @Success 200 {object} schema.Response[model.Hashtag]
@@ -187,7 +191,7 @@ func (h *Handler) AddHashtagToPost(c *gin.Context) error {
 
 // DeleteHashtagToPost
 // WhoAmi godoc
-// @Summary удалить пост из коллекцию
+// @Summary удалить пост в хештег
 // @Accept json
 // @Produce json
 // @Success 200 {object} schema.Response[model.Hashtag]

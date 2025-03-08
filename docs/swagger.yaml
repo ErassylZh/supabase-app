@@ -1423,6 +1423,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: удалить пост
       tags:
       - post
     get:
@@ -1447,6 +1448,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: по айдищке пост
       tags:
       - post
     post:
@@ -1472,6 +1474,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: создать пост
       tags:
       - post
     put:
@@ -1497,6 +1500,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: обновить пост
       tags:
       - post
   /api/v1/admin/product:
@@ -1522,6 +1526,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: удолит продукт
       tags:
       - product
     post:
@@ -1547,6 +1552,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: создать продукт
       tags:
       - product
     put:
@@ -1572,6 +1578,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: абнавить продукт
       tags:
       - product
   /api/v1/admin/product-tag:
@@ -1597,6 +1604,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: удалить тег продукта (для фильтра)
       tags:
       - post
     post:
@@ -1622,6 +1630,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: создать тег продукта (для фильтра)
       tags:
       - post
     put:
@@ -1647,6 +1656,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: обновить тег продукта (для фильтра)
       tags:
       - post
   /api/v1/admin/product-tag/add:
@@ -1671,7 +1681,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: добавить пост в коллекцию
+      summary: добавить/связать тег к продукту  (для фильтра)
       tags:
       - collection
   /api/v1/admin/product/id:
@@ -1697,6 +1707,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: палушит продукт по айди
       tags:
       - product
   /api/v1/balance:
@@ -1759,6 +1770,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: удалить коллекцию
       tags:
       - collection
     get:
@@ -1807,6 +1819,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: создать коллекцию
       tags:
       - collection
     put:
@@ -1830,6 +1843,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: обновить коллекцию
       tags:
       - collection
   /api/v1/collection/add:
@@ -1879,7 +1893,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: удалить пост из коллекцию
+      summary: удалить связку тег к продукту
       tags:
       - collection
   /api/v1/collection/delete-post:
@@ -1928,6 +1942,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: получить коллекцию
       tags:
       - collection
   /api/v1/contest:
@@ -2128,6 +2143,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: удалить хештег
       tags:
       - hashtag
     get:
@@ -2144,7 +2160,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: получить все коллекций
+      summary: получить все хештеги
       tags:
       - hashtag
     post:
@@ -2170,6 +2186,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: создать хештеги
       tags:
       - publication
     put:
@@ -2193,6 +2210,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: обновить хештег
       tags:
       - hashtag
   /api/v1/hashtag/add:
@@ -2217,7 +2235,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: добавить пост в коллекцию
+      summary: добавить пост в хештег
       tags:
       - hashtag
   /api/v1/hashtag/delete-post:
@@ -2242,7 +2260,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: удалить пост из коллекцию
+      summary: удалить пост в хештег
       tags:
       - hashtag
   /api/v1/hashtag/id:
@@ -2266,6 +2284,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: получть хештеги по айдишке епта
       tags:
       - collection
   /api/v1/mark:
@@ -2748,13 +2767,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response-model_Product'
+            $ref: '#/definitions/schema.Response-model_Stories'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: обновить сторис
       tags:
       - product
   /api/v1/stories/all:
@@ -2792,13 +2812,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response-model_Product'
+            $ref: '#/definitions/schema.Response-model_Stories'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: создать сторис
       tags:
       - product
   /api/v1/stories/id:
@@ -2822,7 +2843,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: получить список сторисов
+      summary: удалить сторис
       tags:
       - stories
     get:
@@ -2869,7 +2890,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: получить список сторисов
+      summary: удалить страницу в сторис
       tags:
       - stories
     post:
@@ -2895,6 +2916,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: добавить страницу в сторис
       tags:
       - product
     put:
@@ -2920,6 +2942,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       security:
       - BearerAuth: []
+      summary: обновить страницу в сторис
       tags:
       - product
   /api/v1/tags:

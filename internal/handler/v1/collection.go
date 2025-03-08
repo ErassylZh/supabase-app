@@ -95,6 +95,7 @@ func (h *Handler) GetAllRecommendations(c *gin.Context) error {
 
 // CreateCollection
 // WhoAmi godoc
+// @Summary создать коллекцию
 // @Accept json
 // @Produce json
 // @Param data body admin.CreateCollection true "CreatePost data"
@@ -122,6 +123,7 @@ func (h *Handler) CreateCollection(c *gin.Context) error {
 
 // GetCollectionByID
 // WhoAmi godoc
+// @Summary получить коллекцию
 // @Accept json
 // @Produce json
 // @Param collection_id query int true "collection_id"
@@ -147,6 +149,7 @@ func (h *Handler) GetCollectionByID(c *gin.Context) error {
 
 // UpdateCollection
 // WhoAmi godoc
+// @Summary обновить коллекцию
 // @Accept json
 // @Produce json
 // @Param data body admin.UpdateCollection true "CreatePost data"
@@ -173,6 +176,7 @@ func (h *Handler) UpdateCollection(c *gin.Context) error {
 
 // DeleteCollection
 // WhoAmi godoc
+// @Summary удалить коллекцию
 // @Accept json
 // @Produce json
 // @Param collection_id query int false "collection_id"

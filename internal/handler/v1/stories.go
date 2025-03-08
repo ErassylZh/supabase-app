@@ -106,10 +106,11 @@ func (h *Handler) GetActiveStories(c *gin.Context) error {
 
 // CreateStory
 // WhoAmi godoc
+// @Summary создать сторис
 // @Accept json
 // @Produce json
 // @Param data body admin.CreateStories true "CreateProduct data"
-// @Success 200 {object} schema.Response[model.Product]
+// @Success 200 {object} schema.Response[model.Stories]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags product
@@ -133,10 +134,11 @@ func (h *Handler) CreateStory(c *gin.Context) error {
 
 // UpdateStory
 // WhoAmi godoc
+// @Summary обновить сторис
 // @Accept json
 // @Produce json
 // @Param data body admin.UpdateStories true "CreateProduct data"
-// @Success 200 {object} schema.Response[model.Product]
+// @Success 200 {object} schema.Response[model.Stories]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
 // @tags product
@@ -203,7 +205,7 @@ func (h *Handler) GetStoriesBuId(c *gin.Context) error {
 
 // DeleteStoriesById
 // WhoAmi godoc
-// @Summary получить список сторисов
+// @Summary удалить сторис
 // @Accept json
 // @Produce json
 // @Param stories_id query int true "id"
@@ -227,6 +229,7 @@ func (h *Handler) DeleteStoriesById(c *gin.Context) error {
 
 // CreateStoryPage
 // WhoAmi godoc
+// @Summary добавить страницу в сторис
 // @Accept json
 // @Produce json
 // @Param data body admin.CreateStories true "CreateProduct data"
@@ -254,6 +257,7 @@ func (h *Handler) CreateStoryPage(c *gin.Context) error {
 
 // UpdateStoryPage
 // WhoAmi godoc
+// @Summary обновить страницу в сторис
 // @Accept json
 // @Produce json
 // @Param data body admin.UpdateStories true "CreateProduct data"
@@ -281,7 +285,7 @@ func (h *Handler) UpdateStoryPage(c *gin.Context) error {
 
 // DeleteStoryPageById
 // WhoAmi godoc
-// @Summary получить список сторисов
+// @Summary удалить страницу в сторис
 // @Accept json
 // @Produce json
 // @Param story_page_id query int true "id"
