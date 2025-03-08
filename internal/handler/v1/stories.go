@@ -113,7 +113,7 @@ func (h *Handler) GetActiveStories(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.Stories]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags product
+// @tags stories
 // @Router /api/v1/stories/create [post]
 func (h *Handler) CreateStory(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -141,7 +141,7 @@ func (h *Handler) CreateStory(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.Stories]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags product
+// @tags stories
 // @Router /api/v1/stories [put]
 func (h *Handler) UpdateStory(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -236,7 +236,7 @@ func (h *Handler) DeleteStoriesById(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.Product]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags product
+// @tags stories
 // @Router /api/v1/story-page [post]
 func (h *Handler) CreateStoryPage(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -264,7 +264,7 @@ func (h *Handler) CreateStoryPage(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.Product]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags product
+// @tags stories
 // @Router /api/v1/story-page [put]
 func (h *Handler) UpdateStoryPage(c *gin.Context) error {
 	ctx := c.Request.Context()

@@ -1606,7 +1606,7 @@ paths:
       - BearerAuth: []
       summary: удалить тег продукта (для фильтра)
       tags:
-      - post
+      - product
     post:
       consumes:
       - application/json
@@ -1632,7 +1632,7 @@ paths:
       - BearerAuth: []
       summary: создать тег продукта (для фильтра)
       tags:
-      - post
+      - product
     put:
       consumes:
       - application/json
@@ -1658,7 +1658,7 @@ paths:
       - BearerAuth: []
       summary: обновить тег продукта (для фильтра)
       tags:
-      - post
+      - product
   /api/v1/admin/product-tag/add:
     post:
       consumes:
@@ -1683,7 +1683,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       summary: добавить/связать тег к продукту  (для фильтра)
       tags:
-      - collection
+      - product
   /api/v1/admin/product/id:
     get:
       consumes:
@@ -1895,7 +1895,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       summary: удалить связку тег к продукту
       tags:
-      - collection
+      - product
   /api/v1/collection/delete-post:
     delete:
       consumes:
@@ -2776,7 +2776,7 @@ paths:
       - BearerAuth: []
       summary: обновить сторис
       tags:
-      - product
+      - stories
   /api/v1/stories/all:
     get:
       consumes:
@@ -2821,7 +2821,7 @@ paths:
       - BearerAuth: []
       summary: создать сторис
       tags:
-      - product
+      - stories
   /api/v1/stories/id:
     delete:
       consumes:
@@ -2918,7 +2918,7 @@ paths:
       - BearerAuth: []
       summary: добавить страницу в сторис
       tags:
-      - product
+      - stories
     put:
       consumes:
       - application/json
@@ -2944,7 +2944,7 @@ paths:
       - BearerAuth: []
       summary: обновить страницу в сторис
       tags:
-      - product
+      - stories
   /api/v1/tags:
     get:
       consumes:

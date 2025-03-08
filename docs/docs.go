@@ -348,7 +348,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "post"
+                    "product"
                 ],
                 "summary": "обновить тег продукта (для фильтра)",
                 "parameters": [
@@ -390,7 +390,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "post"
+                    "product"
                 ],
                 "summary": "создать тег продукта (для фильтра)",
                 "parameters": [
@@ -432,7 +432,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "post"
+                    "product"
                 ],
                 "summary": "удалить тег продукта (для фильтра)",
                 "parameters": [
@@ -469,7 +469,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "collection"
+                    "product"
                 ],
                 "summary": "добавить/связать тег к продукту  (для фильтра)",
                 "parameters": [
@@ -805,7 +805,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "collection"
+                    "product"
                 ],
                 "summary": "удалить связку тег к продукту",
                 "parameters": [
@@ -2170,7 +2170,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "stories"
                 ],
                 "summary": "обновить сторис",
                 "parameters": [
@@ -2282,7 +2282,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "stories"
                 ],
                 "summary": "создать сторис",
                 "parameters": [
@@ -2398,7 +2398,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "stories"
                 ],
                 "summary": "обновить страницу в сторис",
                 "parameters": [
@@ -2440,7 +2440,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "stories"
                 ],
                 "summary": "добавить страницу в сторис",
                 "parameters": [

@@ -282,7 +282,7 @@ func (h *Handler) GetProduct(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.ProductTag]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags post
+// @tags product
 // @Router /api/v1/admin/product-tag [post]
 func (h *Handler) CreateProductTag(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -310,7 +310,7 @@ func (h *Handler) CreateProductTag(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.Post]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags post
+// @tags product
 // @Router /api/v1/admin/product-tag [put]
 func (h *Handler) UpdateProductTag(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -338,7 +338,7 @@ func (h *Handler) UpdateProductTag(c *gin.Context) error {
 // @Success 200 {object} schema.Response[schema.Empty]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags post
+// @tags product
 // @Router /api/v1/admin/product-tag [delete]
 func (h *Handler) DeleteProductTag(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -364,7 +364,7 @@ func (h *Handler) DeleteProductTag(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.ProductTag]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param data body admin.AddProductProductTag true "CreatePost data"
-// @tags collection
+// @tags product
 // @Router /api/v1/admin/product-tag/add [post]
 func (h *Handler) AddProductTagToProduct(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -389,7 +389,7 @@ func (h *Handler) AddProductTagToProduct(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.ProductTag]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param data body admin.DeleteProductProductTag true "CreatePost data"
-// @tags collection
+// @tags product
 // @Router /api/v1/collection/delete [delete]
 func (h *Handler) DeleteProductTagToProduct(c *gin.Context) error {
 	ctx := c.Request.Context()
