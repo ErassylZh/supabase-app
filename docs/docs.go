@@ -499,6 +499,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/admin/product-tag/product": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product"
+                ],
+                "summary": "удалить связку тег к продукту",
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.DeleteProductProductTag"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_ProductTag"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/admin/product/id": {
             "get": {
                 "security": [
@@ -785,45 +824,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-model_Collection"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response-schema_Empty"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/collection/delete": {
-            "delete": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "product"
-                ],
-                "summary": "удалить связку тег к продукту",
-                "parameters": [
-                    {
-                        "description": "CreatePost data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/admin.DeleteProductProductTag"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response-model_ProductTag"
                         }
                     },
                     "400": {
@@ -1277,7 +1277,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "publication"
+                    "hashtag"
                 ],
                 "summary": "создать хештеги",
                 "parameters": [
@@ -1428,7 +1428,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "collection"
+                    "hashtag"
                 ],
                 "summary": "получть хештеги по айдишке епта",
                 "parameters": [

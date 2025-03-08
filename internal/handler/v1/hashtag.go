@@ -66,7 +66,7 @@ func (h *Handler) GetAllHashtags(c *gin.Context) error {
 // @Success 200 {object} schema.Response[model.Hashtag]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth
-// @tags publication
+// @tags hashtag
 // @Router /api/v1/hashtag [post]
 func (h *Handler) CreateHashtag(c *gin.Context) error {
 	ctx := c.Request.Context()
@@ -93,7 +93,7 @@ func (h *Handler) CreateHashtag(c *gin.Context) error {
 // @Param hashtag_id query int true "hashtag_id"
 // @Success 200 {object} schema.Response[model.Hashtag]
 // @Failure 400 {object} schema.Response[schema.Empty]
-// @tags collection
+// @tags hashtag
 // @Router /api/v1/hashtag/id [get]
 func (h *Handler) GetHashtagByID(c *gin.Context) error {
 	ctx := c.Request.Context()

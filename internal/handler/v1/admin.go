@@ -390,7 +390,7 @@ func (h *Handler) AddProductTagToProduct(c *gin.Context) error {
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Param data body admin.DeleteProductProductTag true "CreatePost data"
 // @tags product
-// @Router /api/v1/collection/delete [delete]
+// @Router /api/v1/admin/product-tag/product [delete]
 func (h *Handler) DeleteProductTagToProduct(c *gin.Context) error {
 	ctx := c.Request.Context()
 

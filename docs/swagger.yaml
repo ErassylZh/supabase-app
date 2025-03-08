@@ -1684,6 +1684,31 @@ paths:
       summary: добавить/связать тег к продукту  (для фильтра)
       tags:
       - product
+  /api/v1/admin/product-tag/product:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.DeleteProductProductTag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_ProductTag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: удалить связку тег к продукту
+      tags:
+      - product
   /api/v1/admin/product/id:
     get:
       consumes:
@@ -1871,31 +1896,6 @@ paths:
       summary: добавить пост в коллекцию
       tags:
       - collection
-  /api/v1/collection/delete:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: CreatePost data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/admin.DeleteProductProductTag'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schema.Response-model_ProductTag'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: удалить связку тег к продукту
-      tags:
-      - product
   /api/v1/collection/delete-post:
     delete:
       consumes:
@@ -2188,7 +2188,7 @@ paths:
       - BearerAuth: []
       summary: создать хештеги
       tags:
-      - publication
+      - hashtag
     put:
       consumes:
       - application/json
@@ -2286,7 +2286,7 @@ paths:
             $ref: '#/definitions/schema.Response-schema_Empty'
       summary: получть хештеги по айдишке епта
       tags:
-      - collection
+      - hashtag
   /api/v1/mark:
     post:
       consumes:
