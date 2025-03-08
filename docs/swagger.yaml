@@ -38,6 +38,52 @@ definitions:
       name_ru:
         type: string
     type: object
+  admin.CreateContestBook:
+    properties:
+      body:
+        type: string
+      body_en:
+        type: string
+      body_kz:
+        type: string
+      contest_coins:
+        type: integer
+      contest_id:
+        type: integer
+      count_of_questions:
+        type: integer
+      day_number:
+        type: integer
+      description:
+        type: string
+      description_en:
+        type: string
+      description_kz:
+        type: string
+      image:
+        $ref: '#/definitions/admin.Image'
+      point:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      title_en:
+        type: string
+      title_kz:
+        type: string
+    type: object
+  admin.CreateContestPrize:
+    properties:
+      contest_id:
+        type: integer
+      image:
+        $ref: '#/definitions/admin.Image'
+      number:
+        type: integer
+      prize_name:
+        type: string
+    type: object
   admin.CreateHashtag:
     properties:
       image_base64:
@@ -194,6 +240,65 @@ definitions:
       name_ru:
         type: string
     type: object
+  admin.UpdateContest:
+    properties:
+      consolation_prize_sapphire:
+        type: integer
+      contest_id:
+        type: integer
+      end_time:
+        type: string
+      is_active:
+        type: boolean
+      start_time:
+        type: string
+    type: object
+  admin.UpdateContestBook:
+    properties:
+      body:
+        type: string
+      body_en:
+        type: string
+      body_kz:
+        type: string
+      contest_book_id:
+        type: integer
+      contest_coins:
+        type: integer
+      count_of_questions:
+        type: integer
+      day_number:
+        type: integer
+      description:
+        type: string
+      description_en:
+        type: string
+      description_kz:
+        type: string
+      image:
+        $ref: '#/definitions/admin.Image'
+      point:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      title_en:
+        type: string
+      title_kz:
+        type: string
+    type: object
+  admin.UpdateContestPrize:
+    properties:
+      contest_prize_id:
+        type: integer
+      image:
+        $ref: '#/definitions/admin.Image'
+      number:
+        type: integer
+      prize_name:
+        type: string
+    type: object
   admin.UpdateHashtag:
     properties:
       hashtag_id:
@@ -338,6 +443,33 @@ definitions:
           $ref: '#/definitions/model.Post'
         type: array
     type: object
+  model.Contest:
+    properties:
+      code:
+        type: string
+      consolation_prize_sapphire:
+        type: integer
+      contest_books:
+        items:
+          $ref: '#/definitions/model.ContestBook'
+        type: array
+      contest_id:
+        type: integer
+      contest_participants:
+        items:
+          $ref: '#/definitions/model.ContestParticipant'
+        type: array
+      created_at:
+        type: string
+      end_time:
+        type: string
+      is_active:
+        type: boolean
+      start_time:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.ContestBook:
     properties:
       body:
@@ -399,6 +531,31 @@ definitions:
         type: integer
       updated_at:
         type: string
+      user_id:
+        type: string
+    type: object
+  model.ContestParticipant:
+    properties:
+      contest_id:
+        type: integer
+      contest_participant_id:
+        type: integer
+      contest_prize_id:
+        type: integer
+      created_at:
+        type: string
+      number:
+        type: integer
+      points:
+        type: integer
+      prize_get:
+        type: boolean
+      read_time:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
       user_id:
         type: string
     type: object
@@ -1022,6 +1179,17 @@ definitions:
       status:
         type: boolean
     type: object
+  schema.Response-array_model_Contest:
+    properties:
+      message:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/model.Contest'
+        type: array
+      status:
+        type: boolean
+    type: object
   schema.Response-array_model_ContestBook:
     properties:
       message:
@@ -1202,6 +1370,15 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/model.Collection'
+      status:
+        type: boolean
+    type: object
+  schema.Response-model_Contest:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.Contest'
       status:
         type: boolean
     type: object
@@ -1946,6 +2123,31 @@ paths:
       tags:
       - collection
   /api/v1/contest:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: query
+        name: contest_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: удолит продукт
+      tags:
+      - contest
     get:
       consumes:
       - application/json
@@ -1971,6 +2173,58 @@ paths:
       summary: получить активные контесты
       tags:
       - contest
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateProduct data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateProduct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Contest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: создать contest
+      tags:
+      - contest
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateProduct data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateContest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Contest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: создать contest
+      tags:
+      - contest
   /api/v1/contest/active:
     get:
       consumes:
@@ -1989,6 +2243,26 @@ paths:
       security:
       - BearerAuth: []
       summary: получить активные контесты
+      tags:
+      - contest
+  /api/v1/contest/all:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_model_Contest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: удолит продукт
       tags:
       - contest
   /api/v1/contest/book:
@@ -2017,6 +2291,58 @@ paths:
       summary: получить книги контеста
       tags:
       - contest
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateProduct data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateContestBook'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Contest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: создать contest
+      tags:
+      - contest
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateProduct data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateContestBook'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Contest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: создать contest
+      tags:
+      - contest
   /api/v1/contest/book/by-id:
     get:
       consumes:
@@ -2041,6 +2367,32 @@ paths:
       security:
       - BearerAuth: []
       summary: получить книги контеста
+      tags:
+      - contest
+  /api/v1/contest/books:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: query
+        name: contest_book_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: удолит продукт
       tags:
       - contest
   /api/v1/contest/join:
@@ -2071,6 +2423,31 @@ paths:
       tags:
       - contest
   /api/v1/contest/prize:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: query
+        name: contest_prize_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: удолит продукт
+      tags:
+      - contest
     get:
       consumes:
       - application/json
@@ -2094,6 +2471,58 @@ paths:
       security:
       - BearerAuth: []
       summary: получить призы контеста
+      tags:
+      - contest
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateProduct data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateContestPrize'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Contest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: создать contest
+      tags:
+      - contest
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateProduct data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateContestPrize'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Contest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      summary: создать contest
       tags:
       - contest
   /api/v1/contest/read:

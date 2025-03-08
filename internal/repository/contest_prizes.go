@@ -13,6 +13,9 @@ type ContestPrize interface {
 	UpdateMany(ctx context.Context, contestPrizes []model.ContestPrize) ([]model.ContestPrize, error)
 	GetByContestIDAndNumber(ctx context.Context, contestId uint, number int) (model.ContestPrize, error)
 	GetAll(ctx context.Context) ([]model.ContestPrize, error)
+	GetByID(ctx context.Context, id uint) (model.ContestPrize, error)
+	Update(ctx context.Context, prize model.ContestPrize) (model.ContestPrize, error)
+	Delete(ctx context.Context, id uint) error
 }
 
 type ContestPrizeDB struct {
@@ -95,4 +98,40 @@ func (r *ContestPrizeDB) GetAll(ctx context.Context) (contestPrizes []model.Cont
 		return contestPrizes, err
 	}
 	return contestPrizes, nil
+}
+
+func (r *ContestPrizeDB) GetByID(ctx context.Context, id uint) (contestPrizes model.ContestPrize, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.ContestPrize{})
+	err = q.Where("contest_prize_id = ?", id).
+		First(&contestPrizes).
+		Error
+	if err != nil {
+		return contestPrizes, err
+	}
+	return contestPrizes, nil
+}
+
+func (r *ContestPrizeDB) Update(ctx context.Context, prize model.ContestPrize) (model.ContestPrize, error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.ContestPrize{})
+	err := q.Where("contest_prize_id = ?", prize.ContestPrizeID).
+		Save(&prize).
+		Error
+	if err != nil {
+		return prize, err
+	}
+	return prize, nil
+}
+
+func (r *ContestPrizeDB) Delete(ctx context.Context, id uint) error {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.ContestPrize{})
+	err := q.Where("contest_prize_id = ?", id).
+		Delete(&model.ContestPrize{}).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"log"
 	"sort"
+	"work-project/internal/admin"
 	"work-project/internal/model"
 	"work-project/internal/repository"
 	"work-project/internal/schema"
@@ -20,6 +22,16 @@ type Contest interface {
 	GetPrizes(ctx context.Context, contestId uint) ([]model.ContestPrize, error)
 	GetBooks(ctx context.Context, contestId uint) ([]model.ContestBook, error)
 	GetBookByID(ctx context.Context, contestBookId uint) (model.ContestBook, error)
+	Create(ctx context.Context, data admin.CreateContest) (model.Contest, error)
+	Update(ctx context.Context, data admin.UpdateContest) (model.Contest, error)
+	Delete(ctx context.Context, contestId uint) error
+	GetAll(ctx context.Context) ([]model.Contest, error)
+	CreateBook(ctx context.Context, data admin.CreateContestBook) (model.ContestBook, error)
+	UpdateBook(ctx context.Context, data admin.UpdateContestBook) (model.ContestBook, error)
+	DeleteBook(ctx context.Context, id uint) error
+	CreatePrize(ctx context.Context, data admin.CreateContestPrize) (model.ContestPrize, error)
+	UpdatePrize(ctx context.Context, data admin.UpdateContestPrize) (model.ContestPrize, error)
+	DeletePrize(ctx context.Context, id uint) error
 }
 
 type ContestService struct {
@@ -28,6 +40,7 @@ type ContestService struct {
 	contestBookRepo        repository.ContestBook
 	contestHistoryRepo     repository.ContestHistory
 	contestPrizeRepo       repository.ContestPrize
+	storage                repository.StorageClient
 
 	balanceService BalanceService
 }
@@ -265,4 +278,180 @@ func (s *ContestService) GetBooks(ctx context.Context, contestId uint) ([]model.
 }
 func (s *ContestService) GetBookByID(ctx context.Context, contestBookId uint) (model.ContestBook, error) {
 	return s.contestBookRepo.GetByID(ctx, contestBookId)
+}
+func (s *ContestService) Create(ctx context.Context, data admin.CreateContest) (model.Contest, error) {
+	return s.contestRepo.Create(ctx, model.Contest{
+		StartTime:                data.StartTime,
+		EndTime:                  data.EndTime,
+		IsActive:                 data.IsActive,
+		ConsolationPrizeSapphire: data.ConsolationPrizeSapphire,
+	})
+}
+func (s *ContestService) Update(ctx context.Context, data admin.UpdateContest) (model.Contest, error) {
+	contest, err := s.contestRepo.GetById(ctx, data.ContestID)
+	if err != nil {
+		return model.Contest{}, err
+	}
+	if data.EndTime != nil {
+		contest.EndTime = *data.EndTime
+	}
+	if data.StartTime != nil {
+		contest.EndTime = *data.StartTime
+	}
+	if data.IsActive != nil {
+		contest.IsActive = *data.IsActive
+	}
+	if data.ConsolationPrizeSapphire != nil {
+		contest.ConsolationPrizeSapphire = *data.ConsolationPrizeSapphire
+	}
+
+	return s.contestRepo.Update(ctx, contest)
+}
+
+func (s *ContestService) Delete(ctx context.Context, contestId uint) error {
+	return s.contestRepo.Delete(ctx, contestId)
+}
+
+func (s *ContestService) GetAll(ctx context.Context) ([]model.Contest, error) {
+	return s.contestRepo.GetAll(ctx)
+}
+
+func (s *ContestService) CreateBook(ctx context.Context, data admin.CreateContestBook) (model.ContestBook, error) {
+	contestBook := model.ContestBook{
+		ContestID:        data.ContestID,
+		DayNumber:        data.DayNumber,
+		Title:            data.Title,
+		TitleKz:          data.TitleKz,
+		TitleEn:          data.TitleEn,
+		Description:      data.Description,
+		DescriptionKz:    data.DescriptionKz,
+		DescriptionEn:    data.DescriptionEn,
+		Body:             data.Body,
+		BodyEn:           data.BodyEn,
+		BodyKz:           data.BodyKz,
+		Point:            data.Point,
+		ContestCoins:     data.ContestCoins,
+		CountOfQuestions: data.CountOfQuestions,
+	}
+
+	if data.Image != nil {
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), data.Image.FileName, data.Image.File)
+		if err != nil {
+			log.Println(ctx, "some err while create image", "err", err, "contest book name", contestBook.Title)
+			return model.ContestBook{}, err
+		}
+		contestBook.PhotoPath = &file
+	}
+
+	return s.contestBookRepo.Create(ctx, contestBook)
+}
+
+func (s *ContestService) UpdateBook(ctx context.Context, data admin.UpdateContestBook) (model.ContestBook, error) {
+	contestBook, err := s.contestBookRepo.GetByID(ctx, data.ContestBookID)
+	if err != nil {
+		return model.ContestBook{}, err
+	}
+
+	if data.DayNumber != nil {
+		contestBook.DayNumber = *data.DayNumber
+	}
+	if data.TitleKz != nil {
+		contestBook.TitleKz = *data.TitleKz
+	}
+	if data.Title != nil {
+		contestBook.Title = *data.Title
+	}
+	if data.TitleEn != nil {
+		contestBook.TitleEn = *data.TitleEn
+	}
+	if data.Description != nil {
+		contestBook.Description = *data.Description
+	}
+	if data.DescriptionEn != nil {
+		contestBook.DescriptionEn = *data.DescriptionEn
+	}
+	if data.DescriptionKz != nil {
+		contestBook.DescriptionKz = *data.DescriptionKz
+	}
+	if data.Body != nil {
+		contestBook.Body = *data.Body
+	}
+	if data.BodyEn != nil {
+		contestBook.BodyEn = *data.BodyEn
+	}
+	if data.BodyKz != nil {
+		contestBook.BodyKz = *data.BodyKz
+	}
+
+	if data.Point != nil {
+		contestBook.Point = *data.Point
+	}
+	if data.ContestCoins != nil {
+		contestBook.ContestCoins = *data.ContestCoins
+	}
+	if data.Point != nil {
+		contestBook.CountOfQuestions = *data.CountOfQuestions
+	}
+
+	if data.Image != nil {
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), data.Image.FileName, data.Image.File)
+		if err != nil {
+			log.Println(ctx, "some err while create image", "err", err, "contest book name", contestBook.Title)
+			return model.ContestBook{}, err
+		}
+		contestBook.PhotoPath = &file
+	}
+
+	return s.contestBookRepo.Update(ctx, contestBook)
+}
+
+func (s *ContestService) DeleteBook(ctx context.Context, id uint) error {
+	return s.contestBookRepo.Delete(ctx, id)
+}
+
+func (s *ContestService) CreatePrize(ctx context.Context, data admin.CreateContestPrize) (model.ContestPrize, error) {
+	contestPrize := model.ContestPrize{
+		ContestID: data.ContestID,
+		Number:    data.Number,
+		PrizeName: data.PrizeName,
+	}
+
+	if data.Image != nil {
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), data.Image.FileName, data.Image.File)
+		if err != nil {
+			log.Println(ctx, "some err while create image", "err", err, "contest prize name", contestPrize.PrizeName)
+			return model.ContestPrize{}, err
+		}
+		contestPrize.PhotoPath = &file
+	}
+
+	return s.contestPrizeRepo.Create(ctx, contestPrize)
+}
+
+func (s *ContestService) UpdatePrize(ctx context.Context, data admin.UpdateContestPrize) (model.ContestPrize, error) {
+	contestPrize, err := s.contestPrizeRepo.GetByID(ctx, data.ContestPrizeID)
+	if err != nil {
+		return model.ContestPrize{}, err
+	}
+
+	if data.PrizeName != nil {
+		contestPrize.PrizeName = *data.PrizeName
+	}
+	if data.Number != nil {
+		contestPrize.Number = *data.Number
+	}
+
+	if data.Image != nil {
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), data.Image.FileName, data.Image.File)
+		if err != nil {
+			log.Println(ctx, "some err while create image", "err", err, "contest prize name", contestPrize.PrizeName)
+			return model.ContestPrize{}, err
+		}
+		contestPrize.PhotoPath = &file
+	}
+
+	return s.contestPrizeRepo.Update(ctx, contestPrize)
+}
+func (s *ContestService) DeletePrize(ctx context.Context, id uint) error {
+	return s.contestPrizeRepo.Delete(ctx, id)
 }

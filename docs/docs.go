@@ -951,6 +951,130 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "создать contest",
+                "parameters": [
+                    {
+                        "description": "CreateProduct data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.UpdateContest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Contest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "создать contest",
+                "parameters": [
+                    {
+                        "description": "CreateProduct data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreateProduct"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Contest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "удолит продукт",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "contest_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/contest/active": {
@@ -975,6 +1099,39 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-schema_ContestActivity"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/contest/all": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "удолит продукт",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_model_Contest"
                         }
                     },
                     "400": {
@@ -1026,6 +1183,90 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "создать contest",
+                "parameters": [
+                    {
+                        "description": "CreateProduct data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.UpdateContestBook"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Contest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "создать contest",
+                "parameters": [
+                    {
+                        "description": "CreateProduct data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreateContestBook"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Contest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/contest/book/by-id": {
@@ -1059,6 +1300,48 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-model_ContestBook"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/contest/books": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "удолит продукт",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "contest_book_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
                         }
                     },
                     "400": {
@@ -1145,6 +1428,130 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-array_model_ContestPrize"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "создать contest",
+                "parameters": [
+                    {
+                        "description": "CreateProduct data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.UpdateContestPrize"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Contest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "создать contest",
+                "parameters": [
+                    {
+                        "description": "CreateProduct data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreateContestPrize"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Contest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contest"
+                ],
+                "summary": "удолит продукт",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "contest_prize_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
                         }
                     },
                     "400": {
@@ -2999,6 +3406,76 @@ const docTemplate = `{
                 }
             }
         },
+        "admin.CreateContestBook": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "body_en": {
+                    "type": "string"
+                },
+                "body_kz": {
+                    "type": "string"
+                },
+                "contest_coins": {
+                    "type": "integer"
+                },
+                "contest_id": {
+                    "type": "integer"
+                },
+                "count_of_questions": {
+                    "type": "integer"
+                },
+                "day_number": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "description_en": {
+                    "type": "string"
+                },
+                "description_kz": {
+                    "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
+                },
+                "point": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "title_en": {
+                    "type": "string"
+                },
+                "title_kz": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.CreateContestPrize": {
+            "type": "object",
+            "properties": {
+                "contest_id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "prize_name": {
+                    "type": "string"
+                }
+            }
+        },
         "admin.CreateHashtag": {
             "type": "object",
             "properties": {
@@ -3238,6 +3715,96 @@ const docTemplate = `{
                 }
             }
         },
+        "admin.UpdateContest": {
+            "type": "object",
+            "properties": {
+                "consolation_prize_sapphire": {
+                    "type": "integer"
+                },
+                "contest_id": {
+                    "type": "integer"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "start_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.UpdateContestBook": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "body_en": {
+                    "type": "string"
+                },
+                "body_kz": {
+                    "type": "string"
+                },
+                "contest_book_id": {
+                    "type": "integer"
+                },
+                "contest_coins": {
+                    "type": "integer"
+                },
+                "count_of_questions": {
+                    "type": "integer"
+                },
+                "day_number": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "description_en": {
+                    "type": "string"
+                },
+                "description_kz": {
+                    "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
+                },
+                "point": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "title_en": {
+                    "type": "string"
+                },
+                "title_kz": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.UpdateContestPrize": {
+            "type": "object",
+            "properties": {
+                "contest_prize_id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "prize_name": {
+                    "type": "string"
+                }
+            }
+        },
         "admin.UpdateHashtag": {
             "type": "object",
             "properties": {
@@ -3457,6 +4024,47 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Contest": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "consolation_prize_sapphire": {
+                    "type": "integer"
+                },
+                "contest_books": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ContestBook"
+                    }
+                },
+                "contest_id": {
+                    "type": "integer"
+                },
+                "contest_participants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ContestParticipant"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ContestBook": {
             "type": "object",
             "properties": {
@@ -3548,6 +4156,44 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ContestParticipant": {
+            "type": "object",
+            "properties": {
+                "contest_id": {
+                    "type": "integer"
+                },
+                "contest_participant_id": {
+                    "type": "integer"
+                },
+                "contest_prize_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "points": {
+                    "type": "integer"
+                },
+                "prize_get": {
+                    "type": "boolean"
+                },
+                "read_time": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
                 },
                 "user_id": {
                     "type": "string"
@@ -4501,6 +5147,23 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.Response-array_model_Contest": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Contest"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.Response-array_model_ContestBook": {
             "type": "object",
             "properties": {
@@ -4778,6 +5441,20 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/model.Collection"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-model_Contest": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/model.Contest"
                 },
                 "status": {
                     "type": "boolean"
