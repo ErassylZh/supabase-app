@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
+	"log"
+	"strings"
+	"time"
+	"work-project/internal/admin"
 	"work-project/internal/model"
 	"work-project/internal/repository"
 	"work-project/internal/schema"
@@ -12,17 +16,26 @@ import (
 type Collection interface {
 	GetAllCollection(ctx context.Context, language string, userId *string, withoutPosts bool) ([]schema.CollectionListResponse, error)
 	GetAllRecommendation(ctx context.Context, language string) ([]schema.CollectionListResponse, error)
+	Create(ctx context.Context, data admin.CreateCollection) (model.Collection, error)
+	GetAll(ctx context.Context) ([]model.Collection, error)
+	GetByID(ctx context.Context, id uint) (model.Collection, error)
+	Update(ctx context.Context, data admin.UpdateCollection) (model.Collection, error)
+	Delete(ctx context.Context, id uint) error
+	AddToPost(ctx context.Context, data admin.AddCollection) (model.Collection, error)
+	DeleteCollectionPost(ctx context.Context, data admin.DeleteCollectionPost) (model.Collection, error)
 }
 
 type CollectionService struct {
-	collectionRepo repository.Collection
-	userPostRepo   repository.UserPost
-	markRepo       repository.Mark
-	postService    Post
+	collectionRepo     repository.Collection
+	postCollectionRepo repository.PostCollection
+	userPostRepo       repository.UserPost
+	markRepo           repository.Mark
+	storage            repository.StorageClient
+	postService        Post
 }
 
-func NewCollectionService(collectionRepo repository.Collection, userPostRepo repository.UserPost, postService Post, markRepo repository.Mark) *CollectionService {
-	return &CollectionService{collectionRepo: collectionRepo, postService: postService, markRepo: markRepo, userPostRepo: userPostRepo}
+func NewCollectionService(collectionRepo repository.Collection, userPostRepo repository.UserPost, markRepo repository.Mark, storage repository.StorageClient, postService Post) *CollectionService {
+	return &CollectionService{collectionRepo: collectionRepo, userPostRepo: userPostRepo, markRepo: markRepo, storage: storage, postService: postService}
 }
 
 func (s *CollectionService) GetAllCollection(ctx context.Context, language string, userId *string, withoutPosts bool) ([]schema.CollectionListResponse, error) {
@@ -120,4 +133,151 @@ func (s *CollectionService) GetAllRecommendation(ctx context.Context, language s
 	}
 
 	return result, nil
+}
+
+func (s *CollectionService) Create(ctx context.Context, data admin.CreateCollection) (model.Collection, error) {
+	collection := model.Collection{}
+
+	// Обновляем поля
+	collection.Name = data.Name
+	collection.NameRu = data.NameRu
+	collection.NameKz = data.NameKz
+	collection.IsRecommendation = data.IsRecommendation
+
+	// Обрабатываем изображения, если они есть
+	if data.ImageBase64 != nil && *data.ImageBase64 != "" {
+		newPath, err := s.saveBase64Image(ctx, *data.ImageBase64, collection.Name+time.Now().String())
+		if err != nil {
+			log.Println("Ошибка сохранения image_path:", err)
+			return model.Collection{}, err
+		}
+		collection.ImagePath = newPath
+	}
+
+	if data.ImageKzBase64 != nil && *data.ImageKzBase64 != "" {
+		newPath, err := s.saveBase64Image(ctx, *data.ImageKzBase64, collection.NameKz+time.Now().String())
+		if err != nil {
+			log.Println("Ошибка сохранения image_path_kz:", err)
+			return model.Collection{}, err
+		}
+		collection.ImagePathKz = newPath
+	}
+
+	if data.ImageRuBase64 != nil && *data.ImageRuBase64 != "" {
+		newPath, err := s.saveBase64Image(ctx, *data.ImageRuBase64, collection.NameRu+time.Now().String())
+		if err != nil {
+			log.Println("Ошибка сохранения image_path_ru:", err)
+			return model.Collection{}, err
+		}
+		collection.ImagePathRu = newPath
+	}
+
+	// Сохраняем обновленную коллекцию
+	updatedCollection, err := s.collectionRepo.Create(ctx, collection)
+	if err != nil {
+		return model.Collection{}, err
+	}
+
+	return updatedCollection, nil
+}
+
+// Получение всех коллекций
+func (s *CollectionService) GetAll(ctx context.Context) ([]model.Collection, error) {
+	return s.collectionRepo.GetAll(ctx)
+}
+
+// Получение коллекции по ID
+func (s *CollectionService) GetByID(ctx context.Context, id uint) (model.Collection, error) {
+	return s.collectionRepo.GetByID(ctx, id)
+}
+
+func (s *CollectionService) saveBase64Image(ctx context.Context, base64Str, filename string) (*string, error) {
+	if base64Str == "" {
+		return nil, nil
+	}
+
+	// Проверяем, есть ли `data:image/png;base64,`
+	if strings.Contains(base64Str, "base64,") {
+		parts := strings.Split(base64Str, "base64,")
+		if len(parts) < 2 {
+			return nil, errors.New("неправильный формат base64")
+		}
+		base64Str = parts[1]
+	}
+
+	// Сохраняем файл
+	filePath, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_COLLECTION), filename, base64Str)
+	if err != nil {
+		return nil, err
+	}
+
+	return &filePath, nil
+}
+
+// Обновление коллекции
+func (s *CollectionService) Update(ctx context.Context, data admin.UpdateCollection) (model.Collection, error) {
+	collection, err := s.collectionRepo.GetByID(ctx, data.CollectionID)
+	if err != nil {
+		return model.Collection{}, err
+	}
+
+	// Обновляем поля
+	collection.Name = data.Name
+	collection.NameRu = data.NameRu
+	collection.NameKz = data.NameKz
+	collection.IsRecommendation = data.IsRecommendation
+
+	// Обрабатываем изображения, если они есть
+	if data.ImageBase64 != nil && *data.ImageBase64 != "" {
+		newPath, err := s.saveBase64Image(ctx, *data.ImageBase64, collection.Name+time.Now().String())
+		if err != nil {
+			log.Println("Ошибка сохранения image_path:", err)
+			return model.Collection{}, err
+		}
+		collection.ImagePath = newPath
+	}
+
+	if data.ImageKzBase64 != nil && *data.ImageKzBase64 != "" {
+		newPath, err := s.saveBase64Image(ctx, *data.ImageKzBase64, collection.NameKz+time.Now().String())
+		if err != nil {
+			log.Println("Ошибка сохранения image_path_kz:", err)
+			return model.Collection{}, err
+		}
+		collection.ImagePathKz = newPath
+	}
+
+	if data.ImageRuBase64 != nil && *data.ImageRuBase64 != "" {
+		newPath, err := s.saveBase64Image(ctx, *data.ImageRuBase64, collection.NameRu+time.Now().String())
+		if err != nil {
+			log.Println("Ошибка сохранения image_path_ru:", err)
+			return model.Collection{}, err
+		}
+		collection.ImagePathRu = newPath
+	}
+
+	// Сохраняем обновленную коллекцию
+	updatedCollection, err := s.collectionRepo.Update(ctx, collection)
+	if err != nil {
+		return model.Collection{}, err
+	}
+
+	return updatedCollection, nil
+}
+
+// Удаление коллекции
+func (s *CollectionService) Delete(ctx context.Context, id uint) error {
+	return s.collectionRepo.Delete(ctx, id)
+}
+
+func (s *CollectionService) AddToPost(ctx context.Context, data admin.AddCollection) (model.Collection, error) {
+	_, err := s.postCollectionRepo.Create(ctx, model.PostCollection{
+		PostId:       data.PostID,
+		CollectionId: data.CollectionID,
+	})
+	return model.Collection{}, err
+}
+
+func (s *CollectionService) DeleteCollectionPost(ctx context.Context, data admin.DeleteCollectionPost) (model.Collection, error) {
+	err := s.postCollectionRepo.DeleteByPostAndCollectionId(ctx, data.PostID, data.CollectionID)
+	return model.Collection{}, err
 }

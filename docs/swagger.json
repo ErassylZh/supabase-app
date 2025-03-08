@@ -36,6 +36,49 @@
                 "responses": {}
             }
         },
+        "/api/v1/admin/post": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreatePost"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Post"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/balance": {
             "get": {
                 "security": [
@@ -113,12 +156,11 @@
                 "tags": [
                     "collection"
                 ],
-                "summary": "получить все коллекций",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "language",
-                        "name": "language",
+                        "type": "integer",
+                        "description": "collection_id",
+                        "name": "collection_id",
                         "in": "query",
                         "required": true
                     }
@@ -127,7 +169,195 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-array_model_Collection"
+                            "$ref": "#/definitions/schema.Response-model_Collection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection"
+                ],
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.UpdateCollection"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Collection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection"
+                ],
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreateCollection"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Collection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "collection_id",
+                        "name": "collection_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/collection/add": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection"
+                ],
+                "summary": "добавить пост в коллекцию",
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.AddCollection"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Collection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/collection/delete-post": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "collection"
+                ],
+                "summary": "удалить пост из коллекцию",
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.DeleteCollectionPost"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Collection"
                         }
                     },
                     "400": {
@@ -256,48 +486,6 @@
                 }
             }
         },
-        "/api/v1/contest/book/by-id": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "contest"
-                ],
-                "summary": "получить книги контеста",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "contest_book_id",
-                        "name": "contest_book_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response-model_ContestBook"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response-schema_Empty"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/contest/join": {
             "post": {
                 "security": [
@@ -408,7 +596,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/schema.JoinContestRequest"
+                            "$ref": "#/definitions/schema.ReadContestRequest"
                         }
                     }
                 ],
@@ -416,7 +604,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-schema_ReadContestRequest"
+                            "$ref": "#/definitions/schema.Response-schema_ContestPassBook"
                         }
                     },
                     "400": {
@@ -437,14 +625,210 @@
                     "application/json"
                 ],
                 "tags": [
-                    "hashtag"
+                    "collection"
                 ],
-                "summary": "получить все коллекций",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "hashtag_id",
+                        "name": "hashtag_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response-array_model_Hashtag"
+                            "$ref": "#/definitions/schema.Response-model_Hashtag"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hashtag"
+                ],
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.UpdateHashtag"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Collection"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "publication"
+                ],
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreateHashtag"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Hashtag"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hashtag"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "hashtag_id",
+                        "name": "hashtag_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/hashtag/add": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hashtag"
+                ],
+                "summary": "добавить пост в коллекцию",
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.AddHashtag"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Hashtag"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/hashtag/delete-post": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hashtag"
+                ],
+                "summary": "удалить пост из коллекцию",
+                "parameters": [
+                    {
+                        "description": "CreatePost data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.DeleteHashtagPost"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Hashtag"
                         }
                     },
                     "400": {
@@ -632,6 +1016,86 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schema.Response-schema_PostResponseByGroup"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "parameters": [
+                    {
+                        "description": "UserLogin data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.UpdatePost"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-model_Post"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "post_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
                         }
                     },
                     "400": {
@@ -1633,6 +2097,253 @@
         }
     },
     "definitions": {
+        "admin.AddCollection": {
+            "type": "object",
+            "properties": {
+                "collection_id": {
+                    "type": "integer"
+                },
+                "post_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "admin.AddHashtag": {
+            "type": "object",
+            "properties": {
+                "hashtag_id": {
+                    "type": "integer"
+                },
+                "post_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "admin.CreateCollection": {
+            "type": "object",
+            "properties": {
+                "image_base64": {
+                    "type": "string"
+                },
+                "image_kz_base64": {
+                    "type": "string"
+                },
+                "image_ru_base64": {
+                    "type": "string"
+                },
+                "is_recommendation": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_kz": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.CreateHashtag": {
+            "type": "object",
+            "properties": {
+                "image_base64": {
+                    "type": "string"
+                },
+                "is_visible": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_kz": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.CreatePost": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "logo": {
+                    "$ref": "#/definitions/admin.Image"
+                },
+                "point": {
+                    "type": "integer"
+                },
+                "quiz_time": {
+                    "type": "integer"
+                },
+                "rating_status": {
+                    "type": "string"
+                },
+                "read_time": {
+                    "type": "integer"
+                },
+                "sapphire": {
+                    "type": "integer"
+                },
+                "short_description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.DeleteCollectionPost": {
+            "type": "object",
+            "properties": {
+                "collection_id": {
+                    "type": "integer"
+                },
+                "post_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "admin.DeleteHashtagPost": {
+            "type": "object",
+            "properties": {
+                "hashtag_id": {
+                    "type": "integer"
+                },
+                "post_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "admin.Image": {
+            "type": "object",
+            "properties": {
+                "file": {
+                    "type": "string"
+                },
+                "filename": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.UpdateCollection": {
+            "type": "object",
+            "properties": {
+                "collection_id": {
+                    "type": "integer"
+                },
+                "image_base64": {
+                    "type": "string"
+                },
+                "image_kz_base64": {
+                    "type": "string"
+                },
+                "image_ru_base64": {
+                    "type": "string"
+                },
+                "is_recommendation": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_kz": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.UpdateHashtag": {
+            "type": "object",
+            "properties": {
+                "hashtag_id": {
+                    "type": "integer"
+                },
+                "image_base64": {
+                    "type": "string"
+                },
+                "is_visible": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_kz": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.UpdatePost": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "logo": {
+                    "$ref": "#/definitions/admin.Image"
+                },
+                "point": {
+                    "type": "integer"
+                },
+                "post_id": {
+                    "type": "integer"
+                },
+                "quiz_time": {
+                    "type": "integer"
+                },
+                "rating_status": {
+                    "type": "string"
+                },
+                "read_time": {
+                    "type": "integer"
+                },
+                "sapphire": {
+                    "type": "integer"
+                },
+                "short_description": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Balance": {
             "type": "object",
             "properties": {
@@ -1691,12 +2402,6 @@
                 "body": {
                     "type": "string"
                 },
-                "body_en": {
-                    "type": "string"
-                },
-                "body_kz": {
-                    "type": "string"
-                },
                 "contest_book_id": {
                     "type": "integer"
                 },
@@ -1724,12 +2429,6 @@
                 "description": {
                     "type": "string"
                 },
-                "description_en": {
-                    "type": "string"
-                },
-                "description_kz": {
-                    "type": "string"
-                },
                 "photo_path": {
                     "type": "string"
                 },
@@ -1740,12 +2439,6 @@
                     "type": "string"
                 },
                 "title": {
-                    "type": "string"
-                },
-                "title_en": {
-                    "type": "string"
-                },
-                "title_kz": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -2506,6 +3199,17 @@
                 }
             }
         },
+        "schema.ContestPassBook": {
+            "type": "object",
+            "properties": {
+                "coins": {
+                    "type": "integer"
+                },
+                "points": {
+                    "type": "integer"
+                }
+            }
+        },
         "schema.ContestResultPrize": {
             "type": "object",
             "properties": {
@@ -2998,14 +3702,28 @@
                 }
             }
         },
-        "schema.Response-model_ContestBook": {
+        "schema.Response-model_Collection": {
             "type": "object",
             "properties": {
                 "message": {
                     "type": "string"
                 },
                 "result": {
-                    "$ref": "#/definitions/model.ContestBook"
+                    "$ref": "#/definitions/model.Collection"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-model_Hashtag": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/model.Hashtag"
                 },
                 "status": {
                     "type": "boolean"
@@ -3020,6 +3738,20 @@
                 },
                 "result": {
                     "$ref": "#/definitions/model.Mark"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.Response-model_Post": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/model.Post"
                 },
                 "status": {
                     "type": "boolean"
@@ -3110,6 +3842,20 @@
                 }
             }
         },
+        "schema.Response-schema_ContestPassBook": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/schema.ContestPassBook"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.Response-schema_Empty": {
             "type": "object",
             "properties": {
@@ -3132,20 +3878,6 @@
                 },
                 "result": {
                     "$ref": "#/definitions/schema.PostResponseByGroup"
-                },
-                "status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "schema.Response-schema_ReadContestRequest": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "result": {
-                    "$ref": "#/definitions/schema.ReadContestRequest"
                 },
                 "status": {
                     "type": "boolean"

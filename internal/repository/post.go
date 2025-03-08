@@ -16,6 +16,10 @@ type Post interface {
 	GetAllByIds(ctx context.Context, ids []uint) ([]model.Post, error)
 	DeleteAllNotInUuid(ctx context.Context, uuids []string) error
 	GetAllGroupedByPostId(ctx context.Context, id uint) ([]model.Post, error)
+	Create(ctx context.Context, posts model.Post) (model.Post, error)
+	GetById(ctx context.Context, id uint) (model.Post, error)
+	Update(ctx context.Context, post model.Post) (model.Post, error)
+	DeleteById(ctx context.Context, id uint) error
 }
 
 type PostDB struct {
@@ -169,4 +173,53 @@ func (r *PostDB) GetAllGroupedByPostId(ctx context.Context, id uint) (posts []mo
 	}
 
 	return posts, nil
+}
+
+func (r *PostDB) Create(ctx context.Context, post model.Post) (model.Post, error) {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Post{}).
+		Create(&post).
+		Error
+	if err != nil {
+		return model.Post{}, err
+	}
+
+	return post, nil
+}
+func (r *PostDB) GetById(ctx context.Context, id uint) (post model.Post, err error) {
+	db := r.db.WithContext(ctx)
+	err = db.Model(&model.Post{}).
+		Where("post_id = ?", id).
+		First(&post).
+		Error
+	if err != nil {
+		return model.Post{}, err
+	}
+
+	return post, nil
+}
+
+func (r *PostDB) Update(ctx context.Context, post model.Post) (model.Post, error) {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Post{}).
+		Create(&post).
+		Error
+	if err != nil {
+		return model.Post{}, err
+	}
+
+	return post, nil
+}
+
+func (r *PostDB) DeleteById(ctx context.Context, id uint) error {
+	db := r.db.WithContext(ctx)
+	err := db.Model(&model.Post{}).
+		Where("post_id = ?", id).
+		Delete(&model.Post{}).
+		Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

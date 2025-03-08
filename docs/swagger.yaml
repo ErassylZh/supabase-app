@@ -1,5 +1,166 @@
 basePath: /
 definitions:
+  admin.AddCollection:
+    properties:
+      collection_id:
+        type: integer
+      post_id:
+        type: integer
+    type: object
+  admin.AddHashtag:
+    properties:
+      hashtag_id:
+        type: integer
+      post_id:
+        type: integer
+    type: object
+  admin.CreateCollection:
+    properties:
+      image_base64:
+        type: string
+      image_kz_base64:
+        type: string
+      image_ru_base64:
+        type: string
+      is_recommendation:
+        type: boolean
+      name:
+        type: string
+      name_kz:
+        type: string
+      name_ru:
+        type: string
+    type: object
+  admin.CreateHashtag:
+    properties:
+      image_base64:
+        type: string
+      is_visible:
+        type: boolean
+      name:
+        type: string
+      name_kz:
+        type: string
+      name_ru:
+        type: string
+    type: object
+  admin.CreatePost:
+    properties:
+      body:
+        type: string
+      company:
+        type: string
+      description:
+        type: string
+      image:
+        $ref: '#/definitions/admin.Image'
+      language:
+        type: string
+      logo:
+        $ref: '#/definitions/admin.Image'
+      point:
+        type: integer
+      quiz_time:
+        type: integer
+      rating_status:
+        type: string
+      read_time:
+        type: integer
+      sapphire:
+        type: integer
+      short_description:
+        type: string
+      title:
+        type: string
+    type: object
+  admin.DeleteCollectionPost:
+    properties:
+      collection_id:
+        type: integer
+      post_id:
+        type: integer
+    type: object
+  admin.DeleteHashtagPost:
+    properties:
+      hashtag_id:
+        type: integer
+      post_id:
+        type: integer
+    type: object
+  admin.Image:
+    properties:
+      file:
+        type: string
+      filename:
+        type: string
+    type: object
+  admin.UpdateCollection:
+    properties:
+      collection_id:
+        type: integer
+      image_base64:
+        type: string
+      image_kz_base64:
+        type: string
+      image_ru_base64:
+        type: string
+      is_recommendation:
+        type: boolean
+      name:
+        type: string
+      name_kz:
+        type: string
+      name_ru:
+        type: string
+    type: object
+  admin.UpdateHashtag:
+    properties:
+      hashtag_id:
+        type: integer
+      image_base64:
+        type: string
+      is_visible:
+        type: boolean
+      name:
+        type: string
+      name_kz:
+        type: string
+      name_ru:
+        type: string
+    type: object
+  admin.UpdatePost:
+    properties:
+      body:
+        type: string
+      company:
+        type: string
+      description:
+        type: string
+      image:
+        $ref: '#/definitions/admin.Image'
+      language:
+        type: string
+      logo:
+        $ref: '#/definitions/admin.Image'
+      point:
+        type: integer
+      post_id:
+        type: integer
+      quiz_time:
+        type: integer
+      rating_status:
+        type: string
+      read_time:
+        type: integer
+      sapphire:
+        type: integer
+      short_description:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
   model.Balance:
     properties:
       balance_id:
@@ -38,10 +199,6 @@ definitions:
     properties:
       body:
         type: string
-      body_en:
-        type: string
-      body_kz:
-        type: string
       contest_book_id:
         type: integer
       contest_coins:
@@ -60,10 +217,6 @@ definitions:
         type: integer
       description:
         type: string
-      description_en:
-        type: string
-      description_kz:
-        type: string
       photo_path:
         type: string
       point:
@@ -71,10 +224,6 @@ definitions:
       status:
         type: string
       title:
-        type: string
-      title_en:
-        type: string
-      title_kz:
         type: string
       updated_at:
         type: string
@@ -573,6 +722,13 @@ definitions:
       total_users_count:
         type: integer
     type: object
+  schema.ContestPassBook:
+    properties:
+      coins:
+        type: integer
+      points:
+        type: integer
+    type: object
   schema.ContestResultPrize:
     properties:
       consolation_prize_sapphire:
@@ -892,12 +1048,21 @@ definitions:
       status:
         type: boolean
     type: object
-  schema.Response-model_ContestBook:
+  schema.Response-model_Collection:
     properties:
       message:
         type: string
       result:
-        $ref: '#/definitions/model.ContestBook'
+        $ref: '#/definitions/model.Collection'
+      status:
+        type: boolean
+    type: object
+  schema.Response-model_Hashtag:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.Hashtag'
       status:
         type: boolean
     type: object
@@ -907,6 +1072,15 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/model.Mark'
+      status:
+        type: boolean
+    type: object
+  schema.Response-model_Post:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/model.Post'
       status:
         type: boolean
     type: object
@@ -964,6 +1138,15 @@ definitions:
       status:
         type: boolean
     type: object
+  schema.Response-schema_ContestPassBook:
+    properties:
+      message:
+        type: string
+      result:
+        $ref: '#/definitions/schema.ContestPassBook'
+      status:
+        type: boolean
+    type: object
   schema.Response-schema_Empty:
     properties:
       message:
@@ -979,15 +1162,6 @@ definitions:
         type: string
       result:
         $ref: '#/definitions/schema.PostResponseByGroup'
-      status:
-        type: boolean
-    type: object
-  schema.Response-schema_ReadContestRequest:
-    properties:
-      message:
-        type: string
-      result:
-        $ref: '#/definitions/schema.ReadContestRequest'
       status:
         type: boolean
     type: object
@@ -1042,6 +1216,32 @@ paths:
       summary: WebSocket for rating aggregation
       tags:
       - WebSocket
+  /api/v1/admin/post:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreatePost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      tags:
+      - post
   /api/v1/balance:
     get:
       consumes:
@@ -1083,27 +1283,145 @@ paths:
       tags:
       - balance
   /api/v1/collection:
-    get:
+    delete:
       consumes:
       - application/json
       parameters:
-      - description: language
+      - description: collection_id
         in: query
-        name: language
-        required: true
-        type: string
+        name: collection_id
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response-array_model_Collection'
+            $ref: '#/definitions/schema.Response-schema_Empty'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: получить все коллекций
+      tags:
+      - collection
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: collection_id
+        in: query
+        name: collection_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      tags:
+      - collection
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateCollection'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      tags:
+      - collection
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateCollection'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      tags:
+      - collection
+  /api/v1/collection/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.AddCollection'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: добавить пост в коллекцию
+      tags:
+      - collection
+  /api/v1/collection/delete-post:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.DeleteCollectionPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: удалить пост из коллекцию
       tags:
       - collection
   /api/v1/contest:
@@ -1178,32 +1496,6 @@ paths:
       summary: получить книги контеста
       tags:
       - contest
-  /api/v1/contest/book/by-id:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: contest_book_id
-        in: query
-        name: contest_book_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schema.Response-model_ContestBook'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/schema.Response-schema_Empty'
-      security:
-      - BearerAuth: []
-      summary: получить книги контеста
-      tags:
-      - contest
   /api/v1/contest/join:
     post:
       consumes:
@@ -1267,14 +1559,14 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/schema.JoinContestRequest'
+          $ref: '#/definitions/schema.ReadContestRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response-schema_ReadContestRequest'
+            $ref: '#/definitions/schema.Response-schema_ContestPassBook'
         "400":
           description: Bad Request
           schema:
@@ -1285,21 +1577,145 @@ paths:
       tags:
       - contest
   /api/v1/hashtag:
-    get:
+    delete:
       consumes:
       - application/json
+      parameters:
+      - description: hashtag_id
+        in: query
+        name: hashtag_id
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response-array_model_Hashtag'
+            $ref: '#/definitions/schema.Response-schema_Empty'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
-      summary: получить все коллекций
+      tags:
+      - hashtag
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: hashtag_id
+        in: query
+        name: hashtag_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Hashtag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      tags:
+      - collection
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateHashtag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Hashtag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      tags:
+      - publication
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateHashtag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Collection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      tags:
+      - hashtag
+  /api/v1/hashtag/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.AddHashtag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Hashtag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: добавить пост в коллекцию
+      tags:
+      - hashtag
+  /api/v1/hashtag/delete-post:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreatePost data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.DeleteHashtagPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Hashtag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: удалить пост из коллекцию
       tags:
       - hashtag
   /api/v1/mark:
@@ -1388,6 +1804,30 @@ paths:
       tags:
       - product
   /api/v1/post:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: query
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
+      tags:
+      - post
     get:
       consumes:
       - application/json
@@ -1417,6 +1857,31 @@ paths:
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
       summary: список группированных постов
+      tags:
+      - post
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: UserLogin data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdatePost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-model_Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      security:
+      - BearerAuth: []
       tags:
       - post
   /api/v1/post/archive:

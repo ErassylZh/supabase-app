@@ -41,10 +41,8 @@ type ProductListResponse struct {
 }
 
 type Image struct {
-	Id       string `json:"id"`
-	Url      string `json:"url"`
 	FileName string `json:"filename"`
-	Type     string `json:"type"`
+	File     string `json:"file"`
 }
 
 type Post struct {

@@ -14,6 +14,10 @@ type Stories interface {
 	GetAllActiveByUser(ctx context.Context, userId string) ([]model.Stories, error)
 	UpdateMany(ctx context.Context, posts []model.Stories) ([]model.Stories, error)
 	DeleteManyByTitle(ctx context.Context, titles []string) error
+	Create(ctx context.Context, story model.Stories) (model.Stories, error)
+	GetByID(ctx context.Context, storyID uint) (model.Stories, error)
+	Update(ctx context.Context, story model.Stories) (model.Stories, error)
+	DeleteByID(ctx context.Context, id uint) error
 }
 
 type StoriesDB struct {
@@ -109,5 +113,52 @@ func (r *StoriesDB) DeleteManyByTitle(ctx context.Context, titles []string) erro
 		return err
 	}
 
+	return nil
+}
+
+func (r *StoriesDB) Create(ctx context.Context, story model.Stories) (model.Stories, error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Stories{})
+	err := q.Create(&story).Error
+	if err != nil {
+		return story, err
+	}
+	return story, nil
+}
+
+func (r *StoriesDB) GetByID(ctx context.Context, storyID uint) (story model.Stories, err error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Stories{})
+	err = q.Where("stories_id = ?", storyID).
+		Preload("StoryPages").
+		First(&story).
+		Error
+	if err != nil {
+		return story, err
+	}
+	return story, nil
+}
+
+func (r *StoriesDB) Update(ctx context.Context, story model.Stories) (model.Stories, error) {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Stories{})
+	err := q.Where("stories_id = ?", story.StoriesId).
+		Save(&story).
+		Error
+	if err != nil {
+		return story, err
+	}
+	return story, nil
+}
+
+func (r *StoriesDB) DeleteByID(ctx context.Context, id uint) error {
+	db := r.db.WithContext(ctx)
+	q := db.Model(&model.Stories{})
+	err := q.Where("stories_id = ?", id).
+		Delete(&model.Stories{}).
+		Error
+	if err != nil {
+		return err
+	}
 	return nil
 }

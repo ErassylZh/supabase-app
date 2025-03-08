@@ -15,6 +15,9 @@ type Collection interface {
 	CreateMany(ctx context.Context, collections []model.Collection) ([]model.Collection, error)
 	UpdateMany(ctx context.Context, collections []model.Collection) ([]model.Collection, error)
 	DeleteMany(ctx context.Context, collections []uint) error
+	Create(ctx context.Context, data model.Collection) (model.Collection, error)
+	Update(ctx context.Context, data model.Collection) (model.Collection, error)
+	Delete(ctx context.Context, id uint) error
 }
 
 type CollectionDB struct {
@@ -139,4 +142,20 @@ func (r *CollectionDB) DeleteMany(ctx context.Context, collectionIds []uint) err
 		return err
 	}
 	return nil
+}
+
+func (r *CollectionDB) Create(ctx context.Context, collection model.Collection) (model.Collection, error) {
+	err := r.db.WithContext(ctx).Create(&collection).Error
+	return collection, err
+}
+
+// Обновление коллекции
+func (r *CollectionDB) Update(ctx context.Context, collection model.Collection) (model.Collection, error) {
+	err := r.db.WithContext(ctx).Where("collection_id = ?", collection.CollectionID).Save(&collection).Error
+	return collection, err
+}
+
+// Удаление коллекции
+func (r *CollectionDB) Delete(ctx context.Context, id uint) error {
+	return r.db.WithContext(ctx).Delete(&model.Collection{}, id).Error
 }
