@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 	"strings"
-	"time"
 	"work-project/internal/admin"
 	"work-project/internal/model"
 	"work-project/internal/repository"
@@ -27,8 +26,8 @@ type HashtagService struct {
 	storage     repository.StorageClient
 }
 
-func NewHashtagService(hashtagRepo repository.Hashtag) *HashtagService {
-	return &HashtagService{hashtagRepo: hashtagRepo}
+func NewHashtagService(hashtagRepo repository.Hashtag, postHashtag repository.PostHashtag, storage repository.StorageClient) *HashtagService {
+	return &HashtagService{hashtagRepo: hashtagRepo, postHashtag: postHashtag, storage: storage}
 }
 
 func (s *HashtagService) GetAll(ctx context.Context) ([]model.Hashtag, error) {
@@ -67,8 +66,8 @@ func (s *HashtagService) saveBase64Image(ctx context.Context, base64Str, filenam
 func (s *HashtagService) Create(ctx context.Context, data admin.CreateHashtag) (model.Hashtag, error) {
 	// Обрабатываем изображение, если передано
 	var imagePath *string
-	if data.ImageBase64 != nil && *data.ImageBase64 != "" {
-		newPath, err := s.saveBase64Image(ctx, *data.ImageBase64, "image_hashtag.jpg")
+	if data.Image != nil && data.Image.File != "" {
+		newPath, err := s.saveBase64Image(ctx, data.Image.File, data.Image.FileName)
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Hashtag{}, err
@@ -107,8 +106,8 @@ func (s *HashtagService) Update(ctx context.Context, data admin.UpdateHashtag) (
 	hashtag.IsVisible = data.IsVisible
 
 	// Обрабатываем изображение, если передано
-	if data.ImageBase64 != nil && *data.ImageBase64 != "" {
-		newPath, err := s.saveBase64Image(ctx, *data.ImageBase64, hashtag.Name+time.Now().String())
+	if data.Image != nil && data.Image.File != "" {
+		newPath, err := s.saveBase64Image(ctx, data.Image.File, data.Image.FileName)
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Hashtag{}, err

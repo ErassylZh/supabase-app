@@ -145,8 +145,8 @@ func (s *CollectionService) Create(ctx context.Context, data admin.CreateCollect
 	collection.IsRecommendation = data.IsRecommendation
 
 	// Обрабатываем изображения, если они есть
-	if data.ImageBase64 != nil && *data.ImageBase64 != "" {
-		newPath, err := s.saveBase64Image(ctx, *data.ImageBase64, collection.Name+time.Now().String())
+	if data.Image != nil && data.Image.File != "" {
+		newPath, err := s.saveBase64Image(ctx, data.Image.File, data.Image.FileName+time.Now().String())
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
@@ -154,19 +154,21 @@ func (s *CollectionService) Create(ctx context.Context, data admin.CreateCollect
 		collection.ImagePath = newPath
 	}
 
-	if data.ImageKzBase64 != nil && *data.ImageKzBase64 != "" {
-		newPath, err := s.saveBase64Image(ctx, *data.ImageKzBase64, collection.NameKz+time.Now().String())
+	// Обрабатываем изображения, если они есть
+	if data.ImageKz != nil && data.ImageKz.File != "" {
+		newPath, err := s.saveBase64Image(ctx, data.ImageKz.File, data.ImageKz.FileName+time.Now().String())
 		if err != nil {
-			log.Println("Ошибка сохранения image_path_kz:", err)
+			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
 		}
 		collection.ImagePathKz = newPath
 	}
 
-	if data.ImageRuBase64 != nil && *data.ImageRuBase64 != "" {
-		newPath, err := s.saveBase64Image(ctx, *data.ImageRuBase64, collection.NameRu+time.Now().String())
+	// Обрабатываем изображения, если они есть
+	if data.ImageRu != nil && data.ImageRu.File != "" {
+		newPath, err := s.saveBase64Image(ctx, data.ImageRu.File, data.ImageRu.FileName+time.Now().String())
 		if err != nil {
-			log.Println("Ошибка сохранения image_path_ru:", err)
+			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
 		}
 		collection.ImagePathRu = newPath
@@ -228,8 +230,8 @@ func (s *CollectionService) Update(ctx context.Context, data admin.UpdateCollect
 	collection.IsRecommendation = data.IsRecommendation
 
 	// Обрабатываем изображения, если они есть
-	if data.ImageBase64 != nil && *data.ImageBase64 != "" {
-		newPath, err := s.saveBase64Image(ctx, *data.ImageBase64, collection.Name+time.Now().String())
+	if data.Image != nil && data.Image.File != "" {
+		newPath, err := s.saveBase64Image(ctx, data.Image.File, data.Image.FileName+time.Now().String())
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
@@ -237,19 +239,21 @@ func (s *CollectionService) Update(ctx context.Context, data admin.UpdateCollect
 		collection.ImagePath = newPath
 	}
 
-	if data.ImageKzBase64 != nil && *data.ImageKzBase64 != "" {
-		newPath, err := s.saveBase64Image(ctx, *data.ImageKzBase64, collection.NameKz+time.Now().String())
+	// Обрабатываем изображения, если они есть
+	if data.ImageKz != nil && data.ImageKz.File != "" {
+		newPath, err := s.saveBase64Image(ctx, data.ImageKz.File, data.ImageKz.FileName+time.Now().String())
 		if err != nil {
-			log.Println("Ошибка сохранения image_path_kz:", err)
+			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
 		}
 		collection.ImagePathKz = newPath
 	}
 
-	if data.ImageRuBase64 != nil && *data.ImageRuBase64 != "" {
-		newPath, err := s.saveBase64Image(ctx, *data.ImageRuBase64, collection.NameRu+time.Now().String())
+	// Обрабатываем изображения, если они есть
+	if data.ImageRu != nil && data.ImageRu.File != "" {
+		newPath, err := s.saveBase64Image(ctx, data.ImageRu.File, data.ImageRu.FileName+time.Now().String())
 		if err != nil {
-			log.Println("Ошибка сохранения image_path_ru:", err)
+			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
 		}
 		collection.ImagePathRu = newPath

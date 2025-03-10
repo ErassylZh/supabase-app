@@ -42,6 +42,7 @@ func (h *Handler) Init(api *gin.RouterGroup) {
 		h.initCollection(v1)
 		h.initPrivacyTerms(v1)
 		h.initContest(v1)
+		h.initAdmin(v1)
 	}
 
 	v2 := api.Group("/v2")
