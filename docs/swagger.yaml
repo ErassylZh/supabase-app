@@ -23,12 +23,12 @@ definitions:
     type: object
   admin.CreateCollection:
     properties:
-      image_base64:
-        type: string
-      image_kz_base64:
-        type: string
-      image_ru_base64:
-        type: string
+      image:
+        $ref: '#/definitions/admin.Image'
+      image_kz:
+        $ref: '#/definitions/admin.Image'
+      image_ru:
+        $ref: '#/definitions/admin.Image'
       is_recommendation:
         type: boolean
       name:
@@ -86,8 +86,8 @@ definitions:
     type: object
   admin.CreateHashtag:
     properties:
-      image_base64:
-        type: string
+      image:
+        $ref: '#/definitions/admin.Image'
       is_visible:
         type: boolean
       name:
@@ -225,12 +225,12 @@ definitions:
     properties:
       collection_id:
         type: integer
-      image_base64:
-        type: string
-      image_kz_base64:
-        type: string
-      image_ru_base64:
-        type: string
+      image:
+        $ref: '#/definitions/admin.Image'
+      image_kz:
+        $ref: '#/definitions/admin.Image'
+      image_ru:
+        $ref: '#/definitions/admin.Image'
       is_recommendation:
         type: boolean
       name:
@@ -303,8 +303,8 @@ definitions:
     properties:
       hashtag_id:
         type: integer
-      image_base64:
-        type: string
+      image:
+        $ref: '#/definitions/admin.Image'
       is_visible:
         type: boolean
       name:

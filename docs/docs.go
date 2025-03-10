@@ -3383,14 +3383,14 @@ const docTemplate = `{
         "admin.CreateCollection": {
             "type": "object",
             "properties": {
-                "image_base64": {
-                    "type": "string"
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
                 },
-                "image_kz_base64": {
-                    "type": "string"
+                "image_kz": {
+                    "$ref": "#/definitions/admin.Image"
                 },
-                "image_ru_base64": {
-                    "type": "string"
+                "image_ru": {
+                    "$ref": "#/definitions/admin.Image"
                 },
                 "is_recommendation": {
                     "type": "boolean"
@@ -3479,8 +3479,8 @@ const docTemplate = `{
         "admin.CreateHashtag": {
             "type": "object",
             "properties": {
-                "image_base64": {
-                    "type": "string"
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
                 },
                 "is_visible": {
                     "type": "boolean"
@@ -3692,14 +3692,14 @@ const docTemplate = `{
                 "collection_id": {
                     "type": "integer"
                 },
-                "image_base64": {
-                    "type": "string"
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
                 },
-                "image_kz_base64": {
-                    "type": "string"
+                "image_kz": {
+                    "$ref": "#/definitions/admin.Image"
                 },
-                "image_ru_base64": {
-                    "type": "string"
+                "image_ru": {
+                    "$ref": "#/definitions/admin.Image"
                 },
                 "is_recommendation": {
                     "type": "boolean"
@@ -3811,8 +3811,8 @@ const docTemplate = `{
                 "hashtag_id": {
                     "type": "integer"
                 },
-                "image_base64": {
-                    "type": "string"
+                "image": {
+                    "$ref": "#/definitions/admin.Image"
                 },
                 "is_visible": {
                     "type": "boolean"
