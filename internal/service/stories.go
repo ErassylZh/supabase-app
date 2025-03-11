@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"log"
+	"time"
 	"work-project/internal/admin"
 	"work-project/internal/model"
 	"work-project/internal/repository"
@@ -70,7 +71,7 @@ func (s *StoriesService) ReadStory(ctx context.Context, userId string, storyId u
 
 func (s *StoriesService) Create(ctx context.Context, data admin.CreateStories) (model.Stories, error) {
 	if data.Icon != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), data.Icon.FileName, data.Icon.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), time.Now().String()+data.Icon.FileName, data.Icon.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "story name", data.Title)
 			return model.Stories{}, err
@@ -108,7 +109,7 @@ func (s *StoriesService) Update(ctx context.Context, data admin.UpdateStories) (
 	}
 
 	if data.Icon != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), data.Icon.FileName, data.Icon.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), time.Now().String()+data.Icon.FileName, data.Icon.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "story name", data.Title)
 			return model.Stories{}, err
@@ -134,7 +135,7 @@ func (s *StoriesService) DeleteByID(ctx context.Context, id uint) error {
 
 func (s *StoriesService) CreatePage(ctx context.Context, data admin.CreateStoryPage) (model.StoryPage, error) {
 	if data.Icon != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_STORIES), data.Icon.FileName, data.Icon.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_STORIES), time.Now().String()+data.Icon.FileName, data.Icon.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "story name", data.Text)
 			return model.StoryPage{}, err
@@ -168,7 +169,7 @@ func (s *StoriesService) UpdateStoryPage(ctx context.Context, data admin.UpdateS
 		storyPage.PageOrder = *data.PageOrder
 	}
 	if data.Icon != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_STORIES), data.Icon.FileName, data.Icon.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_STORIES), time.Now().String()+data.Icon.FileName, data.Icon.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "story name", data.Text)
 			return model.StoryPage{}, err

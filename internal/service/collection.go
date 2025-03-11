@@ -146,7 +146,7 @@ func (s *CollectionService) Create(ctx context.Context, data admin.CreateCollect
 
 	// Обрабатываем изображения, если они есть
 	if data.Image != nil && data.Image.File != "" {
-		newPath, err := s.saveBase64Image(ctx, data.Image.File, data.Image.FileName+time.Now().String())
+		newPath, err := s.saveBase64Image(ctx, data.Image.File, data.Image.FileName)
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
@@ -156,7 +156,7 @@ func (s *CollectionService) Create(ctx context.Context, data admin.CreateCollect
 
 	// Обрабатываем изображения, если они есть
 	if data.ImageKz != nil && data.ImageKz.File != "" {
-		newPath, err := s.saveBase64Image(ctx, data.ImageKz.File, data.ImageKz.FileName+time.Now().String())
+		newPath, err := s.saveBase64Image(ctx, data.ImageKz.File, data.ImageKz.FileName)
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
@@ -166,7 +166,7 @@ func (s *CollectionService) Create(ctx context.Context, data admin.CreateCollect
 
 	// Обрабатываем изображения, если они есть
 	if data.ImageRu != nil && data.ImageRu.File != "" {
-		newPath, err := s.saveBase64Image(ctx, data.ImageRu.File, data.ImageRu.FileName+time.Now().String())
+		newPath, err := s.saveBase64Image(ctx, data.ImageRu.File, data.ImageRu.FileName)
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
@@ -208,7 +208,7 @@ func (s *CollectionService) saveBase64Image(ctx context.Context, base64Str, file
 	}
 
 	// Сохраняем файл
-	filePath, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_COLLECTION), filename, base64Str)
+	filePath, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_COLLECTION), time.Now().String()+filename, base64Str)
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +231,7 @@ func (s *CollectionService) Update(ctx context.Context, data admin.UpdateCollect
 
 	// Обрабатываем изображения, если они есть
 	if data.Image != nil && data.Image.File != "" {
-		newPath, err := s.saveBase64Image(ctx, data.Image.File, data.Image.FileName+time.Now().String())
+		newPath, err := s.saveBase64Image(ctx, data.Image.File, data.Image.FileName)
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
@@ -241,7 +241,7 @@ func (s *CollectionService) Update(ctx context.Context, data admin.UpdateCollect
 
 	// Обрабатываем изображения, если они есть
 	if data.ImageKz != nil && data.ImageKz.File != "" {
-		newPath, err := s.saveBase64Image(ctx, data.ImageKz.File, data.ImageKz.FileName+time.Now().String())
+		newPath, err := s.saveBase64Image(ctx, data.ImageKz.File, data.ImageKz.FileName)
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err
@@ -251,7 +251,7 @@ func (s *CollectionService) Update(ctx context.Context, data admin.UpdateCollect
 
 	// Обрабатываем изображения, если они есть
 	if data.ImageRu != nil && data.ImageRu.File != "" {
-		newPath, err := s.saveBase64Image(ctx, data.ImageRu.File, data.ImageRu.FileName+time.Now().String())
+		newPath, err := s.saveBase64Image(ctx, data.ImageRu.File, data.ImageRu.FileName)
 		if err != nil {
 			log.Println("Ошибка сохранения image_path:", err)
 			return model.Collection{}, err

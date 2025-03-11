@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"strings"
+	"time"
 	"work-project/internal/admin"
 	"work-project/internal/model"
 	"work-project/internal/repository"
@@ -55,7 +56,7 @@ func (s *HashtagService) saveBase64Image(ctx context.Context, base64Str, filenam
 		base64Str = parts[1]
 	}
 
-	filePath, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_HASHTAG), filename, base64Str)
+	filePath, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_HASHTAG), time.Now().String()+filename, base64Str)
 	if err != nil {
 		return nil, err
 	}

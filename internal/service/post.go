@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"log"
+	"time"
 	"work-project/internal/admin"
 	"work-project/internal/model"
 	"work-project/internal/repository"
@@ -84,7 +85,7 @@ func (s *PostService) Create(ctx context.Context, data admin.CreatePost) (model.
 	images := make([]model.Image, 0)
 
 	if data.Logo != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), data.Logo.FileName, data.Logo.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), time.Now().String()+data.Logo.FileName, data.Logo.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "post name", post.Title)
 			return model.Post{}, err
@@ -97,7 +98,7 @@ func (s *PostService) Create(ctx context.Context, data admin.CreatePost) (model.
 	}
 
 	if data.Image != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), data.Image.FileName, data.Image.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), time.Now().String()+data.Image.FileName, data.Image.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "post name", post.Title)
 			return model.Post{}, err
@@ -125,7 +126,7 @@ func (s *PostService) Update(ctx context.Context, data admin.UpdatePost) (model.
 	images := make([]model.Image, 0)
 
 	if data.Logo != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), data.Logo.FileName, data.Logo.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), time.Now().String()+data.Logo.FileName, data.Logo.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "post name", post.Title)
 			return model.Post{}, err
@@ -138,7 +139,7 @@ func (s *PostService) Update(ctx context.Context, data admin.UpdatePost) (model.
 	}
 
 	if data.Image != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), data.Image.FileName, data.Image.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), time.Now().String()+data.Image.FileName, data.Image.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "post name", post.Title)
 			return model.Post{}, err

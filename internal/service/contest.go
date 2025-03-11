@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"sort"
+	"time"
 	"work-project/internal/admin"
 	"work-project/internal/model"
 	"work-project/internal/repository"
@@ -335,7 +336,7 @@ func (s *ContestService) CreateBook(ctx context.Context, data admin.CreateContes
 	}
 
 	if data.Image != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), data.Image.FileName, data.Image.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), time.Now().String()+data.Image.FileName, data.Image.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "contest book name", contestBook.Title)
 			return model.ContestBook{}, err
@@ -394,7 +395,7 @@ func (s *ContestService) UpdateBook(ctx context.Context, data admin.UpdateContes
 	}
 
 	if data.Image != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), data.Image.FileName, data.Image.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), time.Now().String()+data.Image.FileName, data.Image.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "contest book name", contestBook.Title)
 			return model.ContestBook{}, err
@@ -417,7 +418,7 @@ func (s *ContestService) CreatePrize(ctx context.Context, data admin.CreateConte
 	}
 
 	if data.Image != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), data.Image.FileName, data.Image.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), time.Now().String()+data.Image.FileName, data.Image.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "contest prize name", contestPrize.PrizeName)
 			return model.ContestPrize{}, err
@@ -442,7 +443,7 @@ func (s *ContestService) UpdatePrize(ctx context.Context, data admin.UpdateConte
 	}
 
 	if data.Image != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), data.Image.FileName, data.Image.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), time.Now().String()+data.Image.FileName, data.Image.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "contest prize name", contestPrize.PrizeName)
 			return model.ContestPrize{}, err
