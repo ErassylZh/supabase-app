@@ -24,10 +24,10 @@ type Hashtag interface {
 type HashtagService struct {
 	hashtagRepo repository.Hashtag
 	postHashtag repository.PostHashtag
-	storage     repository.StorageClient
+	storage     repository.Storage
 }
 
-func NewHashtagService(hashtagRepo repository.Hashtag, postHashtag repository.PostHashtag, storage repository.StorageClient) *HashtagService {
+func NewHashtagService(hashtagRepo repository.Hashtag, postHashtag repository.PostHashtag, storage repository.Storage) *HashtagService {
 	return &HashtagService{hashtagRepo: hashtagRepo, postHashtag: postHashtag, storage: storage}
 }
 

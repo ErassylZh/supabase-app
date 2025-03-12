@@ -30,11 +30,11 @@ type CollectionService struct {
 	postCollectionRepo repository.PostCollection
 	userPostRepo       repository.UserPost
 	markRepo           repository.Mark
-	storage            repository.StorageClient
+	storage            repository.Storage
 	postService        Post
 }
 
-func NewCollectionService(collectionRepo repository.Collection, userPostRepo repository.UserPost, markRepo repository.Mark, storage repository.StorageClient, postService Post) *CollectionService {
+func NewCollectionService(collectionRepo repository.Collection, userPostRepo repository.UserPost, markRepo repository.Mark, storage repository.Storage, postService Post) *CollectionService {
 	return &CollectionService{collectionRepo: collectionRepo, userPostRepo: userPostRepo, markRepo: markRepo, storage: storage, postService: postService}
 }
 

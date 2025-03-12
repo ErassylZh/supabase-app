@@ -22,8 +22,8 @@ type StorageClient struct {
 	supabaseKey string
 }
 
-func NewStorageClient(supabaseURL string, supabaseKey string) StorageClient {
-	return StorageClient{supabaseURL: supabaseURL, supabaseKey: supabaseKey}
+func NewStorageClient(supabaseURL string, supabaseKey string) *StorageClient {
+	return &StorageClient{supabaseURL: supabaseURL, supabaseKey: supabaseKey}
 }
 
 func (s *StorageClient) CreateImage(ctx context.Context, bucketName string, fileName, fileUrl string) (string, error) {

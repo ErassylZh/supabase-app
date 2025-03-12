@@ -44,7 +44,7 @@ func NewServices(deps Deps) *Services {
 		UserDeviceToken:  NewUserDeviceTokenService(deps.Repos.UserDeviceToken),
 		Product:          NewProductService(deps.Repos.Product, deps.Repos.Image, deps.Repos.StorageClient),
 		Post:             postService,
-		Stories:          NewStoriesService(deps.Repos.Stories, deps.Repos.StoryPage, deps.Repos.StoryPageUser),
+		Stories:          NewStoriesService(deps.Repos.Stories, deps.Repos.StoryPage, deps.Repos.StoryPageUser, deps.Repos.StorageClient),
 		Mark:             markService,
 		Hashtag:          NewHashtagService(deps.Repos.Hashtag, deps.Repos.PostHashtag, deps.Repos.StorageClient),
 		UserPost:         NewUserPostService(deps.Repos.UserPost, deps.Repos.Post),

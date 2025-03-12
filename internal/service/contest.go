@@ -41,7 +41,7 @@ type ContestService struct {
 	contestBookRepo        repository.ContestBook
 	contestHistoryRepo     repository.ContestHistory
 	contestPrizeRepo       repository.ContestPrize
-	storage                repository.StorageClient
+	storage                repository.Storage
 
 	balanceService BalanceService
 }

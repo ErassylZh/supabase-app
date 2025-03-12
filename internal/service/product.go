@@ -21,10 +21,10 @@ type Product interface {
 type ProductService struct {
 	productRepo repository.Product
 	image       repository.Image
-	storage     repository.StorageClient
+	storage     repository.Storage
 }
 
-func NewProductService(productRepo repository.Product, image repository.Image, storage repository.StorageClient) *ProductService {
+func NewProductService(productRepo repository.Product, image repository.Image, storage repository.Storage) *ProductService {
 	return &ProductService{productRepo: productRepo, image: image, storage: storage}
 }
 

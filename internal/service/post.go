@@ -23,10 +23,10 @@ type Post interface {
 type PostService struct {
 	postRepo repository.Post
 	image    repository.Image
-	storage  repository.StorageClient
+	storage  repository.Storage
 }
 
-func NewPostService(postRepo repository.Post, image repository.Image, storage repository.StorageClient) *PostService {
+func NewPostService(postRepo repository.Post, image repository.Image, storage repository.Storage) *PostService {
 	return &PostService{postRepo: postRepo, image: image, storage: storage}
 }
 

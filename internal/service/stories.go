@@ -26,11 +26,11 @@ type StoriesService struct {
 	storiesRepo       repository.Stories
 	storyPageRepo     repository.StoryPage
 	storyPageUserRepo repository.StoryPageUser
-	storage           repository.StorageClient
+	storage           repository.Storage
 }
 
-func NewStoriesService(storiesRepo repository.Stories, storyPageRepo repository.StoryPage, storyPageUserRepo repository.StoryPageUser) *StoriesService {
-	return &StoriesService{storiesRepo: storiesRepo, storyPageRepo: storyPageRepo, storyPageUserRepo: storyPageUserRepo}
+func NewStoriesService(storiesRepo repository.Stories, storyPageRepo repository.StoryPage, storyPageUserRepo repository.StoryPageUser, storage repository.Storage) *StoriesService {
+	return &StoriesService{storiesRepo: storiesRepo, storyPageRepo: storyPageRepo, storyPageUserRepo: storyPageUserRepo, storage: storage}
 }
 
 func (s *StoriesService) GetByUserId(ctx context.Context, userId string) ([]model.Stories, error) {
