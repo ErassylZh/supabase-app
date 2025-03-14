@@ -1017,7 +1017,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/admin.CreateProduct"
+                            "$ref": "#/definitions/admin.CreateContest"
                         }
                     }
                 ],
@@ -3406,6 +3406,23 @@ const docTemplate = `{
                 }
             }
         },
+        "admin.CreateContest": {
+            "type": "object",
+            "properties": {
+                "consolation_prize_sapphire": {
+                    "type": "integer"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "start_time": {
+                    "type": "string"
+                }
+            }
+        },
         "admin.CreateContestBook": {
             "type": "object",
             "properties": {
@@ -4046,6 +4063,12 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.ContestParticipant"
+                    }
+                },
+                "contest_prizes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ContestPrize"
                     }
                 },
                 "created_at": {

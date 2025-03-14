@@ -31,7 +31,8 @@ func NewContestDB(db *gorm.DB) *ContestDB {
 func (r *ContestDB) GetAll(ctx context.Context) (contests []model.Contest, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Contest{})
-	err = q.Find(&contests).
+	err = q.Preload("ContestPrizes").
+		Find(&contests).
 		Error
 	if err != nil {
 		return contests, err

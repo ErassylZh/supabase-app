@@ -48,7 +48,7 @@ func NewServices(deps Deps) *Services {
 		Mark:             markService,
 		Hashtag:          NewHashtagService(deps.Repos.Hashtag, deps.Repos.PostHashtag, deps.Repos.StorageClient),
 		UserPost:         NewUserPostService(deps.Repos.UserPost, deps.Repos.Post),
-		Collection:       NewCollectionService(deps.Repos.Collection, deps.Repos.UserPost, deps.Repos.Mark, deps.Repos.StorageClient, postService),
+		Collection:       NewCollectionService(deps.Repos.Collection, deps.Repos.PostCollection, deps.Repos.UserPost, deps.Repos.Mark, deps.Repos.StorageClient, postService),
 		EmailSender:      NewEmailSenderService(deps.Cgf.Email.Username, deps.Cgf.Email.Password, deps.Cgf.Email.Addr),
 		Order:            NewOrderService(deps.Repos.Order, deps.Repos.OrderProduct),
 		ProductTag:       NewProductTagService(deps.Repos.ProductTag),

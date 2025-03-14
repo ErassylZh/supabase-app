@@ -17,6 +17,7 @@ type Contest struct {
 
 	ContestParticipants []ContestParticipant `gorm:"foreignKey:ContestID;references:ContestID" json:"contest_participants"`
 	ContestBooks        ContestBooks         `gorm:"foreignKey:ContestID;references:ContestID" json:"contest_books"`
+	ContestPrizes       []ContestPrize       `gorm:"foreignKey:ContestID;references:ContestID" json:"contest_prizes"`
 }
 
 func (c *Contest) TableName() string {

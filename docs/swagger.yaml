@@ -38,6 +38,17 @@ definitions:
       name_ru:
         type: string
     type: object
+  admin.CreateContest:
+    properties:
+      consolation_prize_sapphire:
+        type: integer
+      end_time:
+        type: string
+      is_active:
+        type: boolean
+      start_time:
+        type: string
+    type: object
   admin.CreateContestBook:
     properties:
       body:
@@ -458,6 +469,10 @@ definitions:
       contest_participants:
         items:
           $ref: '#/definitions/model.ContestParticipant'
+        type: array
+      contest_prizes:
+        items:
+          $ref: '#/definitions/model.ContestPrize'
         type: array
       created_at:
         type: string
@@ -2182,7 +2197,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/admin.CreateProduct'
+          $ref: '#/definitions/admin.CreateContest'
       produces:
       - application/json
       responses:

@@ -284,7 +284,7 @@ func (h *Handler) GetContestBookByID(c *gin.Context) error {
 // @Summary создать contest
 // @Accept json
 // @Produce json
-// @Param data body admin.CreateProduct true "CreateProduct data"
+// @Param data body admin.CreateContest true "CreateProduct data"
 // @Success 200 {object} schema.Response[model.Contest]
 // @Failure 400 {object} schema.Response[schema.Empty]
 // @Security BearerAuth

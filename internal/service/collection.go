@@ -34,8 +34,8 @@ type CollectionService struct {
 	postService        Post
 }
 
-func NewCollectionService(collectionRepo repository.Collection, userPostRepo repository.UserPost, markRepo repository.Mark, storage repository.Storage, postService Post) *CollectionService {
-	return &CollectionService{collectionRepo: collectionRepo, userPostRepo: userPostRepo, markRepo: markRepo, storage: storage, postService: postService}
+func NewCollectionService(collectionRepo repository.Collection, postCollectionRepo repository.PostCollection, userPostRepo repository.UserPost, markRepo repository.Mark, storage repository.Storage, postService Post) *CollectionService {
+	return &CollectionService{collectionRepo: collectionRepo, postCollectionRepo: postCollectionRepo, userPostRepo: userPostRepo, markRepo: markRepo, storage: storage, postService: postService}
 }
 
 func (s *CollectionService) GetAllCollection(ctx context.Context, language string, userId *string, withoutPosts bool) ([]schema.CollectionListResponse, error) {

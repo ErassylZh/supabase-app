@@ -71,7 +71,7 @@ func (s *StoriesService) ReadStory(ctx context.Context, userId string, storyId u
 
 func (s *StoriesService) Create(ctx context.Context, data admin.CreateStories) (model.Stories, error) {
 	if data.Icon != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), time.Now().String()+data.Icon.FileName, data.Icon.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_STORIES), time.Now().String()+data.Icon.FileName, data.Icon.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "story name", data.Title)
 			return model.Stories{}, err
@@ -109,7 +109,7 @@ func (s *StoriesService) Update(ctx context.Context, data admin.UpdateStories) (
 	}
 
 	if data.Icon != nil {
-		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_PRODUCT), time.Now().String()+data.Icon.FileName, data.Icon.File)
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_STORIES), time.Now().String()+data.Icon.FileName, data.Icon.File)
 		if err != nil {
 			log.Println(ctx, "some err while create image", "err", err, "story name", data.Title)
 			return model.Stories{}, err
