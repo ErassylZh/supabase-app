@@ -3546,6 +3546,9 @@
                 "short_description": {
                     "type": "string"
                 },
+                "status": {
+                    "type": "string"
+                },
                 "title": {
                     "type": "string"
                 }
@@ -3609,6 +3612,9 @@
                     "type": "string"
                 },
                 "sku": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "title": {

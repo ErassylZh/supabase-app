@@ -3552,6 +3552,9 @@ const docTemplate = `{
                 "short_description": {
                     "type": "string"
                 },
+                "status": {
+                    "type": "string"
+                },
                 "title": {
                     "type": "string"
                 }
@@ -3615,6 +3618,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sku": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "title": {

@@ -8,6 +8,7 @@ type CreatePost struct {
 	Body             string  `json:"body"`
 	ReadTime         *int    `json:"read_time"`
 	RatingStatus     *string `json:"rating_status"`
+	Status           string  `gorm:"column:status" json:"status"`
 	Point            *int    `json:"point"`
 	QuizTime         *int    `json:"quiz_time"`
 	Sapphire         int     `json:"sapphire"`

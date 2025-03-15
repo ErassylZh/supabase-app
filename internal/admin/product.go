@@ -12,6 +12,7 @@ type CreateProduct struct {
 	Sapphire      int    `gorm:"column:sapphire" json:"sapphire"`
 	Sku           string `gorm:"column:sku" json:"sku"`
 	ProductType   string `gorm:"column:product_type" json:"product_type"`
+	Status        string `gorm:"column:status" json:"status"`
 	SellType      string `gorm:"column:sell_type" json:"sell_type"`
 	Offer         string `gorm:"column:offer" json:"offer"`
 	OfferKz       string `gorm:"column:offer_kz" json:"offer_kz"`
