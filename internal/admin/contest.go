@@ -34,7 +34,8 @@ type CreateContestBook struct {
 	BodyEn           string `json:"body_en"`
 	CountOfQuestions int    `json:"count_of_questions"`
 
-	Image *Image `json:"image"`
+	Image       *Image `json:"image"`
+	AuthorImage *Image `json:"author_image"`
 }
 
 type UpdateContestBook struct {

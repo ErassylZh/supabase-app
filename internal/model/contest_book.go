@@ -25,8 +25,11 @@ type ContestBook struct {
 	BodyEn           string    `gorm:"column:body_en" json:"body_en"`
 	CountOfQuestions int       `gorm:"column:count_of_questions"  json:"count_of_questions"`
 	PhotoPath        *string   `gorm:"column:photo_path" json:"photo_path"`
+	ReadTime         int       `gorm:"column:read_time" json:"read_time"`
+	Company          *string   `gorm:"column:company" json:"company"`
 
 	ContestHistory []ContestHistory `json:"contest_history"`
+	Images         []Image          `json:"images"`
 }
 
 func (c *ContestBook) TableName() string {

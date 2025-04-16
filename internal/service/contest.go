@@ -41,6 +41,7 @@ type ContestService struct {
 	contestBookRepo        repository.ContestBook
 	contestHistoryRepo     repository.ContestHistory
 	contestPrizeRepo       repository.ContestPrize
+	imageRepo              repository.Image
 	storage                repository.Storage
 
 	balanceService BalanceService
@@ -335,6 +336,12 @@ func (s *ContestService) CreateBook(ctx context.Context, data admin.CreateContes
 		CountOfQuestions: data.CountOfQuestions,
 	}
 
+	conestBook, err := s.contestBookRepo.Create(ctx, contestBook)
+	if err != nil {
+		return model.ContestBook{}, err
+	}
+
+	images := make([]model.Image, 0)
 	if data.Image != nil {
 		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), time.Now().String()+data.Image.FileName, data.Image.File)
 		if err != nil {
@@ -342,9 +349,33 @@ func (s *ContestService) CreateBook(ctx context.Context, data admin.CreateContes
 			return model.ContestBook{}, err
 		}
 		contestBook.PhotoPath = &file
+		images = append(images, model.Image{
+			ContestBookID: &contestBook.ContestBookID,
+			ImageUrl:      file,
+			Type:          string(model.POST_IMAGE_TYPE_LOGO),
+		})
 	}
 
-	return s.contestBookRepo.Create(ctx, contestBook)
+	if data.AuthorImage != nil {
+		file, err := s.storage.CreateImageFromBase64(ctx, string(model.BUCKET_NAME_CONTEST), time.Now().String()+data.Image.FileName, data.Image.File)
+		if err != nil {
+			log.Println(ctx, "some err while create image", "err", err, "contest book name", contestBook.Title)
+			return model.ContestBook{}, err
+		}
+		images = append(images, model.Image{
+			ContestBookID: &contestBook.ContestBookID,
+			ImageUrl:      file,
+			Type:          string(model.POST_IMAGE_TYPE_IMAGE),
+		})
+	}
+
+	if len(images) > 0 {
+		_, err = s.imageRepo.CreateMany(ctx, images)
+		if err != nil {
+			return model.ContestBook{}, err
+		}
+	}
+	return conestBook, nil
 }
 
 func (s *ContestService) UpdateBook(ctx context.Context, data admin.UpdateContestBook) (model.ContestBook, error) {

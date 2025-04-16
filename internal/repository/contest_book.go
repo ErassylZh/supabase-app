@@ -40,6 +40,7 @@ func (r *ContestBookDB) GetByID(ctx context.Context, contestBookId uint) (contes
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.ContestBook{})
 	err = q.Where("contest_book_id = ?", contestBookId).
+		Preload("Images").
 		First(&contestBook).
 		Error
 	if err != nil {
@@ -52,6 +53,7 @@ func (r *ContestBookDB) GetByContestID(ctx context.Context, contestId uint) (con
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.ContestBook{})
 	err = q.Where("contest_id = ?", contestId).
+		Preload("Images").
 		Find(&contestBooks).
 		Error
 	if err != nil {

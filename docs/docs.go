@@ -3426,6 +3426,9 @@ const docTemplate = `{
         "admin.CreateContestBook": {
             "type": "object",
             "properties": {
+                "author_image": {
+                    "$ref": "#/definitions/admin.Image"
+                },
                 "body": {
                     "type": "string"
                 },
@@ -4106,6 +4109,9 @@ const docTemplate = `{
                 "body_kz": {
                     "type": "string"
                 },
+                "company": {
+                    "type": "string"
+                },
                 "contest_book_id": {
                     "type": "integer"
                 },
@@ -4139,10 +4145,19 @@ const docTemplate = `{
                 "description_kz": {
                     "type": "string"
                 },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Image"
+                    }
+                },
                 "photo_path": {
                     "type": "string"
                 },
                 "point": {
+                    "type": "integer"
+                },
+                "read_time": {
                     "type": "integer"
                 },
                 "status": {
@@ -4287,6 +4302,9 @@ const docTemplate = `{
         "model.Image": {
             "type": "object",
             "properties": {
+                "contest_book_id": {
+                    "type": "integer"
+                },
                 "created_at": {
                     "type": "string"
                 },
