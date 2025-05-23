@@ -14,7 +14,7 @@ import (
 func (h *Handler) initRatingSocket(router *gin.RouterGroup) {
 	orders := router.Group("/all")
 	{
-		orders.GET("/", func(c *gin.Context) {
+		orders.GET("", func(c *gin.Context) {
 			h.SocketAggregator(c)
 		})
 	}
@@ -33,8 +33,14 @@ var upgrader = websocket.Upgrader{
 // @Accept json
 // @Produce json
 // @Param token body TokenData true "JWT Token"
-// @Router /all/ [get]
+// @Router /all [get]
 func (h *Handler) SocketAggregator(c *gin.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("panic recovered:", r)
+		}
+	}()
+
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to establish WebSocket connection"})

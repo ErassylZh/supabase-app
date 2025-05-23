@@ -33,6 +33,12 @@ func NewServiceAggregatorService(service service.Services) *ServiceAggregatorSer
 }
 
 func (s *ServiceAggregatorService) SocketAggregate(ctx context.Context, c *websocket.Conn, client *service.SocketClient, warehouseCodeUt string) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("panic recovered:", r)
+		}
+	}()
+
 	ticker := time.NewTicker(10 * time.Second)
 	data, err := s.getActiveMessages(ctx, client)
 	if err != nil {
