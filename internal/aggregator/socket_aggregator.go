@@ -67,14 +67,14 @@ func (s *ServiceAggregatorService) SocketAggregate(ctx context.Context, c *webso
 		case message, ok := <-client.Send:
 			if !ok {
 				_ = c.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""), time.Now().Add(10*time.Second))
-				log.Fatal("error while close connect", "err", err)
+				log.Println("client send channel closed")
 				return
 			}
 
 			_ = c.SetWriteDeadline(time.Now().Add(90 * time.Second))
 
 			if err := c.WriteJSON(message); err != nil {
-				//log.Errorf(ctx, "error while write message", "err", err)
+				log.Printf("error while write message %s", err.Error())
 				return
 			}
 		case <-ticker.C:
@@ -87,7 +87,7 @@ func (s *ServiceAggregatorService) SocketAggregate(ctx context.Context, c *webso
 
 			data, err = s.getActiveMessages(ctx, client)
 			if err != nil {
-				log.Fatal(ctx, "error get active messages", "err", err)
+				log.Printf("error get active messages %s", err.Error())
 				return
 			}
 			service.GetHub().SendMessageToClient(client, service.SocketResponseArrayStatusCode, data)
