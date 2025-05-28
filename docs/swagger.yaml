@@ -1590,7 +1590,7 @@ info:
   title: swagger API
   version: "1.0"
 paths:
-  /all/:
+  /all:
     get:
       consumes:
       - application/json
@@ -3624,6 +3624,40 @@ paths:
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
       summary: список группированных постов
+      tags:
+      - post
+  /api/v2/post/continue-reading:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: language
+        in: query
+        name: language
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: size
+        in: query
+        name: size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-schema_PostResponseByGroup'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: список продолжить чтения постов
       tags:
       - post
   /api/v2/post/filter:

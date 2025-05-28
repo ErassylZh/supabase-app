@@ -18,6 +18,10 @@ func (h *Handler) initPostV2(v2 *gin.RouterGroup) {
 		"/post/filter",
 		middleware.GinErrorHandle(h.GetFilterPostsV2),
 	)
+	v2.GET(
+		"/post/continue-reading",
+		middleware.GinErrorHandle(h.GetFilterPostsV2),
+	)
 }
 
 // GetListingPostsV2
@@ -166,6 +170,51 @@ func (h *Handler) GetFilterPostsV2(c *gin.Context) error {
 		Language:      &language,
 		PostIds:       postIds,
 		Pagination:    pagination,
+	})
+	if err != nil {
+		return err
+	}
+
+	return schema.RespondPaginate(posts, total, pagination.Page, c)
+}
+
+// GetContinueReading
+// WhoAmi godoc
+// @Summary список продолжить чтения постов
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[schema.PostResponseByGroup]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param language query string true "language"
+// @Param page query int true "page"
+// @Param size query int true "size"
+// @tags post
+// @Router /api/v2/post/continue-reading [get]
+func (h *Handler) GetContinueReading(c *gin.Context) error {
+	ctx := c.Request.Context()
+
+	var pagination schema.Pagination
+	if err := c.BindQuery(&pagination); err != nil {
+		return err
+	}
+	pagination.Validate()
+
+	var userId *string
+	token := c.GetHeader("Authorization")
+
+	language := c.Query("language")
+
+	if token != "" {
+		userIdStr, err := h.services.Auth.VerifyToken(token)
+		if err != nil {
+			return err
+		}
+		userId = &userIdStr
+	}
+
+	posts, total, err := h.usecases.Post.GetListingWithGroup(ctx, userId, schema.GetListingFilter{
+		Language:   &language,
+		Pagination: pagination,
 	})
 	if err != nil {
 		return err

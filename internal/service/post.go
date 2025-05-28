@@ -18,6 +18,7 @@ type Post interface {
 	Update(ctx context.Context, data admin.UpdatePost) (model.Post, error)
 	Delete(ctx context.Context, id uint) error
 	GetById(ctx context.Context, id uint) (model.Post, error)
+	GetContinueReading(ctx context.Context, userID string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error)
 }
 
 type PostService struct {
@@ -161,4 +162,30 @@ func (s *PostService) Update(ctx context.Context, data admin.UpdatePost) (model.
 
 func (s *PostService) Delete(ctx context.Context, id uint) error {
 	return s.postRepo.DeleteById(ctx, id)
+}
+
+func (s *PostService) GetContinueReading(ctx context.Context, userID string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error) {
+	posts, total, err := s.postRepo.GetContinueReading(ctx, userID, filter)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	result := make([]schema.PostResponse, len(posts))
+	for i, post := range posts {
+		data := schema.PostResponse{Post: post}
+		for _, hashtag := range post.Hashtags {
+			if hashtag.Name == string(model.HASHTAG_NAME_PARTNER) {
+				data.PostType = "partner"
+				break
+			}
+			if hashtag.Name == string(model.HASHTAG_NAME_BESTSELLER) {
+				data.PostType = "post"
+				break
+			}
+		}
+		result[i] = data
+	}
+
+	return result, total, nil
+
 }

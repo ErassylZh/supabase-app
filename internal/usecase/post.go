@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"sort"
 	"work-project/internal/model"
@@ -17,6 +18,7 @@ type Post interface {
 	CheckQuiz(ctx context.Context, userId string, postId uint) (bool, error)
 	GetListingWithGroup(ctx context.Context, userId *string, filter schema.GetListingFilter) (schema.PostResponseByGroup, int64, error)
 	ReadPost(ctx context.Context, post schema.ReadPostRequest) (model.UserPost, error)
+	GetContinueReadingPost(ctx context.Context, userId *string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error)
 }
 
 type PostUsecase struct {
@@ -260,6 +262,52 @@ func (u *PostUsecase) GetListingWithGroup(ctx context.Context, userId *string, f
 		if up, exists := userPostMap[post.PostID]; exists && !up.ReadEnd {
 			result.ContinueReading = append(result.ContinueReading, post)
 		}
+	}
+
+	return result, total, nil
+}
+
+func (u *PostUsecase) GetContinueReadingPost(ctx context.Context, userId *string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error) {
+	if userId == nil {
+		return nil, 0, fmt.Errorf("no user in context")
+	}
+	posts, total, err := u.postService.GetContinueReading(ctx, *userId, filter)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	userPosts, err := u.userPostService.GetAllByUser(ctx, *userId)
+	if err != nil {
+		return nil, total, err
+	}
+	userPostMap := make(map[uint]model.UserPost)
+	for _, up := range userPosts {
+		userPostMap[up.PostId] = up
+	}
+	userMarks, err := u.markService.FindByUserID(ctx, *userId)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, total, err
+	}
+
+	postIdMark := make(map[uint]schema.MarkResponse)
+	for _, um := range userMarks {
+		postIdMark[um.PostID] = um
+	}
+
+	for i := range posts {
+		um, exists := postIdMark[posts[i].PostID]
+		posts[i].IsMarked = exists
+		posts[i].MarkId = &um.MarkID
+
+		if up, upExists := userPostMap[posts[i].PostID]; upExists {
+			posts[i].IsAlreadyRead = upExists
+			posts[i].QuizPassed = up.QuizPoints != nil || up.QuizSapphires != nil
+		}
+	}
+
+	result := make([]schema.PostResponse, 0)
+	for _, post := range posts {
+		result = append(result, post)
 	}
 
 	return result, total, nil

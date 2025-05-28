@@ -20,6 +20,7 @@ type Post interface {
 	GetById(ctx context.Context, id uint) (model.Post, error)
 	Update(ctx context.Context, post model.Post) (model.Post, error)
 	DeleteById(ctx context.Context, id uint) error
+	GetContinueReading(ctx context.Context, userID string, filter schema.GetListingFilter) ([]model.Post, int64, error)
 }
 
 type PostDB struct {
@@ -222,4 +223,36 @@ func (r *PostDB) DeleteById(ctx context.Context, id uint) error {
 	}
 
 	return nil
+}
+
+func (r *PostDB) GetContinueReading(ctx context.Context, userId string, filter schema.GetListingFilter) (posts []model.Post, total int64, err error) {
+	db := r.db.WithContext(ctx)
+
+	query := db.
+		Table("public.post AS p").
+		Select("p.*").
+		Joins("JOIN public.user_post up ON up.post_id = p.post_id AND up.user_id = ?", userId).
+		Where("NOT up.read_end")
+
+	err = query.Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if filter.Page != 0 && filter.Size != 0 {
+		query.Offset(filter.Size * (filter.Page - 1))
+		query.Limit(filter.Size)
+	}
+
+	err = query.
+		Preload("Images").
+		Preload("Hashtags").
+		Preload("Collections").
+		Find(&posts).
+		Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return posts, total, nil
 }
