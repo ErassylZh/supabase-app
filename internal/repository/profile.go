@@ -24,7 +24,7 @@ func (r *ProfileDB) GetByID(ctx context.Context, profileId string) (profile mode
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Profile{})
 	err = q.Where("id = ?", profileId).
-		First(&profileId).
+		First(&profile).
 		Error
 	if err != nil {
 		return profile, err
