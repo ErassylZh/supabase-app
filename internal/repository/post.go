@@ -114,7 +114,7 @@ func (r *PostDB) GetAllForListing(ctx context.Context, filter schema.GetListingF
 		Preload("Hashtags").
 		Preload("Collections").
 		Group("public.post.post_id").
-		Order("post_order")
+		Order("post_id desc")
 
 	err = query.Find(&posts).Error
 	if err != nil {
