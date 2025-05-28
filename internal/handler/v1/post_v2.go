@@ -22,6 +22,10 @@ func (h *Handler) initPostV2(v2 *gin.RouterGroup) {
 		"/post/continue-reading",
 		middleware.GinErrorHandle(h.GetFilterPostsV2),
 	)
+	v2.GET(
+		"/post/all",
+		middleware.GinErrorHandle(h.GetAllPostsV2),
+	)
 }
 
 // GetListingPostsV2
@@ -215,6 +219,83 @@ func (h *Handler) GetContinueReading(c *gin.Context) error {
 	posts, total, err := h.usecases.Post.GetListingWithGroup(ctx, userId, schema.GetListingFilter{
 		Language:   &language,
 		Pagination: pagination,
+	})
+	if err != nil {
+		return err
+	}
+
+	return schema.RespondPaginate(posts, total, pagination.Page, c)
+}
+
+// GetAllPostsV2
+// WhoAmi godoc
+// @Summary список постов с фильтром
+// @Accept json
+// @Produce json
+// @Success 200 {object} schema.Response[[]schema.PostResponse]
+// @Failure 400 {object} schema.Response[schema.Empty]
+// @Param hashtag_id query string false "hashtag_id"
+// @Param collection_id query string false "collection_id"
+// @Param language query string true "language"
+// @Param search query string false "search"
+// @Param post_ids query string false "post_ids"
+// @Param post_type query string true "all, post, partner"
+// @Param page query int true "page"
+// @Param size query int true "size"
+// @tags post
+// @Router /api/v2/post/all [get]
+func (h *Handler) GetAllPostsV2(c *gin.Context) error {
+	ctx := c.Request.Context()
+	var postIds []uint
+
+	var pagination schema.Pagination
+	if err := c.BindQuery(&pagination); err != nil {
+		return err
+	}
+	pagination.Validate()
+
+	language := c.Query("language")
+	postIdsStr := c.Query("post_ids")
+	for _, msi := range strings.Split(postIdsStr, ",") {
+		if msi == "" {
+			continue
+		}
+		id, _ := strconv.ParseUint(msi, 10, 64)
+		postIds = append(postIds, uint(id))
+	}
+
+	hashtagIDsStr := c.Query("hashtag_id")
+	hashtagIds := make([]uint, 0)
+	for _, msi := range strings.Split(hashtagIDsStr, ",") {
+		if msi == "" {
+			continue
+		}
+		id, _ := strconv.ParseUint(msi, 10, 64)
+		hashtagIds = append(hashtagIds, uint(id))
+	}
+	collectionIDsStr := c.Query("collection_id")
+	collectionIds := make([]uint, 0)
+	for _, msi := range strings.Split(collectionIDsStr, ",") {
+		if msi == "" {
+			continue
+		}
+		id, _ := strconv.ParseUint(msi, 10, 64)
+		collectionIds = append(collectionIds, uint(id))
+	}
+
+	search := c.Query("search")
+	postType := c.Query("post_type")
+	if postType != "all" && postType != "post" && postType != "partner" {
+		return fmt.Errorf("incorrect post_type value")
+	}
+
+	posts, total, err := h.usecases.Post.GetAll(ctx, postType, schema.GetListingFilter{
+		Search:        &search,
+		HashtagIds:    hashtagIds,
+		CollectionIds: collectionIds,
+		Language:      &language,
+		PostIds:       postIds,
+		Pagination:    pagination,
 	})
 	if err != nil {
 		return err

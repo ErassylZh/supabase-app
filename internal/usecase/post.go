@@ -19,6 +19,7 @@ type Post interface {
 	GetListingWithGroup(ctx context.Context, userId *string, filter schema.GetListingFilter) (schema.PostResponseByGroup, int64, error)
 	ReadPost(ctx context.Context, post schema.ReadPostRequest) (model.UserPost, error)
 	GetContinueReadingPost(ctx context.Context, userId *string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error)
+	GetAll(ctx context.Context, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error)
 }
 
 type PostUsecase struct {
@@ -311,4 +312,7 @@ func (u *PostUsecase) GetContinueReadingPost(ctx context.Context, userId *string
 	}
 
 	return result, total, nil
+}
+func (u *PostUsecase) GetAll(ctx context.Context, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error) {
+	return u.userPostService.GetAll(ctx, postType, filter)
 }

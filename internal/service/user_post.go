@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"work-project/internal/model"
 	"work-project/internal/repository"
+	"work-project/internal/schema"
 )
 
 type UserPost interface {
@@ -14,6 +15,7 @@ type UserPost interface {
 	GetByUserAndPost(ctx context.Context, userId string, postId uint) (model.UserPost, error)
 	GetAllByUser(ctx context.Context, id string) ([]model.UserPost, error)
 	Update(ctx context.Context, readed model.UserPost) (model.UserPost, error)
+	GetAll(ctx context.Context, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error)
 }
 
 type UserPostService struct {
@@ -74,4 +76,19 @@ func (s *UserPostService) GetAllByUser(ctx context.Context, id string) ([]model.
 
 func (s *UserPostService) Update(ctx context.Context, readed model.UserPost) (model.UserPost, error) {
 	return s.userPostRepo.Update(ctx, readed)
+}
+
+func (s *UserPostService) GetAll(ctx context.Context, postType string, filter schema.GetListingFilter) ([]schema.PostResponse, int64, error) {
+	posts, total, err := s.postRepo.GetAll(ctx, postType, filter)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	result := make([]schema.PostResponse, len(posts))
+	for i, post := range posts {
+		result[i] = schema.PostResponse{
+			Post: post,
+		}
+	}
+	return result, total, nil
 }
