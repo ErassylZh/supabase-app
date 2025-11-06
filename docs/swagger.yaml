@@ -1583,7 +1583,7 @@ definitions:
       token:
         type: string
     type: object
-host: 157.90.227.125:8000
+host: 3.77.53.4:8000
 info:
   contact: {}
   description: Это пример сервера с использованием Swagger в Gin.
@@ -3624,6 +3624,61 @@ paths:
           schema:
             $ref: '#/definitions/schema.Response-schema_Empty'
       summary: список группированных постов
+      tags:
+      - post
+  /api/v2/post/all:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: hashtag_id
+        in: query
+        name: hashtag_id
+        type: string
+      - description: collection_id
+        in: query
+        name: collection_id
+        type: string
+      - description: language
+        in: query
+        name: language
+        required: true
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: post_ids
+        in: query
+        name: post_ids
+        type: string
+      - description: all, post, partner
+        in: query
+        name: post_type
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: size
+        in: query
+        name: size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.Response-array_schema_PostResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.Response-schema_Empty'
+      summary: список постов с фильтром
       tags:
       - post
   /api/v2/post/continue-reading:

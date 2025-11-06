@@ -3263,6 +3263,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v2/post/all": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "summary": "список постов с фильтром",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "hashtag_id",
+                        "name": "hashtag_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "collection_id",
+                        "name": "collection_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "search",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "post_ids",
+                        "name": "post_ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "all, post, partner",
+                        "name": "post_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-array_schema_PostResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.Response-schema_Empty"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v2/post/continue-reading": {
             "get": {
                 "consumes": [
@@ -5837,7 +5919,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "157.90.227.125:8000",
+	Host:             "3.77.53.4:8000",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "swagger API",
