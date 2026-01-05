@@ -13,9 +13,6 @@ type ProductTag interface {
 	CreateMany(ctx context.Context, productTags []model.ProductTag) ([]model.ProductTag, error)
 	UpdateMany(ctx context.Context, productTags []model.ProductTag) ([]model.ProductTag, error)
 	DeleteMany(ctx context.Context, productTagIds []uint) error
-	Create(ctx context.Context, productTags model.ProductTag) (model.ProductTag, error)
-	Delete(ctx context.Context, productTagIds uint) error
-	Update(ctx context.Context, productTags model.ProductTag) (model.ProductTag, error)
 }
 
 type ProductTagDB struct {
@@ -88,53 +85,14 @@ func (r *ProductTagDB) UpdateMany(ctx context.Context, productTags []model.Produ
 	return productTags, nil
 }
 
-func (r *ProductTagDB) DeleteMany(ctx context.Context, productTagIds []uint) error {
+func (r *ProductTagDB) DeleteMany(ctx context.Context, product_tagIds []uint) error {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.ProductTag{})
-	err := q.Where("product_tag_id in (?)", productTagIds).
+	err := q.Where("product_tag_id in (?)", product_tagIds).
 		Delete(&model.ProductTag{}).
 		Error
 	if err != nil {
 		return err
 	}
 	return nil
-}
-
-func (r *ProductTagDB) Create(ctx context.Context, productTags model.ProductTag) (model.ProductTag, error) {
-	db := r.db.WithContext(ctx)
-	q := db.Model(&model.ProductTag{})
-	err := q.Create(&productTags).
-		Error
-	if err != nil {
-		return productTags, err
-	}
-	return productTags, nil
-}
-
-func (r *ProductTagDB) Delete(ctx context.Context, productTagIds uint) error {
-	db := r.db.WithContext(ctx)
-	q := db.Model(&model.ProductTag{})
-	err := q.Where("product_tag_id = (?)", productTagIds).
-		Delete(&model.ProductTag{}).
-		Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *ProductTagDB) Update(ctx context.Context, productTag model.ProductTag) (model.ProductTag, error) {
-	db := r.db.WithContext(ctx)
-	q := db.Model(&model.ProductTag{})
-	err := q.Where("product_tag_id = ?", productTag.ProductTagID).Updates(map[string]interface{}{
-		"name":       productTag.Name,
-		"name_ru":    productTag.NameRu,
-		"name_kz":    productTag.NameKz,
-		"image_path": productTag.ImagePath,
-	}).Error
-	if err != nil {
-		return productTag, err
-	}
-
-	return productTag, nil
 }

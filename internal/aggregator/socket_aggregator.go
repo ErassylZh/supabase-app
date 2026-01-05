@@ -33,12 +33,6 @@ func NewServiceAggregatorService(service service.Services) *ServiceAggregatorSer
 }
 
 func (s *ServiceAggregatorService) SocketAggregate(ctx context.Context, c *websocket.Conn, client *service.SocketClient, warehouseCodeUt string) {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Println("panic recovered:", r)
-		}
-	}()
-
 	ticker := time.NewTicker(10 * time.Second)
 	data, err := s.getActiveMessages(ctx, client)
 	if err != nil {
@@ -67,14 +61,14 @@ func (s *ServiceAggregatorService) SocketAggregate(ctx context.Context, c *webso
 		case message, ok := <-client.Send:
 			if !ok {
 				_ = c.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""), time.Now().Add(10*time.Second))
-				log.Println("client send channel closed")
+				log.Fatal("error while close connect", "err", err)
 				return
 			}
 
 			_ = c.SetWriteDeadline(time.Now().Add(90 * time.Second))
 
 			if err := c.WriteJSON(message); err != nil {
-				log.Printf("error while write message %s", err.Error())
+				//log.Errorf(ctx, "error while write message", "err", err)
 				return
 			}
 		case <-ticker.C:
@@ -87,7 +81,7 @@ func (s *ServiceAggregatorService) SocketAggregate(ctx context.Context, c *webso
 
 			data, err = s.getActiveMessages(ctx, client)
 			if err != nil {
-				log.Printf("error get active messages %s", err.Error())
+				log.Fatal(ctx, "error get active messages", "err", err)
 				return
 			}
 			service.GetHub().SendMessageToClient(client, service.SocketResponseArrayStatusCode, data)

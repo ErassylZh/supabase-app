@@ -17,7 +17,6 @@ type Contest interface {
 	GetAll(ctx context.Context) ([]model.Contest, error)
 	CreateMany(ctx context.Context, contests []model.Contest) ([]model.Contest, error)
 	UpdateMany(ctx context.Context, contests []model.Contest) ([]model.Contest, error)
-	Delete(ctx context.Context, id uint) error
 }
 
 type ContestDB struct {
@@ -31,8 +30,7 @@ func NewContestDB(db *gorm.DB) *ContestDB {
 func (r *ContestDB) GetAll(ctx context.Context) (contests []model.Contest, err error) {
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.Contest{})
-	err = q.Preload("ContestPrizes").
-		Find(&contests).
+	err = q.Find(&contests).
 		Error
 	if err != nil {
 		return contests, err
@@ -83,7 +81,7 @@ func (r *ContestDB) GetById(ctx context.Context, contestId uint) (contest model.
 
 func (r *ContestDB) Create(ctx context.Context, contest model.Contest) (model.Contest, error) {
 	db := r.db.WithContext(ctx)
-	q := db.Model(&model.Contest{})
+	q := db.Model(&model.Collection{})
 	err := q.Create(&contest).
 		Error
 	if err != nil {
@@ -94,7 +92,7 @@ func (r *ContestDB) Create(ctx context.Context, contest model.Contest) (model.Co
 
 func (r *ContestDB) Update(ctx context.Context, contest model.Contest) (model.Contest, error) {
 	db := r.db.WithContext(ctx)
-	q := db.Model(&model.Contest{})
+	q := db.Model(&model.Collection{})
 	err := q.Where("contest_id = ?", contest.ContestID).
 		Save(&contest).
 		Error
@@ -122,7 +120,7 @@ func (r *ContestDB) GetActiveJoinedByUser(ctx context.Context, userId string) (c
 
 func (r *ContestDB) CreateMany(ctx context.Context, contests []model.Contest) ([]model.Contest, error) {
 	db := r.db.WithContext(ctx)
-	q := db.Model(&model.Contest{})
+	q := db.Model(&model.Collection{})
 	err := q.Create(&contests).
 		Error
 	if err != nil {
@@ -151,16 +149,4 @@ func (r *ContestDB) UpdateMany(ctx context.Context, contests []model.Contest) ([
 		return nil, err
 	}
 	return contests, nil
-}
-
-func (r *ContestDB) Delete(ctx context.Context, id uint) error {
-	db := r.db.WithContext(ctx)
-	q := db.Model(&model.Contest{})
-	err := q.Where("contest_id = ?", id).
-		Delete(&model.Contest{}).
-		Error
-	if err != nil {
-		return err
-	}
-	return nil
 }

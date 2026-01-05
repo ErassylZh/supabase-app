@@ -12,9 +12,6 @@ type ContestBook interface {
 	CreateMany(ctx context.Context, contestBooks []model.ContestBook) ([]model.ContestBook, error)
 	UpdateMany(ctx context.Context, contestBooks []model.ContestBook) ([]model.ContestBook, error)
 	GetAll(ctx context.Context) ([]model.ContestBook, error)
-	Create(ctx context.Context, book model.ContestBook) (model.ContestBook, error)
-	Update(ctx context.Context, book model.ContestBook) (model.ContestBook, error)
-	Delete(ctx context.Context, id uint) error
 }
 
 type ContestBookDB struct {
@@ -40,7 +37,6 @@ func (r *ContestBookDB) GetByID(ctx context.Context, contestBookId uint) (contes
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.ContestBook{})
 	err = q.Where("contest_book_id = ?", contestBookId).
-		Preload("Images").
 		First(&contestBook).
 		Error
 	if err != nil {
@@ -53,7 +49,6 @@ func (r *ContestBookDB) GetByContestID(ctx context.Context, contestId uint) (con
 	db := r.db.WithContext(ctx)
 	q := db.Model(&model.ContestBook{})
 	err = q.Where("contest_id = ?", contestId).
-		Preload("Images").
 		Find(&contestBooks).
 		Error
 	if err != nil {
@@ -64,7 +59,7 @@ func (r *ContestBookDB) GetByContestID(ctx context.Context, contestId uint) (con
 
 func (r *ContestBookDB) CreateMany(ctx context.Context, contestBooks []model.ContestBook) ([]model.ContestBook, error) {
 	db := r.db.WithContext(ctx)
-	q := db.Model(&model.ContestBook{})
+	q := db.Model(&model.Collection{})
 	err := q.Create(&contestBooks).
 		Error
 	if err != nil {
@@ -87,39 +82,4 @@ func (r *ContestBookDB) UpdateMany(ctx context.Context, contestBooks []model.Con
 		return nil, err
 	}
 	return contestBooks, nil
-}
-
-func (r *ContestBookDB) Create(ctx context.Context, book model.ContestBook) (model.ContestBook, error) {
-	db := r.db.WithContext(ctx)
-	q := db.Model(&model.ContestBook{})
-	err := q.Create(&book).
-		Error
-	if err != nil {
-		return book, err
-	}
-	return book, nil
-}
-
-func (r *ContestBookDB) Update(ctx context.Context, book model.ContestBook) (model.ContestBook, error) {
-	db := r.db.WithContext(ctx)
-	q := db.Model(&model.ContestBook{})
-	err := q.Where("contest_book_id = ?", book.ContestBookID).
-		Save(&book).
-		Error
-	if err != nil {
-		return book, err
-	}
-	return book, nil
-}
-
-func (r *ContestBookDB) Delete(ctx context.Context, id uint) error {
-	db := r.db.WithContext(ctx)
-	q := db.Model(&model.ContestBook{})
-	err := q.Where("contest_book_id = ?", id).
-		Delete(&model.ContestBook{}).
-		Error
-	if err != nil {
-		return err
-	}
-	return nil
 }

@@ -40,7 +40,7 @@ type Repositories struct {
 
 	FirebaseMessaging FirebaseMessaging
 	Airtable          AirTable
-	StorageClient     Storage
+	StorageClient     StorageClient
 }
 
 func NewRepositories(db *gorm.DB, cfg *config.Config) (*Repositories, error) {
