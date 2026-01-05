@@ -14,7 +14,7 @@ import (
 // @title           swagger API
 // @version         1.0
 // @description     Это пример сервера с использованием Swagger в Gin.
-// @host            157.90.227.125:8000
+// @host            3.77.53.4:8000
 // @BasePath        /
 //
 // @securityDefinitions.apikey BearerAuth
